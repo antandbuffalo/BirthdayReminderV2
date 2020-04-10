@@ -2,10 +2,12 @@ package com.antandbuffalo.birthdayreminder;
 
 import android.util.Pair;
 
+import com.antandbuffalo.birthdayreminder.utilities.Util;
 import com.google.android.gms.auth.UserRecoverableAuthException;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException;
+import com.google.api.client.http.FileContent;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
 
@@ -30,12 +32,15 @@ public class DriveServiceHelper {
      */
     public Task<String> createFile() {
         return Tasks.call(mExecutor, () -> {
+            FileContent fileContent = new FileContent("text/plain", Util.getCachedFile(""));
+
             File metadata = new File()
                     .setParents(Collections.singletonList("appDataFolder"))
                     .setMimeType("text/plain")
-                    .setName("config.json");
+                    .setName("dob.txt");
+            File googleFile = mDriveService.files().create(metadata, fileContent).execute();
 
-            File googleFile = mDriveService.files().create(metadata).execute();
+            //File googleFile = mDriveService.files().create(metadata).execute();
             if (googleFile == null) {
                 throw new IOException("Null result when requesting file creation.");
             }

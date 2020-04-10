@@ -3,6 +3,7 @@ package com.antandbuffalo.birthdayreminder;
 import android.content.Intent;
 import android.os.Bundle;
 
+import com.antandbuffalo.birthdayreminder.utilities.DataHolder;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -53,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
                 createFile();
             }
         });
+        DataHolder.getInstance().setAppContext(getApplicationContext());
 
         driveSignIn();
     }
