@@ -3,6 +3,7 @@ package com.antandbuffalo.birthdayreminder;
 import android.content.Intent;
 import android.os.Bundle;
 
+import com.antandbuffalo.birthdayreminder.settings.Settings;
 import com.antandbuffalo.birthdayreminder.utilities.DataHolder;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -12,6 +13,7 @@ import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.api.client.extensions.android.http.AndroidHttp;
@@ -75,6 +77,8 @@ public class MainActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            Intent settings = new Intent(this, Settings.class);
+            startActivity(settings);
             return true;
         }
 
@@ -161,20 +165,13 @@ public class MainActivity extends AppCompatActivity {
 
                         Log.d("JBL", "File name: " + name);
                         Log.d("JBL", "File content: " + content);
+                        String[] lines = content.split("\r\n|\r|\n");
+                        for (String line : lines) {
+                            Log.d("JBL", line);
+                        }
                     })
                     .addOnFailureListener(exception ->
                             Log.e("JBL", "Couldn't read file.", exception));
         }
-    }
-    public void uploadFile() {
-        File fileMetadata = new File();
-        fileMetadata.setName("config.json");
-        fileMetadata.setParents(Collections.singletonList("appDataFolder"));
-        java.io.File filePath = new java.io.File("files/config.json");
-        FileContent mediaContent = new FileContent("application/json", filePath);
-//        File file = driveService.files().create(fileMetadata, mediaContent)
-//                .setFields("id")
-//                .execute();
-//        System.out.println("File ID: " + file.getId());
     }
 }

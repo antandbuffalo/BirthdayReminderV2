@@ -66,7 +66,7 @@ public class DriveServiceHelper {
                 String line;
 
                 while ((line = reader.readLine()) != null) {
-                    stringBuilder.append(line);
+                    stringBuilder.append(line + "\n");
                 }
                 String contents = stringBuilder.toString();
 
