@@ -1,5 +1,6 @@
 package com.antandbuffalo.birthdayreminder;
 
+import android.util.Log;
 import android.util.Pair;
 
 import com.antandbuffalo.birthdayreminder.utilities.Util;
@@ -12,9 +13,11 @@ import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.util.Collections;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -64,15 +67,25 @@ public class DriveServiceHelper {
                  BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
                 StringBuilder stringBuilder = new StringBuilder();
                 String line;
-
                 while ((line = reader.readLine()) != null) {
                     stringBuilder.append(line + "\n");
                 }
                 String contents = stringBuilder.toString();
-
                 return Pair.create(name, contents);
             }
         });
+    }
+
+    public void downloadFile(String fileId) {
+        //https://stackoverflow.com/questions/17488534/create-a-file-from-a-bytearrayoutputstream
+        OutputStream outputStream = new ByteArrayOutputStream();
+        try {
+            mDriveService.files().get(fileId)
+                    .executeMediaAndDownloadTo(outputStream);
+        }
+        catch (Exception e) {
+            Log.e("BR", "Not able to download file: " + e.getLocalizedMessage());
+        }
     }
 
     //https://github.com/mesadhan/google-drive-app
