@@ -357,7 +357,7 @@ public class Util {
         return returnValue;
     }
 
-    public static String readFromAssetFile(String defaultFileName) {
+    public static Boolean copyFromAssetFileToDatabase(String defaultFileName) {
         try {
             BufferedReader br;
             DataInputStream in = null;
@@ -366,7 +366,6 @@ public class Util {
             InputStream fstream = am.open(defaultFileName);
             // Get the object of DataInputStream
             in = new DataInputStream(fstream);
-
             br = new BufferedReader(new InputStreamReader(in));
 
             String strLine, n1, d1, m1, y1;
@@ -393,6 +392,7 @@ public class Util {
 
                 if(!d1.trim().matches(regexStr) || !m1.trim().matches(regexStr) || !y1.trim().matches(regexStr)) {
                     //write code here for failure
+                    Log.e("BRJB", "Not abel to parse string. Other than number is found d: " + d1 + " m: " + m1 + " y: " + y1);
                     continue;
                 }
 
@@ -401,18 +401,15 @@ public class Util {
                 if(DateOfBirthDBHelper.isUniqueDateOfBirth(dateOfBirth)) {
                     DateOfBirthDBHelper.insertDOB(dateOfBirth);
                 }
-//                else {
-//                    Log.i("Entry already available", dateOfBirth.getName());
-//                }
             }
             // Close the input stream
-            //progressDialog.dismiss();
             in.close();
+            return true;
         }
         catch (Exception e) {// Catch exception if any
-            System.err.println("Error: " + e.getMessage());
+            Log.e("BRJB", e.getLocalizedMessage());
+            return false;
         }
-        return "TRUE";
     }
     public static String createEmptyFolder() {
         if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {

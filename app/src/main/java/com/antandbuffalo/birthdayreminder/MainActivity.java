@@ -6,7 +6,9 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 
+import com.antandbuffalo.birthdayreminder.database.DBHelper;
 import com.antandbuffalo.birthdayreminder.settings.Settings;
+import com.antandbuffalo.birthdayreminder.upcoming.UpcomingListAdapter;
 import com.antandbuffalo.birthdayreminder.utilities.Constants;
 import com.antandbuffalo.birthdayreminder.utilities.DataHolder;
 import com.antandbuffalo.birthdayreminder.utilities.Util;
@@ -40,12 +42,14 @@ import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ListView;
 
 import java.util.Collections;
 
 public class MainActivity extends AppCompatActivity {
 
     DriveServiceHelper driveServiceHelper;
+    UpcomingListAdapter upcomingListAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,9 +67,21 @@ public class MainActivity extends AppCompatActivity {
                 createFile();
             }
         });
-        DataHolder.getInstance().setAppContext(getApplicationContext());
 
-        driveSignIn();
+        initValues();
+//        driveSignIn();
+        Util.copyFromAssetFileToDatabase("cse.txt");
+
+        upcomingListAdapter = new UpcomingListAdapter();
+        //http://stackoverflow.com/questions/6495898/findviewbyid-in-fragment
+        ListView upcomingListView = (ListView)findViewById(R.id.upcomingListView);
+        upcomingListView.setAdapter(upcomingListAdapter);
+
+    }
+
+    public void initValues() {
+        DBHelper.createInstance(this);
+        DataHolder.getInstance().setAppContext(getApplicationContext());
     }
 
     @Override
@@ -147,7 +163,6 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Creates a new file via the Drive REST API.
      */
-    @RequiresApi(api = Build.VERSION_CODES.M)
     private void createFile() {
         if (driveServiceHelper != null) {
             Log.d("JBL", "Creating a file.");
@@ -188,7 +203,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
     public Boolean getStoragePermission(int permissionType) {
         switch (permissionType) {
             case Constants.MY_PERMISSIONS_WRITE_EXTERNAL_STORAGE: {
