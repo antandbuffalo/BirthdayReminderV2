@@ -14,6 +14,7 @@ import com.google.api.services.drive.model.File;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -76,16 +77,19 @@ public class DriveServiceHelper {
         });
     }
 
-    public void downloadFile(String fileId) {
+    public Task<Boolean> downloadFileWithFileId(String fileId, FileOutputStream fileOutputStream) {
+        return Tasks.call(mExecutor, () -> {
+            try {
+                mDriveService.files().get(fileId)
+                        .executeMediaAndDownloadTo(fileOutputStream);
+                return true;
+            }
+            catch (Exception e) {
+                Log.e("BR", "Not able to download file: " + e.getLocalizedMessage());
+                return false;
+            }
+        });
         //https://stackoverflow.com/questions/17488534/create-a-file-from-a-bytearrayoutputstream
-        OutputStream outputStream = new ByteArrayOutputStream();
-        try {
-            mDriveService.files().get(fileId)
-                    .executeMediaAndDownloadTo(outputStream);
-        }
-        catch (Exception e) {
-            Log.e("BR", "Not able to download file: " + e.getLocalizedMessage());
-        }
     }
 
     //https://github.com/mesadhan/google-drive-app

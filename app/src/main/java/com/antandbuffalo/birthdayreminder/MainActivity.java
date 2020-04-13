@@ -1,10 +1,15 @@
 package com.antandbuffalo.birthdayreminder;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 
 import com.antandbuffalo.birthdayreminder.settings.Settings;
+import com.antandbuffalo.birthdayreminder.utilities.Constants;
 import com.antandbuffalo.birthdayreminder.utilities.DataHolder;
+import com.antandbuffalo.birthdayreminder.utilities.Util;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -25,9 +30,11 @@ import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.drive.model.File;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.annotation.RestrictTo;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 
 import android.util.Log;
 import android.view.View;
@@ -140,12 +147,18 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Creates a new file via the Drive REST API.
      */
+    @RequiresApi(api = Build.VERSION_CODES.M)
     private void createFile() {
         if (driveServiceHelper != null) {
             Log.d("JBL", "Creating a file.");
 
             driveServiceHelper.createFile()
-                    .addOnSuccessListener(fileId -> readFile(fileId))
+                    .addOnSuccessListener(fileId -> {
+                        readFile(fileId);
+                        if(getStoragePermission(Constants.MY_PERMISSIONS_WRITE_EXTERNAL_STORAGE)) {
+                            Util.downloadFileFromGoogleDrive(driveServiceHelper, fileId);
+                        }
+                    })
                     .addOnFailureListener(exception ->
                             Log.e("JBL", "Couldn't create file.", exception));
         }
@@ -173,5 +186,41 @@ public class MainActivity extends AppCompatActivity {
                     .addOnFailureListener(exception ->
                             Log.e("JBL", "Couldn't read file.", exception));
         }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    public Boolean getStoragePermission(int permissionType) {
+        switch (permissionType) {
+            case Constants.MY_PERMISSIONS_WRITE_EXTERNAL_STORAGE: {
+                if (ContextCompat.checkSelfPermission(this,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        != PackageManager.PERMISSION_GRANTED) {
+
+                    requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                            Constants.MY_PERMISSIONS_WRITE_EXTERNAL_STORAGE);
+
+                    return false;
+                } else {
+                    // Permission has already been granted
+                    return true;
+                }
+            }
+            case Constants.MY_PERMISSIONS_READ_EXTERNAL_STORAGE: {
+                if (ContextCompat.checkSelfPermission(this,
+                        Manifest.permission.READ_EXTERNAL_STORAGE)
+                        != PackageManager.PERMISSION_GRANTED) {
+
+                    requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                            Constants.MY_PERMISSIONS_READ_EXTERNAL_STORAGE);
+
+                    return false;
+                } else {
+                    // Permission has already been granted
+                    return true;
+                }
+            }
+
+        }
+        return false;
     }
 }
