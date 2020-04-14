@@ -6,12 +6,13 @@
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".MainActivity"
+    android:focusableInTouchMode="true"
     tools:showIn="@layout/activity_main">
 
     <EditText
-        android:id="@+id/filter"
+        android:id="@+id/upcomingFiler"
         android:layout_width="fill_parent"
-        android:layout_height="35sp"
+        android:layout_height="40sp"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:autoText="false"
@@ -31,9 +32,10 @@
         android:id="@+id/upcomingListView"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_marginTop="2dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/filter" />
+        app:layout_constraintTop_toBottomOf="@+id/upcomingFiler" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

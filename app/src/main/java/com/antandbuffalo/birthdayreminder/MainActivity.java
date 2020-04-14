@@ -38,10 +38,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.EditText;
 import android.widget.ListView;
 
 import java.util.Collections;
@@ -76,6 +79,21 @@ public class MainActivity extends AppCompatActivity {
         //http://stackoverflow.com/questions/6495898/findviewbyid-in-fragment
         ListView upcomingListView = (ListView)findViewById(R.id.upcomingListView);
         upcomingListView.setAdapter(upcomingListAdapter);
+
+        EditText filter = (EditText)findViewById(R.id.upcomingFiler);
+        filter.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void onTextChanged(CharSequence cs, int arg1, int arg2, int arg3) {
+                // When user changed the Text
+                upcomingListAdapter.getFilter().filter(cs);
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) { }
+
+            @Override
+            public void afterTextChanged(Editable arg0) {}
+        });
 
     }
 
