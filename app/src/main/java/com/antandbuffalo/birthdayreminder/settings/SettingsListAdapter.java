@@ -35,7 +35,7 @@ public class SettingsListAdapter extends BaseAdapter {
 
     SettingsListAdapter() {
         //listData = OptionsDBHelper.selectAll();
-        listData = OptionsDBHelper.getDefatultValues();
+        listData = SettingsData.getDefatultValues();
         currentDayOfYear = Integer.parseInt(Util.getStringFromDate(new Date(), Constants.DAY_OF_YEAR));
         cal = Calendar.getInstance();
         dateFormatter = new SimpleDateFormat("MMM");
@@ -154,18 +154,8 @@ public class SettingsListAdapter extends BaseAdapter {
             TextView currentValue = (TextView)convertView.findViewById(R.id.currentValue);
             String givenKey = option.getKey().toUpperCase();
             currentValue.setVisibility(View.VISIBLE);
-
+            currentValue.setText(option.getValue());
             switch (givenKey) {
-                case Constants.SETTINGS_MODIFY_TODAY:
-                case Constants.SETTINGS_NOTIFICATION: {
-                    int currVal = getSelectedValueForKey(option.getKey());
-                    if (currVal == 1) {
-                        currentValue.setText(currVal + " day");
-                    } else {
-                        currentValue.setText(currVal + " days");
-                    }
-                    break;
-                }
                 case Constants.SETTINGS_NOTIFICATION_TIME: {
                     currentValue.setText(getSelectedNotificationTime(parent.getContext()));
                     break;
@@ -174,8 +164,6 @@ public class SettingsListAdapter extends BaseAdapter {
                     currentValue.setText(getSelectedFrequency(parent.getContext()));
                     break;
                 }
-                default:
-                    currentValue.setVisibility(View.INVISIBLE);
             }
         }
         else {
@@ -222,7 +210,7 @@ public class SettingsListAdapter extends BaseAdapter {
     }
 
     public void refreshData() {
-        listData = OptionsDBHelper.selectAll();
+        listData = SettingsData.getDefatultValues();
         this.notifyDataSetChanged();
     }
 

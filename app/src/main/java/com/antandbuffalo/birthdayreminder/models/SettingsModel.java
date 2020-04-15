@@ -16,6 +16,8 @@ public class SettingsModel {
     private String extra;
     private JSONObject extraJson;
     private int sno;
+    private String iconLetter;
+    private String value;
 
     public String getKey() {
         return key;
@@ -83,5 +85,21 @@ public class SettingsModel {
 
     public void setSno(int sno) {
         this.sno = sno;
+    }
+
+    public String getIconLetter() {
+        return iconLetter;
+    }
+
+    public void setIconLetter(String iconLetter) {
+        this.iconLetter = iconLetter;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
     }
 }
