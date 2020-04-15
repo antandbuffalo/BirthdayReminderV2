@@ -185,7 +185,7 @@ public class MainActivity extends AppCompatActivity {
         if (driveServiceHelper != null) {
             Log.d("JBL", "Creating a file.");
 
-            driveServiceHelper.createFile()
+            driveServiceHelper.createFile(null)
                     .addOnSuccessListener(fileId -> {
                         readFile(fileId);
                         if(getStoragePermission(Constants.MY_PERMISSIONS_WRITE_EXTERNAL_STORAGE)) {

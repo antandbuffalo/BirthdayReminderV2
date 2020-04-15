@@ -66,7 +66,7 @@ public class SettingsData {
         data.add(datum);
 
         datum = SettingsModel.newInstance();
-        datum.setKey(Constants.SETTINGS_WRITE_FILE);
+        datum.setKey(Constants.settingsBackup);
         datum.setTitle(Constants.SETTINGS_WRITE_FILE_TITLE);
         datum.setSubTitle(Constants.SETTINGS_WRITE_FILE_SUB_TITLE);
         //datum.setUpdatedOn(new Date());

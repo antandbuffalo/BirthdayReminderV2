@@ -34,9 +34,9 @@ public class DriveServiceHelper {
     /**
      * Creates a text file in the user's My Drive folder and returns its file ID.
      */
-    public Task<String> createFile() {
+    public Task<String> createFile(java.io.File file) {
         return Tasks.call(mExecutor, () -> {
-            FileContent fileContent = new FileContent("text/plain", Util.getCachedFile(""));
+            FileContent fileContent = new FileContent("text/plain", file);
 
             File metadata = new File()
                     .setParents(Collections.singletonList("appDataFolder"))

@@ -74,6 +74,7 @@ public class Constants {
     public static final String SETTINGS_NOTIFICATION_TIME = "SETTINGS_NOTIFICATION_TIME";
     public static final String SETTINGS_NOTIFICATION_FREQUENCY = "SETTINGS_NOTIFICATION_FREQUENCY";
     public static final String SETTINGS_WISH_TEMPLATE = "SETTINGS_WISH_TEMPLATE";
+    public static final String settingsBackup = "SETTINGS_BACKUP";
 
     public static final Map<String, Integer> OPIONS_SNO_MAPPER = new HashMap<String, Integer>() {{
         put(SETTINGS_WRITE_FILE, 1);
@@ -175,4 +176,6 @@ public class Constants {
     public static final String WISH_TEMPLATE_DEFAULT = "Wish you many more happy returns of the day";
 
     public static final String NEW_FEATURE_2_6_0_34 = "NEW_FEATURE_2_6_0_34";
+
+    public static final Integer driveSignInCode = 999;
 }

@@ -76,9 +76,29 @@ public class Util {
             Log.e("BR", e.getLocalizedMessage());
         }
         return cacheFile;
-
     }
 
+    public static File getLocalFile(String fileName) {
+        if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+            // sdcard not found. read from bundle
+            //SD Card not found.
+            return null;
+        }
+        try {
+            File sdcard = Environment.getExternalStorageDirectory();
+            // Get the text file
+            File file = new File(sdcard, Constants.FOLDER_NAME + "/" + fileName);
+            if (!file.exists()) {
+                Toast.makeText(DataHolder.getInstance().getAppContext(), Constants.ERROR_NO_BACKUP_FILE, Toast.LENGTH_SHORT).show();
+                return null;
+            }
+            return file;
+        }
+        catch (Exception e) {
+            Log.d("BRJB", "Not able to get file");
+            return null;
+        }
+    }
 
     public static int compareDateAndMonth(Date date1, Date date2) {
         Calendar calendar1 = Util.getCalendar(date1);

@@ -12,6 +12,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.antandbuffalo.birthdayreminder.R;
+import com.antandbuffalo.birthdayreminder.backup.Backup;
 import com.antandbuffalo.birthdayreminder.database.DateOfBirthDBHelper;
 import com.antandbuffalo.birthdayreminder.models.SettingsModel;
 import com.antandbuffalo.birthdayreminder.prenotification.PreNotification;
@@ -35,6 +36,10 @@ public class Settings extends AppCompatActivity {
                 SettingsModel selectedOption = settingsListAdapter.listData.get(position);
                 if (selectedOption.getKey().equalsIgnoreCase(Constants.SETTINGS_NOTIFICATION)) {
                     Intent intent = new Intent(view.getContext(), PreNotification.class);
+                    startActivityForResult(intent, Constants.REFRESH_SETTINGS);
+                }
+                else if (selectedOption.getKey().equalsIgnoreCase(Constants.settingsBackup)) {
+                    Intent intent = new Intent(view.getContext(), Backup.class);
                     startActivityForResult(intent, Constants.REFRESH_SETTINGS);
                 }
             }
