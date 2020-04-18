@@ -367,3 +367,12 @@ public class MainActivity extends AppCompatActivity {
         return false;
     }
 }
+
+// Get all documents
+// https://firebase.google.com/docs/firestore/query-data/get-data#java_2
+// add document with custom id
+// https://stackoverflow.com/questions/48541270/how-to-add-document-with-custom-id-to-firestore
+// auth rules
+// https://firebase.google.com/docs/rules/basics?authuser=0#cloud-firestore
+// checking user
+// https://firebase.google.com/docs/auth/android/manage-users?authuser=0
