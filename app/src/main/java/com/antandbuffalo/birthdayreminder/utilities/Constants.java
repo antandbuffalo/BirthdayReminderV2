@@ -178,4 +178,5 @@ public class Constants {
     public static final String NEW_FEATURE_2_6_0_34 = "NEW_FEATURE_2_6_0_34";
 
     public static final Integer driveSignInCode = 999;
+    public static final Integer firebaseSignInCode = 1000;
 }

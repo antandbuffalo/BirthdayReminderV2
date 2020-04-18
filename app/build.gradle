@@ -1,5 +1,7 @@
 apply plugin: 'com.android.application'
 
+apply plugin: 'com.google.gms.google-services'  // Google Services plugin
+
 android {
     compileSdkVersion 29
     buildToolsVersion "29.0.0"
@@ -62,4 +64,9 @@ dependencies {
     }
 
     implementation 'com.google.firebase:firebase-ads:17.0.0'
+
+    implementation 'com.google.firebase:firebase-firestore:21.4.2'
+    implementation 'com.google.firebase:firebase-auth:19.3.0'
+    implementation 'com.firebaseui:firebase-ui-auth:6.2.0'
+
 }

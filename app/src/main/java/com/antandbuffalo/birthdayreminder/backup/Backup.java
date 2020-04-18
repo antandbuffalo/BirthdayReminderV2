@@ -68,7 +68,7 @@ public class Backup extends AppCompatActivity {
             }
         });
 
-
+        driveSignIn();
     }
 
     @Override
@@ -130,6 +130,7 @@ public class Backup extends AppCompatActivity {
         GoogleSignInOptions googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
                 .requestScopes(new Scope(Scopes.DRIVE_APPFOLDER))
+
                 .build();
         GoogleSignInClient googleSignInClient = GoogleSignIn.getClient(this, googleSignInOptions);
         startActivityForResult(googleSignInClient.getSignInIntent(), Constants.driveSignInCode);
@@ -198,5 +199,11 @@ public class Backup extends AppCompatActivity {
             // permissions this app might request.
         }
     }
+
+    // download prgress link
+    // https://developers.google.com/drive/android/files
+
+    // use firebase instead of app data
+    // https://ammar.lanui.online/integrate-google-drive-rest-api-on-android-app-bc4ddbd90820
 
 }
