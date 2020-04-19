@@ -157,7 +157,7 @@ public class SettingsListAdapter extends BaseAdapter {
             currentValue.setText(option.getValue());
             switch (givenKey) {
                 case Constants.SETTINGS_NOTIFICATION_TIME: {
-                    currentValue.setText(getSelectedNotificationTime(parent.getContext()));
+                    currentValue.setText(Storage.getNotificationTime(Util.getSharedPreference(), parent.getContext()));
                     break;
                 }
                 case Constants.SETTINGS_NOTIFICATION_FREQUENCY: {
@@ -185,23 +185,6 @@ public class SettingsListAdapter extends BaseAdapter {
             preNotifDays = settingsPref.getInt(Constants.PREFERENCE_PRE_NOTIFICATION_DAYS, 0);
         }
         return preNotifDays;
-    }
-
-    public String getSelectedNotificationTime(Context context) {
-        int hours = settingsPref.getInt(Constants.PREFERENCE_NOTIFICATION_TIME_HOURS, 0);
-        int minutes = settingsPref.getInt(Constants.PREFERENCE_NOTIFICATION_TIME_MINUTES, 0);
-        boolean is24HourFormat = android.text.format.DateFormat.is24HourFormat(context);
-        if(is24HourFormat) {
-            return Util.getTwoDigitsString(hours) + ":" + Util.getTwoDigitsString(minutes);
-        }
-        else {
-            String amOrPm = "AM";
-            if(hours > 12) {
-                hours = hours - 12;
-                amOrPm = "PM";
-            }
-            return Util.getTwoDigitsString(hours) + ":" + Util.getTwoDigitsString(minutes) + " " + amOrPm;
-        }
     }
 
     public String getSelectedFrequency(Context context) {

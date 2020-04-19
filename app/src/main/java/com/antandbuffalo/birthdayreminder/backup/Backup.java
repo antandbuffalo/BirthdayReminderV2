@@ -11,11 +11,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.antandbuffalo.birthdayreminder.DriveServiceHelper;
 import com.antandbuffalo.birthdayreminder.R;
 import com.antandbuffalo.birthdayreminder.utilities.Constants;
 import com.antandbuffalo.birthdayreminder.utilities.DataHolder;
@@ -39,7 +37,6 @@ import java.io.File;
 import java.util.Collections;
 
 public class Backup extends AppCompatActivity {
-    DriveServiceHelper driveServiceHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +49,6 @@ public class Backup extends AppCompatActivity {
             public void onClick(View view) {
                 if(getStoragePermission(Constants.MY_PERMISSIONS_READ_EXTERNAL_STORAGE)) {
                     File file = Util.getLocalFile("dob.txt");
-                    uploadToGoogleDrive(file);
                 }
                 else {
                     Toast.makeText(DataHolder.getInstance().getAppContext(), "Please provide persmission to access local storage", Toast.LENGTH_SHORT).show();
@@ -64,76 +60,14 @@ public class Backup extends AppCompatActivity {
         selectAccount.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                driveSignIn();
+
             }
         });
-
-        driveSignIn();
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == Constants.driveSignInCode) {
-            handleSignIn(data);
-        }
-    }
-
-    public void handleSignIn(Intent data) {
-        GoogleSignIn.getSignedInAccountFromIntent(data)
-                .addOnSuccessListener(new OnSuccessListener<GoogleSignInAccount>() {
-                    @Override
-                    public void onSuccess(GoogleSignInAccount googleSignInAccount) {
-                        Log.d("JBL", "Signed in as " + googleSignInAccount.getEmail());
-                        TextView accountName = findViewById(R.id.accountName);
-                        accountName.setText("Account Name: " + googleSignInAccount.getEmail());
-
-                        // Use the authenticated account to sign in to the Drive service.
-                        GoogleAccountCredential credential =
-                                GoogleAccountCredential.usingOAuth2(
-                                        getApplicationContext(), Collections.singleton(DriveScopes.DRIVE_APPDATA));
-                        credential.setSelectedAccount(googleSignInAccount.getAccount());
-                        Drive googleDriveService =
-                                new Drive.Builder(
-                                        AndroidHttp.newCompatibleTransport(),
-                                        new GsonFactory(),
-                                        credential)
-                                        .setApplicationName("Birthday Reminder")
-                                        .build();
-                        driveServiceHelper = new DriveServiceHelper(googleDriveService);
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.i("FAIL", e.getLocalizedMessage());
-                    }
-                });
-    }
-
-    private void uploadToGoogleDrive(File file) {
-        if (driveServiceHelper != null) {
-            Log.d("JBL", "Creating a file.");
-
-            driveServiceHelper.createFile(file)
-                    .addOnSuccessListener(fileId -> {
-                        Storage.putString(Util.getSharedPreference(), "driveFileId", fileId);
-                    })
-                    .addOnFailureListener(exception ->
-                            Log.e("JBL", "Couldn't create file to drive.", exception));
-        }
-    }
-
-    public void driveSignIn() {
-        // https://stackoverflow.com/questions/54052220/how-to-access-the-application-data-on-google-drive-on-android-with-its-rest-api
-
-        GoogleSignInOptions googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestEmail()
-                .requestScopes(new Scope(Scopes.DRIVE_APPFOLDER))
-
-                .build();
-        GoogleSignInClient googleSignInClient = GoogleSignIn.getClient(this, googleSignInOptions);
-        startActivityForResult(googleSignInClient.getSignInIntent(), Constants.driveSignInCode);
     }
 
     public Boolean getStoragePermission(int permissionType) {
@@ -174,7 +108,6 @@ public class Backup extends AppCompatActivity {
     public void readPermission(Boolean isGranted) {
         if(isGranted) {
             File file = Util.getLocalFile("dob.txt");
-            uploadToGoogleDrive(file);
         }
     }
 

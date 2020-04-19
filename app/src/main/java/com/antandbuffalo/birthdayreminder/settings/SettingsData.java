@@ -47,6 +47,7 @@ public class SettingsData {
         datum.setSubTitle("");
         datum.setIconLetter("N");
         datum.setSno(2);
+        datum.setValue("00:00");
         data.add(datum);
 
         datum = SettingsModel.newInstance();
@@ -55,6 +56,7 @@ public class SettingsData {
         datum.setSubTitle("");
         datum.setIconLetter("N");
         datum.setSno(3);
+        datum.setValue(Storage.getNotificationFrequency(Util.getSharedPreference()) + "");
         data.add(datum);
 
         datum = SettingsModel.newInstance();

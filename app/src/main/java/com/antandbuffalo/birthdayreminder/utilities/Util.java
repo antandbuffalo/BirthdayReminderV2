@@ -15,7 +15,6 @@ import android.widget.EditText;
 import android.widget.NumberPicker;
 import android.widget.Toast;
 
-import com.antandbuffalo.birthdayreminder.DriveServiceHelper;
 import com.antandbuffalo.birthdayreminder.database.DateOfBirthDBHelper;
 import com.antandbuffalo.birthdayreminder.database.OptionsDBHelper;
 import com.antandbuffalo.birthdayreminder.models.DateOfBirth;
@@ -26,7 +25,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -34,7 +32,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.lang.reflect.Field;
 import java.text.DateFormat;
@@ -302,38 +299,6 @@ public class Util {
             returnValue = Constants.ERROR_UNKNOWN;
         }
         return returnValue;
-    }
-
-    public static String downloadFileFromGoogleDrive(DriveServiceHelper driveServiceHelper, String fileId) {
-        String createFolderResult = Util.createEmptyFolder();
-        if(!createFolderResult.equalsIgnoreCase(Constants.FLAG_SUCCESS)) {
-            return "Not able to create folder in locally";
-        }
-        File sdcard = Environment.getExternalStorageDirectory();
-
-        Calendar calendar = getCalendar(new Date());
-        String currentDateTime = calendar.get(Calendar.YEAR) + getTwoDigitsString(calendar.get(Calendar.MONTH) + 1) + getTwoDigitsString(calendar.get(Calendar.DATE))
-                + getTwoDigitsString(calendar.get(Calendar.HOUR_OF_DAY)) + getTwoDigitsString(calendar.get(Calendar.MINUTE)) + getTwoDigitsString(calendar.get(Calendar.SECOND));
-        String fileName = "/" + Constants.FOLDER_NAME + "/" + Constants.FILE_NAME + Constants.FILE_NAME_SUFFIX;
-        String fileNameBackup = "/" + Constants.FOLDER_NAME + "/" + Constants.FILE_NAME + "_" + currentDateTime + Constants.FILE_NAME_SUFFIX;
-
-        File myFile = new File(sdcard, fileName);
-        File myFileBackup = new File(sdcard, fileNameBackup);
-        myFile.renameTo(myFileBackup);
-
-        try {
-            myFile.createNewFile();
-            FileOutputStream fOut = new FileOutputStream(myFile);
-            driveServiceHelper.downloadFileWithFileId(fileId, fOut).addOnSuccessListener(byteArrayOutputStream -> {
-                Log.d("BR", "File downloaded successfully");
-            });
-            return "File Downloaded Successfully";
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            //Toast.makeText(DataHolder.getInstance().getAppContext(), Constants.ERROR_READ_WRITE_1003, Toast.LENGTH_SHORT).show();
-            e.printStackTrace();
-            return Constants.ERROR_UNKNOWN;
-        }
     }
 
     public static String updateFile(DateOfBirth dob) {

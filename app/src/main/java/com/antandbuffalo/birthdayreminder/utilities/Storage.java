@@ -1,5 +1,6 @@
 package com.antandbuffalo.birthdayreminder.utilities;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 
 import java.util.Date;
@@ -81,5 +82,23 @@ public class Storage {
     public static Integer getInt(SharedPreferences preferences, String key, Integer defaultValue) {
         return preferences.getInt(key, defaultValue);
     }
+
+    public static String getNotificationTime(SharedPreferences sharedPreferences, Context context) {
+        int hours = Storage.getNotificationHours(sharedPreferences);
+        int minutes = Storage.getNotificationMinutes(sharedPreferences);
+        boolean is24HourFormat = android.text.format.DateFormat.is24HourFormat(context);
+        if(is24HourFormat) {
+            return Util.getTwoDigitsString(hours) + ":" + Util.getTwoDigitsString(minutes);
+        }
+        else {
+            String amOrPm = "AM";
+            if(hours > 12) {
+                hours = hours - 12;
+                amOrPm = "PM";
+            }
+            return Util.getTwoDigitsString(hours) + ":" + Util.getTwoDigitsString(minutes) + " " + amOrPm;
+        }
+    }
+
 
 }
