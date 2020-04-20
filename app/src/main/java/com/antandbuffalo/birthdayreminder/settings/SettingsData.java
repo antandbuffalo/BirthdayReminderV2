@@ -69,7 +69,7 @@ public class SettingsData {
 
         datum = SettingsModel.newInstance();
         datum.setKey(Constants.settingsBackup);
-        datum.setTitle(Constants.SETTINGS_WRITE_FILE_TITLE);
+        datum.setTitle("Backup and Restore");
         datum.setSubTitle(Constants.SETTINGS_WRITE_FILE_SUB_TITLE);
         //datum.setUpdatedOn(new Date());
         datum.setSno(5);

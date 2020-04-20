@@ -250,17 +250,22 @@ public class Util {
         return returnValue;
     }
 
-    public static String writeToFile() {
+    public static File writeToFile(Context context) {
         String returnValue = "";
         String createFolderResult = Util.createEmptyFolder();
         if(!createFolderResult.equalsIgnoreCase(Constants.FLAG_SUCCESS)) {
-            return createFolderResult;
+            if(context != null) {
+                Toast.makeText(context, "Not able to create folder", Toast.LENGTH_LONG).show();
+            }
+            return null;
         }
         File sdcard = Environment.getExternalStorageDirectory();
         List<DateOfBirth> dobs = DateOfBirthDBHelper.selectAll();
         if(dobs == null || dobs.size() == 0) {
-            //Toast.makeText(DataHolder.getInstance().getAppContext(), Constants.ERROR_READ_WRITE_1005, Toast.LENGTH_LONG).show();
-            return Constants.MSG_NOTHING_TO_BACKUP_DATA_EMPTY;
+            if(context != null) {
+                Toast.makeText(context, "Not date of births available", Toast.LENGTH_LONG).show();
+            }
+            return null;
         }
         Calendar calendar = getCalendar(new Date());
         String currentDateTime = calendar.get(Calendar.YEAR) + getTwoDigitsString(calendar.get(Calendar.MONTH) + 1) + getTwoDigitsString(calendar.get(Calendar.DATE))
@@ -290,15 +295,14 @@ public class Util {
             myOutWriter.close();
             fOut.close();
             System.out.println("Write successful");
-            returnValue = Constants.NOTIFICATION_READ_WRITE_1001;
+            System.out.println(new Date(myFile.lastModified()));
 
         } catch (IOException e) {
             // TODO Auto-generated catch block
             //Toast.makeText(DataHolder.getInstance().getAppContext(), Constants.ERROR_READ_WRITE_1003, Toast.LENGTH_SHORT).show();
             e.printStackTrace();
-            returnValue = Constants.ERROR_UNKNOWN;
         }
-        return returnValue;
+        return myFile;
     }
 
     public static String updateFile(DateOfBirth dob) {
