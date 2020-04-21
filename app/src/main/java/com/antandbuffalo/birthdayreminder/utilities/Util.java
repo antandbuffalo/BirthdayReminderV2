@@ -44,6 +44,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Created by i677567 on 5/10/15.
@@ -248,6 +250,27 @@ public class Util {
         }
         System.out.println("Read successful");
         return returnValue;
+    }
+
+    public static File getLatestLocalBackupFile() {
+        if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+            // sdcard not found. read from bundle
+            //SD Card not found.
+            return null;
+        }
+        try {
+            File sdcard = Environment.getExternalStorageDirectory();
+            // Get the text file
+            File file = new File(sdcard, Constants.FOLDER_NAME + "/dob.txt");
+            if (!file.exists()) {
+                return null;
+            }
+            return file;
+        }
+        catch (Exception e) {
+            Log.d("FileRead", "File not found");
+            return null;
+        }
     }
 
     public static File writeToFile(Context context) {
@@ -620,6 +643,15 @@ public class Util {
                 + " on "
                 + Util.getStringFromDate(dob, "dd MMM") + " every year";
         return  message;
+    }
+
+    public static Map<String, DateOfBirth> getDateOfBirthMap() {
+        Map<String, DateOfBirth> dateOfBirthMap = new HashMap<>();
+        List<DateOfBirth> dobs = DateOfBirthDBHelper.selectAll();
+        for(DateOfBirth dateOfBirth : dobs) {
+            dateOfBirthMap.put(dateOfBirth.getDobId() + "", dateOfBirth);
+        }
+        return dateOfBirthMap;
     }
 
 }
