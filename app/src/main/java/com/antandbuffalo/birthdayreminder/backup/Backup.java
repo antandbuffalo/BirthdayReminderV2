@@ -6,8 +6,10 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -31,8 +33,10 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.api.Scope;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.google.api.client.json.gson.GsonFactory;
@@ -44,6 +48,8 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.ServerTimestamp;
+import com.google.firestore.v1.DocumentTransform;
 
 import java.io.File;
 import java.sql.Time;
@@ -78,6 +84,7 @@ public class Backup extends AppCompatActivity {
                 else {
                     Toast.makeText(DataHolder.getInstance().getAppContext(), "Please provide permission to access local storage", Toast.LENGTH_SHORT).show();
                 }
+                syncNow();
             }
         });
 
@@ -99,18 +106,15 @@ public class Backup extends AppCompatActivity {
             Log.d("FirebaseError", "User Not found. Please login first");
             startFirebaseAuth();
         }
-
-        File file = Util.getLatestLocalBackupFile();
-        TextView localBackup = findViewById(R.id.localBackup);
-        localBackup.setText("Local: " + Util.getStringFromDate(new Date(file.lastModified()), "dd MMM yyyy HH:mm"));
-
-        getFirebaseLastUpdatedTime(FirebaseFirestore.getInstance(), firebaseUser);
+        getServerBackupTime();
+        getLocalBackupTime();
+        restoreFromFirebase(FirebaseFirestore.getInstance(), firebaseUser);
     }
 
     public void updateLocalBackup() {
         File file = Util.writeToFile(this);
         TextView localBackup = findViewById(R.id.localBackup);
-        localBackup.setText("Local: " + Util.getStringFromDate(new Date(file.lastModified()), "dd MMM yyyy HH:mm"));
+        localBackup.setText("Local: " + Util.getStringFromDate(new Date(file.lastModified()), "dd MMM yyyy, HH:mm"));
     }
 
     @Override
@@ -257,9 +261,29 @@ public class Backup extends AppCompatActivity {
                 });
     }
 
+    public void restoreFromFirebase(FirebaseFirestore firebaseFirestore, FirebaseUser firebaseUser) {
+        DocumentReference documentReference = firebaseFirestore.collection(firebaseUser.getUid()).document("friends");
+        documentReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        Log.d("FirebaseGetData", "DocumentSnapshot data: " + document.getData());
+                        Util.inserDateOfBirthFromServer(document.getData());
+                    } else {
+                        Log.d("FirebaseGetData", "No such document");
+                    }
+                } else {
+                    Log.d("FirebaseGetData", "get failed with ", task.getException());
+                }
+            }
+        });
+    }
+
     public void updateLastUpdatedTime(FirebaseFirestore firebaseFirestore, FirebaseUser firebaseUser) {
         Map<String, Date> updateTime = new HashMap<>();
-        updateTime.put("lastUpdatedTime", new Date());
+        updateTime.put("serverBackupTime", new Date());
         DocumentReference documentReference = firebaseFirestore.collection(firebaseUser.getUid()).document("settings");
         documentReference.set(updateTime).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
@@ -276,23 +300,81 @@ public class Backup extends AppCompatActivity {
                 });
     }
 
-    public void getFirebaseLastUpdatedTime(FirebaseFirestore firebaseFirestore, FirebaseUser firebaseUser) {
+    public void getFirebaseLastUpdatedTime(FirebaseFirestore firebaseFirestore, FirebaseUser firebaseUser, String caller) {
         DocumentReference documentReference = firebaseFirestore.collection(firebaseUser.getUid()).document("settings");
         documentReference.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                    @Override
-                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        Timestamp lastUpdated = (Timestamp) documentSnapshot.get("lastUpdatedTime");
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                Timestamp serverTimestamp = (Timestamp) documentSnapshot.get("serverBackupTime");
+                String formattedDate = Util.getStringFromDate(serverTimestamp.toDate(), Constants.backupDateFormat);
+                Storage.putString(Util.getSharedPreference(), "serverBackupTime",formattedDate);
+                switch (caller) {
+                    case "updateUI": {
                         TextView cloudBackup = findViewById(R.id.cloudBackup);
-                        cloudBackup.setText("Cloud: " + Util.getStringFromDate(lastUpdated.toDate(), "dd MMM yyyy hh:mm"));
-                        System.out.println(documentSnapshot.get("lastUpdatedTime"));
+                        cloudBackup.setText("Server: " + formattedDate);
+                        break;
                     }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.e("ERROR", "Not able to get last updated time");
+                    case "syncNow": {
+                        compareBackupTimes();
+                        break;
                     }
-                });
+                    case "saveLocally": {
+
+                        break;
+                    }
+                }
+            }
+        })
+        .addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.e("ERROR", "Not able to get last updated time");
+            }
+        });
+    }
+
+
+    public void getFirebaseLastUpdatedTime(FirebaseFirestore firebaseFirestore, FirebaseUser firebaseUser) {
+        getFirebaseLastUpdatedTime(firebaseFirestore, firebaseUser, "");
+    }
+
+    public void syncNow() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        if(connectivityManager.getAllNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnected()) {
+            getFirebaseLastUpdatedTime(FirebaseFirestore.getInstance(), firebaseUser, "syncNow");
+        }
+        else {
+            Toast.makeText(DataHolder.getInstance().getAppContext(), "Please connect to Internet", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public void compareBackupTimes() {
+        String dbBackupString = Storage.getString(Util.getSharedPreference(), "dbBackupTime");
+        String serverBackupString = Storage.getString(Util.getSharedPreference(), "serverBackupTime");
+        if(!dbBackupString.equalsIgnoreCase("") && serverBackupString != null) {
+            Date dbBackupDate = Util.getDateFromString(dbBackupString);
+            Date serverBackupDate = Util.getDateFromString(serverBackupString);
+            if(dbBackupDate.getTime() > serverBackupDate.getTime()) {
+                // Local data is latest. Upload to server
+                backupToFirebase(FirebaseFirestore.getInstance(), firebaseUser);
+            }
+            else {
+                // Server data is latest. Download
+                restoreFromFirebase(FirebaseFirestore.getInstance(), firebaseUser);
+            }
+        }
+    }
+
+    public void getServerBackupTime() {
+        TextView cloudBackup = findViewById(R.id.cloudBackup);
+        cloudBackup.setText("Server: " + Storage.getString(Util.getSharedPreference(), "serverBackupTime"));
+        getFirebaseLastUpdatedTime(FirebaseFirestore.getInstance(), firebaseUser, "updateUI");
+    }
+
+    public void getLocalBackupTime() {
+        File file = Util.getLatestLocalBackupFile();
+        TextView localBackup = findViewById(R.id.localBackup);
+        localBackup.setText("Local: " + Util.getStringFromDate(new Date(file.lastModified()), Constants.backupDateFormat));
     }
 
     // download prgress link

@@ -43,6 +43,7 @@ public class Constants {
     public static final String DATE_FORMAT_WITH_SPACE = "dd MM yyyy";
     public static final String DAY_OF_YEAR = "MMdd";
     public static final String FULL_DAY_OF_YEAR = "yyyyMMdd";
+    public static final String backupDateFormat = "dd MMM yyyy, HH:mm";
 
     public static final String SPACE_REPLACER = "_";
     public static final String FOLDER_NAME = "BirthdayReminder";

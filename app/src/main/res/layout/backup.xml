@@ -22,7 +22,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="30dp"
         android:layout_marginTop="20dp"
-        android:text="Last Backup"
+        android:text="Sync Details"
         app:layout_constraintStart_toStartOf="@+id/toolbar"
         app:layout_constraintTop_toBottomOf="@+id/toolbar" />
 
@@ -30,9 +30,9 @@
         android:id="@+id/textView4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="40dp"
+        android:layout_marginStart="30dp"
         android:layout_marginTop="284dp"
-        android:text="Cloud Backup Settings"
+        android:text="Remote Backup Settings"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -51,8 +51,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="51dp"
-        android:layout_marginTop="21dp"
-        android:text="Cloud:"
+        android:layout_marginTop="25dp"
+        android:text="Remote: "
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/localBackup" />
 
@@ -60,13 +60,13 @@
         android:id="@+id/backupNow"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="51dp"
         android:layout_marginTop="25dp"
         android:background="@color/save_button_default"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
-        android:text="Backup Now"
+        android:text="Sync Now"
         android:textColor="@color/white"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/cloudBackup" />
 
@@ -74,7 +74,7 @@
         android:id="@+id/selectAccount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="60dp"
+        android:layout_marginStart="51dp"
         android:layout_marginTop="25dp"
         android:background="@color/save_button_default"
         android:paddingLeft="10dp"
@@ -88,8 +88,8 @@
         android:id="@+id/accountName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="60dp"
-        android:layout_marginTop="15dp"
+        android:layout_marginStart="51dp"
+        android:layout_marginTop="25dp"
         android:text="Account: "
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/selectAccount" />

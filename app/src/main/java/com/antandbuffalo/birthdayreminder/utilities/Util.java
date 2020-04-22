@@ -20,6 +20,7 @@ import com.antandbuffalo.birthdayreminder.database.OptionsDBHelper;
 import com.antandbuffalo.birthdayreminder.models.DateOfBirth;
 import com.antandbuffalo.birthdayreminder.models.SettingsModel;
 import com.antandbuffalo.birthdayreminder.receiver.AlarmReceiver;
+import com.google.firebase.Timestamp;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -654,4 +655,26 @@ public class Util {
         return dateOfBirthMap;
     }
 
+    public static void inserDateOfBirthFromServer(Map<String, Object> dateOfBirthMap) {
+        for(Object genericDob : dateOfBirthMap.values()) {
+            // Print the content on the console
+            DateOfBirth dob = createDateOfBirthObject((Map<String, Object>)genericDob);
+
+            if (DateOfBirthDBHelper.isUniqueDateOfBirthIgnoreCase(dob)) {
+                DateOfBirthDBHelper.insertDOB(dob);
+            }
+            System.out.println("Read successful");
+        }
+    }
+
+    public static DateOfBirth createDateOfBirthObject(Map<String, Object> genericDob) {
+        DateOfBirth dateOfBirth = new DateOfBirth();
+        dateOfBirth.setDobId((Long) genericDob.get("dobId"));
+        dateOfBirth.setName((String) genericDob.get("name"));
+        dateOfBirth.setAge(((Long) genericDob.get("age")).intValue());
+        dateOfBirth.setDescription((String) genericDob.get("description"));
+        dateOfBirth.setDobDate(((Timestamp) genericDob.get("dobDate")).toDate());
+        dateOfBirth.setRemoveYear((Boolean) genericDob.get("removeYear"));
+        return dateOfBirth;
+    }
 }
