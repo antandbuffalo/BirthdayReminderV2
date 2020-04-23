@@ -19,6 +19,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 
+import com.antandbuffalo.birthdayreminder.addnew.AddNew;
 import com.antandbuffalo.birthdayreminder.database.DBHelper;
 import com.antandbuffalo.birthdayreminder.settings.Settings;
 import com.antandbuffalo.birthdayreminder.upcoming.UpcomingListAdapter;
@@ -71,8 +72,11 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                Intent intent = new Intent(getApplicationContext(), AddNew.class);
+                startActivityForResult(intent, Constants.ADD_NEW_MEMBER);
+
+//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+//                        .setAction("Action", null).show();
             }
         });
 
