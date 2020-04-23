@@ -13,6 +13,7 @@ public class DataHolder {
     private Context appContext;
 
     public List<Boolean> refreshTracker = null;
+    public Boolean refresh = false;
 
     private DataHolder() {
         this.refreshTracker = new ArrayList();
@@ -20,6 +21,7 @@ public class DataHolder {
         this.refreshTracker.add(false); //for upcoming
         this.refreshTracker.add(false); //for settings
         appContext = null;
+
     }
 
     public static DataHolder getInstance() {

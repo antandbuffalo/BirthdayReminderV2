@@ -142,10 +142,14 @@ public class Util {
     }
 
     public static Date getDateFromString(String input) {
+        return getDateFromString(input, Constants.DATE_FORMAT);
+    }
+
+    public static Date getDateFromString(String input, String dateFormat) {
         if(input == null) {
             return null;
         }
-        DateFormat format = new SimpleDateFormat(Constants.DATE_FORMAT, Locale.getDefault());
+        DateFormat format = new SimpleDateFormat(dateFormat, Locale.getDefault());
         Date date = null;
         try {
             date = format.parse(input);

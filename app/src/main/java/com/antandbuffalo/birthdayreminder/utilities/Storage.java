@@ -10,6 +10,22 @@ import java.util.Date;
  */
 public class Storage {
 
+    public static String getServerBackupTime() {
+        return Storage.getString(Util.getSharedPreference(), Constants.serverBackupTime);
+    }
+
+    public static void setServerBackupTime(Date givenDate) {
+        Storage.putString(Util.getSharedPreference(), Constants.serverBackupTime, Util.getStringFromDate(givenDate, Constants.backupDateFormatToStore));
+    }
+
+    public static String getDbBackupTime() {
+        return Storage.getString(Util.getSharedPreference(), Constants.dbBackupTime);
+    }
+
+    public static void setDbBackupTime(Date givenDate) {
+        Storage.putString(Util.getSharedPreference(), Constants.dbBackupTime, Util.getStringFromDate(givenDate, Constants.backupDateFormatToStore));
+    }
+
     public static Integer getNotificationFrequency(SharedPreferences preferences) {
         return preferences.getInt(Constants.PREFERENCE_NOTIFINCATION_FREQUENCY, 1);
     }

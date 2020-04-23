@@ -29,10 +29,13 @@ import androidx.lifecycle.ViewModelProviders;
 import com.antandbuffalo.birthdayreminder.R;
 import com.antandbuffalo.birthdayreminder.database.DBHelper;
 import com.antandbuffalo.birthdayreminder.utilities.Constants;
+import com.antandbuffalo.birthdayreminder.utilities.DataHolder;
 import com.antandbuffalo.birthdayreminder.utilities.Storage;
 import com.antandbuffalo.birthdayreminder.utilities.Util;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+
+import java.util.Date;
 
 public class AddNew extends AppCompatActivity {
     EditText name;
@@ -221,6 +224,8 @@ public class AddNew extends AppCompatActivity {
             } else {
                 if(addNewViewModel.isValidDateOfBirth(addNewViewModel.birthdayInfo)) {
                     addNewViewModel.saveToDB();
+                    DataHolder.getInstance().refresh = true;
+                    Storage.setDbBackupTime(new Date());
                     System.out.println("Inserted successfully");
                     String status = Constants.NOTIFICATION_ADD_MEMBER_SUCCESS + ". You will get notified at 12:00am and 12:00pm on " + Util.getStringFromDate(addNewViewModel.dateOfBirth.getDobDate(), "dd MMM") + " every year";
                     Toast toast = Toast.makeText(getApplicationContext(), addNewViewModel.getAddSuccessMessage(getApplicationContext()), Toast.LENGTH_LONG);

@@ -1,24 +1,22 @@
 package com.antandbuffalo.birthdayreminder.backup;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.content.ContextCompat;
-
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 
 import com.antandbuffalo.birthdayreminder.R;
 import com.antandbuffalo.birthdayreminder.models.DateOfBirth;
@@ -27,34 +25,19 @@ import com.antandbuffalo.birthdayreminder.utilities.DataHolder;
 import com.antandbuffalo.birthdayreminder.utilities.Storage;
 import com.antandbuffalo.birthdayreminder.utilities.Util;
 import com.firebase.ui.auth.AuthUI;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.common.Scopes;
-import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.api.client.extensions.android.http.AndroidHttp;
-import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
-import com.google.api.client.json.gson.GsonFactory;
-import com.google.api.services.drive.Drive;
-import com.google.api.services.drive.DriveScopes;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.ServerTimestamp;
-import com.google.firestore.v1.DocumentTransform;
 
 import java.io.File;
-import java.sql.Time;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -78,8 +61,8 @@ public class Backup extends AppCompatActivity {
             public void onClick(View view) {
                 if(getStoragePermission(Constants.MY_PERMISSIONS_WRITE_EXTERNAL_STORAGE)) {
                     updateLocalBackup();
-                    backupToFirebase(FirebaseFirestore.getInstance(), firebaseUser);
-                    File file = Util.getLocalFile("dob.txt");
+                    // backupToFirebase(FirebaseFirestore.getInstance(), firebaseUser);
+                    // File file = Util.getLocalFile("dob.txt");
                 }
                 else {
                     Toast.makeText(DataHolder.getInstance().getAppContext(), "Please provide permission to access local storage", Toast.LENGTH_SHORT).show();
@@ -108,13 +91,11 @@ public class Backup extends AppCompatActivity {
         }
         getServerBackupTime();
         getLocalBackupTime();
-        restoreFromFirebase(FirebaseFirestore.getInstance(), firebaseUser);
+        //restoreFromFirebase(FirebaseFirestore.getInstance(), firebaseUser);
     }
 
     public void updateLocalBackup() {
-        File file = Util.writeToFile(this);
-        TextView localBackup = findViewById(R.id.localBackup);
-        localBackup.setText("Local: " + Util.getStringFromDate(new Date(file.lastModified()), "dd MMM yyyy, HH:mm"));
+        Util.writeToFile(this);
     }
 
     @Override
@@ -247,18 +228,20 @@ public class Backup extends AppCompatActivity {
         Map<String, DateOfBirth> dateOfBirthMap = Util.getDateOfBirthMap();
         DocumentReference documentReference = db.collection(firebaseUser.getUid()).document("friends");
         documentReference.set(dateOfBirthMap).addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d("Success", "data updated successfully");
-                        updateLastUpdatedTime(db, firebaseUser);
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.e("F", e.getLocalizedMessage());
-                    }
-                });
+            @Override
+            public void onSuccess(Void aVoid) {
+                Log.d("Success", "data updated successfully");
+                updateLastUpdatedTime(db, firebaseUser);
+                Toast.makeText(DataHolder.getInstance().getAppContext(), "Successfully updated to server", Toast.LENGTH_SHORT).show();
+            }
+        })
+        .addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.e("F", e.getLocalizedMessage());
+                Toast.makeText(DataHolder.getInstance().getAppContext(), "Error while updating to server", Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     public void restoreFromFirebase(FirebaseFirestore firebaseFirestore, FirebaseUser firebaseUser) {
@@ -271,6 +254,9 @@ public class Backup extends AppCompatActivity {
                     if (document.exists()) {
                         Log.d("FirebaseGetData", "DocumentSnapshot data: " + document.getData());
                         Util.inserDateOfBirthFromServer(document.getData());
+                        Storage.setDbBackupTime(Util.getDateFromString(Storage.getServerBackupTime(), Constants.backupDateFormatToStore));
+                        getLocalBackupTime();
+                        DataHolder.getInstance().refresh = true;
                     } else {
                         Log.d("FirebaseGetData", "No such document");
                     }
@@ -283,21 +269,23 @@ public class Backup extends AppCompatActivity {
 
     public void updateLastUpdatedTime(FirebaseFirestore firebaseFirestore, FirebaseUser firebaseUser) {
         Map<String, Date> updateTime = new HashMap<>();
-        updateTime.put("serverBackupTime", new Date());
+        updateTime.put(Constants.serverBackupTime, Util.getDateFromString(Storage.getDbBackupTime(), Constants.backupDateFormatToStore));
         DocumentReference documentReference = firebaseFirestore.collection(firebaseUser.getUid()).document("settings");
         documentReference.set(updateTime).addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d("Success", "Last updated time updated");
-
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.e("F", e.getLocalizedMessage());
-                    }
-                });
+            @Override
+            public void onSuccess(Void aVoid) {
+                Log.d("Success", "Last updated time updated");
+                Storage.setServerBackupTime(Util.getDateFromString(Storage.getDbBackupTime(), Constants.backupDateFormatToStore));
+                TextView cloudBackup = findViewById(R.id.cloudBackup);
+                cloudBackup.setText("Server: " + Storage.getServerBackupTime());
+            }
+        })
+        .addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.e("F", e.getLocalizedMessage());
+            }
+        });
     }
 
     public void getFirebaseLastUpdatedTime(FirebaseFirestore firebaseFirestore, FirebaseUser firebaseUser, String caller) {
@@ -305,9 +293,9 @@ public class Backup extends AppCompatActivity {
         documentReference.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
-                Timestamp serverTimestamp = (Timestamp) documentSnapshot.get("serverBackupTime");
-                String formattedDate = Util.getStringFromDate(serverTimestamp.toDate(), Constants.backupDateFormat);
-                Storage.putString(Util.getSharedPreference(), "serverBackupTime",formattedDate);
+                Timestamp serverTimestamp = (Timestamp) documentSnapshot.get(Constants.serverBackupTime);
+                String formattedDate = Util.getStringFromDate(serverTimestamp.toDate(), Constants.backupDateFormatToStore);
+                Storage.putString(Util.getSharedPreference(), Constants.serverBackupTime,formattedDate);
                 switch (caller) {
                     case "updateUI": {
                         TextView cloudBackup = findViewById(R.id.cloudBackup);
@@ -349,11 +337,23 @@ public class Backup extends AppCompatActivity {
     }
 
     public void compareBackupTimes() {
-        String dbBackupString = Storage.getString(Util.getSharedPreference(), "dbBackupTime");
-        String serverBackupString = Storage.getString(Util.getSharedPreference(), "serverBackupTime");
+        String dbBackupString = Storage.getDbBackupTime();
+        String serverBackupString = Storage.getServerBackupTime();
         if(!dbBackupString.equalsIgnoreCase("") && serverBackupString != null) {
-            Date dbBackupDate = Util.getDateFromString(dbBackupString);
-            Date serverBackupDate = Util.getDateFromString(serverBackupString);
+            Date dbBackupDate = Util.getDateFromString(Storage.getDbBackupTime(), Constants.backupDateFormatToStore);
+            Date serverBackupDate = Util.getDateFromString(Storage.getServerBackupTime(), Constants.backupDateFormatToStore);
+
+            if(serverBackupDate == null) {
+                backupToFirebase(FirebaseFirestore.getInstance(), firebaseUser);
+                return;
+            }
+            if(dbBackupDate == null) {
+                restoreFromFirebase(FirebaseFirestore.getInstance(), firebaseUser);
+                return;
+            }
+            if(dbBackupDate.getTime() == serverBackupDate.getTime()) {
+                return;
+            }
             if(dbBackupDate.getTime() > serverBackupDate.getTime()) {
                 // Local data is latest. Upload to server
                 backupToFirebase(FirebaseFirestore.getInstance(), firebaseUser);
@@ -367,14 +367,13 @@ public class Backup extends AppCompatActivity {
 
     public void getServerBackupTime() {
         TextView cloudBackup = findViewById(R.id.cloudBackup);
-        cloudBackup.setText("Server: " + Storage.getString(Util.getSharedPreference(), "serverBackupTime"));
+        cloudBackup.setText("Server: " + Storage.getServerBackupTime());
         getFirebaseLastUpdatedTime(FirebaseFirestore.getInstance(), firebaseUser, "updateUI");
     }
 
     public void getLocalBackupTime() {
-        File file = Util.getLatestLocalBackupFile();
         TextView localBackup = findViewById(R.id.localBackup);
-        localBackup.setText("Local: " + Util.getStringFromDate(new Date(file.lastModified()), Constants.backupDateFormat));
+        localBackup.setText("Local: " + Storage.getDbBackupTime());
     }
 
     // download prgress link
