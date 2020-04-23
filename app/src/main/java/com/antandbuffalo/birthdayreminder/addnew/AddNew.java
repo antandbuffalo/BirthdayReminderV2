@@ -48,8 +48,6 @@ public class AddNew extends AppCompatActivity {
     LinearLayout circle;
     CheckBox removeYear;
     Spinner monthSpinner;
-
-    ImageButton save, cancel;
     AdView mAdView;
 
     @Override
@@ -158,20 +156,6 @@ public class AddNew extends AppCompatActivity {
         intent = new Intent();
         intent.putExtra(Constants.IS_USER_ADDED, Constants.FLAG_FAILURE.toString());
         setResult(RESULT_OK, intent);
-
-        save.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                save();
-            }
-        });
-
-        cancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
 
         removeYear.setChecked(addNewViewModel.birthdayInfo.isRemoveYear);
         yearInput.setVisibility(View.INVISIBLE);
@@ -321,12 +305,6 @@ public class AddNew extends AppCompatActivity {
         monthSpinner = (Spinner) findViewById(R.id.monthSpinner);
         yearInput = findViewById(R.id.year);
         removeYear = (CheckBox) findViewById(R.id.removeYear);
-
-        save = (ImageButton) findViewById(R.id.save);
-        save.setBackgroundResource(R.drawable.save_button);
-
-        cancel = (ImageButton)findViewById(R.id.cancel);
-        cancel.setBackgroundResource(R.drawable.cancel_button);
 
         namePreview = (TextView)findViewById(R.id.nameField);
         desc = (TextView)findViewById(R.id.ageField);
