@@ -55,6 +55,8 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        initValues();
+
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -67,8 +69,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        initValues();
-        // Util.copyFromAssetFileToDatabase("cse.txt");
+        Util.copyFromAssetFileToDatabase("cse.txt");
 
         upcomingListAdapter = new UpcomingListAdapter();
         //http://stackoverflow.com/questions/6495898/findviewbyid-in-fragment

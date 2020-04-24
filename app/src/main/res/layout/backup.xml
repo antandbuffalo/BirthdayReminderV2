@@ -20,7 +20,7 @@
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="30dp"
+        android:layout_marginStart="10dp"
         android:layout_marginTop="20dp"
         android:text="Sync Details"
         app:layout_constraintStart_toStartOf="@+id/toolbar"
@@ -30,17 +30,17 @@
         android:id="@+id/textView4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="30dp"
-        android:layout_marginTop="284dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="40dp"
         android:text="Remote Backup Settings"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/backupNow" />
 
     <TextView
         android:id="@+id/localBackup"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="51dp"
+        android:layout_marginStart="20dp"
         android:layout_marginTop="25dp"
         android:text="Local: "
         app:layout_constraintStart_toStartOf="parent"
@@ -50,47 +50,52 @@
         android:id="@+id/cloudBackup"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="51dp"
-        android:layout_marginTop="25dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
         android:text="Remote: "
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/localBackup" />
 
     <Button
         android:id="@+id/backupNow"
+        style="@style/Widget.AppCompat.Button.Colored"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="51dp"
-        android:layout_marginTop="25dp"
-        android:background="@color/save_button_default"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
         android:text="Sync Now"
-        android:textColor="@color/white"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/cloudBackup" />
 
     <Button
-        android:id="@+id/selectAccount"
+        android:id="@+id/removeAccount"
+        style="@style/Widget.AppCompat.Button.Colored"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="51dp"
-        android:layout_marginTop="25dp"
-        android:background="@color/save_button_default"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:text="Remove Account"
+        app:layout_constraintStart_toEndOf="@+id/selectAccount"
+        app:layout_constraintTop_toBottomOf="@+id/accountName" />
+
+    <Button
+        android:id="@+id/selectAccount"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
         android:text="Select Account"
-        android:textColor="@color/white"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView4" />
+        app:layout_constraintTop_toBottomOf="@+id/accountName" />
 
     <TextView
         android:id="@+id/accountName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="51dp"
-        android:layout_marginTop="25dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
         android:text="Account: "
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/selectAccount" />
+        app:layout_constraintTop_toBottomOf="@+id/textView4" />
 </androidx.constraintlayout.widget.ConstraintLayout>

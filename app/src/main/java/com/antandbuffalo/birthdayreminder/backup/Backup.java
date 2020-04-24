@@ -25,6 +25,7 @@ import com.antandbuffalo.birthdayreminder.utilities.DataHolder;
 import com.antandbuffalo.birthdayreminder.utilities.Storage;
 import com.antandbuffalo.birthdayreminder.utilities.Util;
 import com.firebase.ui.auth.AuthUI;
+import com.firebase.ui.auth.IdpResponse;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -44,7 +45,6 @@ import java.util.List;
 import java.util.Map;
 
 public class Backup extends AppCompatActivity {
-    FirebaseUser firebaseUser;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,6 +54,17 @@ public class Backup extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close_white);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        if(FirebaseAuth.getInstance().getCurrentUser() != null) {
+            Log.d("FirebaseUser", FirebaseAuth.getInstance().getCurrentUser().getEmail());
+            TextView textView = findViewById(R.id.accountName);
+            textView.setText("Account: " + FirebaseAuth.getInstance().getCurrentUser().getEmail());
+            getServerBackupTime();
+        }
+        else {
+            Log.d("FirebaseError", "User Not found. Please login first");
+            startFirebaseAuth();
+        }
 
         Button backupNow = findViewById(R.id.backupNow);
         backupNow.setOnClickListener(new View.OnClickListener() {
@@ -67,7 +78,9 @@ public class Backup extends AppCompatActivity {
                 else {
                     Toast.makeText(DataHolder.getInstance().getAppContext(), "Please provide permission to access local storage", Toast.LENGTH_SHORT).show();
                 }
-                syncNow();
+                if(FirebaseAuth.getInstance().getCurrentUser() != null) {
+                    syncNow();
+                }
             }
         });
 
@@ -75,21 +88,18 @@ public class Backup extends AppCompatActivity {
         selectAccount.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                startFirebaseAuth();
             }
         });
 
-        firebaseUser = checkFirebaseUser();
-        if(firebaseUser != null) {
-            Log.d("FirebaseUser", firebaseUser.getEmail());
-            TextView textView = findViewById(R.id.accountName);
-            textView.setText("Account: " + firebaseUser.getEmail());
-        }
-        else {
-            Log.d("FirebaseError", "User Not found. Please login first");
-            startFirebaseAuth();
-        }
-        getServerBackupTime();
+        Button removeAccount = findViewById(R.id.removeAccount);
+        removeAccount.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                signoutFromFirebase();
+            }
+        });
+
         getLocalBackupTime();
         //restoreFromFirebase(FirebaseFirestore.getInstance(), firebaseUser);
     }
@@ -112,6 +122,9 @@ public class Backup extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == Constants.firebaseSignInCode) {
+            handleFirebaseSignIn(resultCode, data);
+        }
     }
 
     public Boolean getStoragePermission(int permissionType) {
@@ -196,11 +209,27 @@ public class Backup extends AppCompatActivity {
         }
     }
 
+    public void handleFirebaseSignIn(int resultCode, Intent data) {
+        IdpResponse response = IdpResponse.fromResultIntent(data);
+
+        if (resultCode == RESULT_OK) {
+            // Successfully signed in
+            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            System.out.println(user.getDisplayName());
+            System.out.println(user.getEmail());
+            System.out.println(user.getPhoneNumber());
+            System.out.println(user.getProviderId());
+            System.out.println(user.getUid());
+            TextView accountName = findViewById(R.id.accountName);
+            accountName.setText("Account: " + user.getEmail());
+        } else {
+            Toast.makeText(DataHolder.getInstance().getAppContext(), "Not able to sign in", Toast.LENGTH_SHORT).show();
+        }
+    }
+
     public void startFirebaseAuth() {
         // Choose authentication providers
         List<AuthUI.IdpConfig> providers = Arrays.asList(
-                new AuthUI.IdpConfig.EmailBuilder().build(),
-                new AuthUI.IdpConfig.PhoneBuilder().build(),
                 new AuthUI.IdpConfig.GoogleBuilder().build());
 // Create and launch sign-in intent
         startActivityForResult(
@@ -211,16 +240,18 @@ public class Backup extends AppCompatActivity {
                 Constants.firebaseSignInCode);
     }
 
-    public FirebaseUser checkFirebaseUser() {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user != null) {
-            // User is signed in
-            System.out.println("User available");
-        } else {
-            // No user is signed in
-            System.out.println("User not available");
-        }
-        return user;
+    public void signoutFromFirebase() {
+        AuthUI.getInstance()
+            .signOut(this)
+            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                public void onComplete(@NonNull Task<Void> task) {
+                    TextView accountName = findViewById(R.id.accountName);
+                    accountName.setText("Account: ");
+                    Storage.setServerBackupTime(null);
+                    TextView serverBackup = findViewById(R.id.cloudBackup);
+                    serverBackup.setText("Server: ");
+                }
+            });
     }
 
     public void backupToFirebase(FirebaseFirestore db, FirebaseUser firebaseUser) {
@@ -294,22 +325,23 @@ public class Backup extends AppCompatActivity {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 Timestamp serverTimestamp = (Timestamp) documentSnapshot.get(Constants.serverBackupTime);
-                String formattedDate = Util.getStringFromDate(serverTimestamp.toDate(), Constants.backupDateFormatToStore);
-                Storage.putString(Util.getSharedPreference(), Constants.serverBackupTime,formattedDate);
-                switch (caller) {
-                    case "updateUI": {
-                        TextView cloudBackup = findViewById(R.id.cloudBackup);
-                        cloudBackup.setText("Server: " + formattedDate);
-                        break;
-                    }
-                    case "syncNow": {
-                        compareBackupTimes();
-                        break;
-                    }
-                    case "saveLocally": {
 
-                        break;
+                if(serverTimestamp != null) {
+                    String formattedDate = Util.getStringFromDate(serverTimestamp.toDate(), Constants.backupDateFormatToStore);
+                    Storage.putString(Util.getSharedPreference(), Constants.serverBackupTime, formattedDate);
+                    switch (caller) {
+                        case "updateUI": {
+                            TextView cloudBackup = findViewById(R.id.cloudBackup);
+                            cloudBackup.setText("Server: " + formattedDate);
+                            break;
+                        }
+                        case "saveLocally": {
+                            break;
+                        }
                     }
+                }
+                if(caller.equalsIgnoreCase("syncNow")) {
+                    compareBackupTimes();
                 }
             }
         })
@@ -329,7 +361,7 @@ public class Backup extends AppCompatActivity {
     public void syncNow() {
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         if(connectivityManager.getAllNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnected()) {
-            getFirebaseLastUpdatedTime(FirebaseFirestore.getInstance(), firebaseUser, "syncNow");
+            getFirebaseLastUpdatedTime(FirebaseFirestore.getInstance(), FirebaseAuth.getInstance().getCurrentUser(), "syncNow");
         }
         else {
             Toast.makeText(DataHolder.getInstance().getAppContext(), "Please connect to Internet", Toast.LENGTH_LONG).show();
@@ -337,38 +369,34 @@ public class Backup extends AppCompatActivity {
     }
 
     public void compareBackupTimes() {
-        String dbBackupString = Storage.getDbBackupTime();
-        String serverBackupString = Storage.getServerBackupTime();
-        if(!dbBackupString.equalsIgnoreCase("") && serverBackupString != null) {
-            Date dbBackupDate = Util.getDateFromString(Storage.getDbBackupTime(), Constants.backupDateFormatToStore);
-            Date serverBackupDate = Util.getDateFromString(Storage.getServerBackupTime(), Constants.backupDateFormatToStore);
-
-            if(serverBackupDate == null) {
-                backupToFirebase(FirebaseFirestore.getInstance(), firebaseUser);
-                return;
-            }
-            if(dbBackupDate == null) {
-                restoreFromFirebase(FirebaseFirestore.getInstance(), firebaseUser);
-                return;
-            }
-            if(dbBackupDate.getTime() == serverBackupDate.getTime()) {
-                return;
-            }
-            if(dbBackupDate.getTime() > serverBackupDate.getTime()) {
-                // Local data is latest. Upload to server
-                backupToFirebase(FirebaseFirestore.getInstance(), firebaseUser);
-            }
-            else {
-                // Server data is latest. Download
-                restoreFromFirebase(FirebaseFirestore.getInstance(), firebaseUser);
-            }
+        Date dbBackupDate = Util.getDateFromString(Storage.getDbBackupTime(), Constants.backupDateFormatToStore);
+        Date serverBackupDate = Util.getDateFromString(Storage.getServerBackupTime(), Constants.backupDateFormatToStore);
+        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        if(serverBackupDate == null) {
+            backupToFirebase(FirebaseFirestore.getInstance(), firebaseUser);
+            return;
+        }
+        if(dbBackupDate == null) {
+            restoreFromFirebase(FirebaseFirestore.getInstance(), firebaseUser);
+            return;
+        }
+        if(dbBackupDate.getTime() == serverBackupDate.getTime()) {
+            return;
+        }
+        if(dbBackupDate.getTime() > serverBackupDate.getTime()) {
+            // Local data is latest. Upload to server
+            backupToFirebase(FirebaseFirestore.getInstance(), firebaseUser);
+        }
+        else {
+            // Server data is latest. Download
+            restoreFromFirebase(FirebaseFirestore.getInstance(), firebaseUser);
         }
     }
 
     public void getServerBackupTime() {
         TextView cloudBackup = findViewById(R.id.cloudBackup);
         cloudBackup.setText("Server: " + Storage.getServerBackupTime());
-        getFirebaseLastUpdatedTime(FirebaseFirestore.getInstance(), firebaseUser, "updateUI");
+        getFirebaseLastUpdatedTime(FirebaseFirestore.getInstance(), FirebaseAuth.getInstance().getCurrentUser(), "updateUI");
     }
 
     public void getLocalBackupTime() {

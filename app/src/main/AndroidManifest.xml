@@ -19,8 +19,14 @@
             android:label="Pre Notification"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
+            android:name=".notificationtime.NotificationTime"
+            android:label="Notification Time"
+            android:theme="@style/AppTheme.NoActionBar" />
+
+        <activity
             android:name=".addnew.AddNew"
             android:label="Add New"
+            android:windowSoftInputMode="adjustPan"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".MainActivity"

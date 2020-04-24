@@ -1,20 +1,16 @@
 package com.antandbuffalo.birthdayreminder.prenotification;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.NumberPicker;
-import android.widget.Toast;
-
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.NumberPicker;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -43,7 +39,7 @@ public class PreNotification extends AppCompatActivity {
         intent = new Intent();
 
         final NumberPicker numberPicker = (NumberPicker) findViewById(R.id.recentDaysToday);
-        setNumberPickerTextColor(numberPicker, Color.WHITE);
+        //setNumberPickerTextColor(numberPicker, Color.WHITE);
         numberPicker.setWrapSelectorWheel(true);
         numberPicker.setMaxValue(7);
         numberPicker.setMinValue(0);
@@ -51,35 +47,6 @@ public class PreNotification extends AppCompatActivity {
 
         int preNotifDays = settings.getInt(Constants.PREFERENCE_PRE_NOTIFICATION_DAYS, 0);
         numberPicker.setValue(preNotifDays);
-
-        ImageButton save = (ImageButton) findViewById(R.id.save);
-        save.setBackgroundResource(R.drawable.save_button);
-
-        ImageButton cancel = (ImageButton)findViewById(R.id.cancel);
-        cancel.setBackgroundResource(R.drawable.cancel_button);
-
-        save.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                settings.getInt(Constants.PREFERENCE_PRE_NOTIFICATION_DAYS, 0);
-                SharedPreferences.Editor editor = settings.edit();
-                editor.putInt(Constants.PREFERENCE_PRE_NOTIFICATION_DAYS, numberPicker.getValue());
-                editor.commit();
-                Toast toast = Toast.makeText(getApplicationContext(), Constants.NOTIFICATION_SUCCESSFULLY_UPDATED, Toast.LENGTH_SHORT);
-                toast.show();
-                setResult(RESULT_OK, intent);
-                finish();
-            }
-        });
-
-        cancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setResult(RESULT_CANCELED, intent);
-                finish();
-            }
-        });
     }
 
     @Override
@@ -96,9 +63,14 @@ public class PreNotification extends AppCompatActivity {
             Log.d("BRJB", item.getItemId() + " : done");
             NumberPicker numberPicker = (NumberPicker) findViewById(R.id.recentDaysToday);
             Storage.putInt(Util.getSharedPreference(), Constants.PREFERENCE_PRE_NOTIFICATION_DAYS, numberPicker.getValue());
+
+            Toast toast = Toast.makeText(getApplicationContext(), Constants.NOTIFICATION_SUCCESSFULLY_UPDATED, Toast.LENGTH_SHORT);
+            toast.show();
+            setResult(RESULT_OK, intent);
         }
         else if(id == android.R.id.home) {
             Log.d("BRJB", item.getItemId() + " : back");
+            setResult(RESULT_CANCELED, intent);
         }
         finish();
         return true;

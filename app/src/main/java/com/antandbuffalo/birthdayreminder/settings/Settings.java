@@ -3,6 +3,7 @@ package com.antandbuffalo.birthdayreminder.settings;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.AlertDialog;
+import android.app.Notification;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -16,6 +17,7 @@ import com.antandbuffalo.birthdayreminder.backup.Backup;
 import com.antandbuffalo.birthdayreminder.database.DateOfBirthDBHelper;
 import com.antandbuffalo.birthdayreminder.models.DateOfBirth;
 import com.antandbuffalo.birthdayreminder.models.SettingsModel;
+import com.antandbuffalo.birthdayreminder.notificationtime.NotificationTime;
 import com.antandbuffalo.birthdayreminder.prenotification.PreNotification;
 import com.antandbuffalo.birthdayreminder.utilities.Constants;
 import com.antandbuffalo.birthdayreminder.utilities.DataHolder;
@@ -46,6 +48,10 @@ public class Settings extends AppCompatActivity {
                 }
                 else if (selectedOption.getKey().equalsIgnoreCase(Constants.settingsBackup)) {
                     Intent intent = new Intent(view.getContext(), Backup.class);
+                    startActivityForResult(intent, Constants.REFRESH_SETTINGS);
+                }
+                else if (selectedOption.getKey().equalsIgnoreCase(Constants.SETTINGS_NOTIFICATION_TIME)) {
+                    Intent intent = new Intent(view.getContext(), NotificationTime.class);
                     startActivityForResult(intent, Constants.REFRESH_SETTINGS);
                 }
                 else if (selectedOption.getKey().equalsIgnoreCase(Constants.SETTINGS_DELETE_ALL)) {

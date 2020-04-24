@@ -165,7 +165,7 @@ public class Util {
 
     public static String getStringFromDate(Date date, String dateFormat) {
         if(date == null || dateFormat == null) {
-            return null;
+            return "";
         }
         SimpleDateFormat dateFormater = new SimpleDateFormat(dateFormat, Locale.getDefault());
         return dateFormater.format(date);
