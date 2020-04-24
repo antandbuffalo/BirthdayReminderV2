@@ -19,6 +19,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 
+import com.antandbuffalo.birthdayreminder.about.About;
 import com.antandbuffalo.birthdayreminder.addnew.AddNew;
 import com.antandbuffalo.birthdayreminder.database.DBHelper;
 import com.antandbuffalo.birthdayreminder.settings.Settings;
@@ -69,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        Util.copyFromAssetFileToDatabase("cse.txt");
+        // Util.copyFromAssetFileToDatabase("cse.txt");
 
         upcomingListAdapter = new UpcomingListAdapter();
         //http://stackoverflow.com/questions/6495898/findviewbyid-in-fragment
@@ -198,6 +199,10 @@ public class MainActivity extends AppCompatActivity {
             Intent settings = new Intent(this, Settings.class);
             startActivity(settings);
             return true;
+        }
+        else if(id == R.id.action_about) {
+            Intent intent = new Intent(this, About.class);
+            startActivity(intent);
         }
 
         return super.onOptionsItemSelected(item);

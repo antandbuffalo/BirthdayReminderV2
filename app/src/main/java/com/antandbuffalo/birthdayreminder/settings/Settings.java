@@ -13,10 +13,12 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.antandbuffalo.birthdayreminder.R;
+import com.antandbuffalo.birthdayreminder.about.About;
 import com.antandbuffalo.birthdayreminder.backup.Backup;
 import com.antandbuffalo.birthdayreminder.database.DateOfBirthDBHelper;
 import com.antandbuffalo.birthdayreminder.models.DateOfBirth;
 import com.antandbuffalo.birthdayreminder.models.SettingsModel;
+import com.antandbuffalo.birthdayreminder.notificationfrequency.NotificationFrequency;
 import com.antandbuffalo.birthdayreminder.notificationtime.NotificationTime;
 import com.antandbuffalo.birthdayreminder.prenotification.PreNotification;
 import com.antandbuffalo.birthdayreminder.utilities.Constants;
@@ -52,6 +54,14 @@ public class Settings extends AppCompatActivity {
                 }
                 else if (selectedOption.getKey().equalsIgnoreCase(Constants.SETTINGS_NOTIFICATION_TIME)) {
                     Intent intent = new Intent(view.getContext(), NotificationTime.class);
+                    startActivityForResult(intent, Constants.REFRESH_SETTINGS);
+                }
+                else if (selectedOption.getKey().equalsIgnoreCase(Constants.SETTINGS_NOTIFICATION_FREQUENCY)) {
+                    Intent intent = new Intent(view.getContext(), NotificationFrequency.class);
+                    startActivityForResult(intent, Constants.REFRESH_SETTINGS);
+                }
+                else if (selectedOption.getKey().equalsIgnoreCase(Constants.SETTINGS_ABOUT)) {
+                    Intent intent = new Intent(view.getContext(), About.class);
                     startActivityForResult(intent, Constants.REFRESH_SETTINGS);
                 }
                 else if (selectedOption.getKey().equalsIgnoreCase(Constants.SETTINGS_DELETE_ALL)) {

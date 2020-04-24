@@ -505,12 +505,24 @@ public class Util {
         OptionsDBHelper.updateOption(option);
     }
     public static void setDescription(DateOfBirth dob, String info) {
+        setDescription(dob, info, null);
+    }
+
+    public static void setDescription(DateOfBirth dob, String info, Integer days) {
+        String upcomingDays = "";
+        if(days != null) {
+            upcomingDays = " in " + days + " days";
+            if(days <= 0) {
+                upcomingDays = " in " + days + " day";
+            }
+        }
+
         if(dob.getAge() <= 1) {
             //dob.setAge(0);
-            dob.setDescription(info + ": " + dob.getAge() + " year");
+            dob.setDescription(info + ": " + dob.getAge() + " year" + upcomingDays);
         }
         else {
-            dob.setDescription(info + ": " + dob.getAge() + " years");
+            dob.setDescription(info + ": " + dob.getAge() + " years" + upcomingDays);
         }
     }
 
@@ -523,6 +535,12 @@ public class Util {
         }
 
         return monthsList;
+    }
+
+    public static Integer getDefaultDayOfYear(Date date) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        return cal.get(Calendar.DAY_OF_YEAR);
     }
 
     public static Integer getDayOfYear(Date date) {
@@ -680,5 +698,25 @@ public class Util {
         dateOfBirth.setDobDate(((Timestamp) genericDob.get("dobDate")).toDate());
         dateOfBirth.setRemoveYear((Boolean) genericDob.get("removeYear"));
         return dateOfBirth;
+    }
+
+    public static Integer getSubstractionFactor() {
+        int factor = 365;
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(new Date());
+        int year = cal.get(Calendar.YEAR);
+        // Jan - 31, Feb - 28 = 59. if less than or equal to 59 then use current year. otherwise next year
+        if(cal.get(Calendar.DAY_OF_YEAR) <= 59) {
+            // check if current year is leap yere
+            if(year % 4 == 0) {
+                factor = 366;
+            }
+        }
+        else {
+            if((year + 1) % 4 == 0) {
+                factor = 366;
+            }
+        }
+        return factor;
     }
 }

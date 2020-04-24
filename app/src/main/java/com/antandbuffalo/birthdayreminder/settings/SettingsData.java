@@ -91,14 +91,6 @@ public class SettingsData {
         datum.setSno(7);
         data.add(datum);
 
-        datum = SettingsModel.newInstance();
-        datum.setKey(Constants.SETTINGS_ABOUT);
-        datum.setTitle("About");
-        datum.setSubTitle("");
-        datum.setIconLetter("A");
-        datum.setSno(8);
-        data.add(datum);
-
         return data;
     }
 }

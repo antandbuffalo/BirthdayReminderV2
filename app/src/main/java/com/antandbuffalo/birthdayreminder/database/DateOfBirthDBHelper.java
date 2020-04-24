@@ -180,12 +180,18 @@ public class DateOfBirthDBHelper {
         int birthdayInNumber = 0;
         for(DateOfBirth dateOfBirth : dobList) {
             birthdayInNumber = Integer.parseInt(Util.getStringFromDate(dateOfBirth.getDobDate(), Constants.DAY_OF_YEAR));
+
+            int diff = Util.getDefaultDayOfYear(dateOfBirth.getDobDate()) - Util.getDefaultDayOfYear(new Date());
+            if(diff < 0) {
+                diff = Util.getSubstractionFactor() + diff;
+            }
+
             if(currentDayInNumber == birthdayInNumber) {
                 Util.setDescription(dateOfBirth, "Completed");
             }
             else {
                 dateOfBirth.setAge(dateOfBirth.getAge() + 1);
-                Util.setDescription(dateOfBirth, "Completing");
+                Util.setDescription(dateOfBirth, "Completing", diff);
             }
         }
 
