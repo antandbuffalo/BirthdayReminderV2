@@ -1,12 +1,15 @@
 package com.antandbuffalo.birthdayreminder.settings;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import android.app.AlertDialog;
 import android.app.Notification;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -34,6 +37,11 @@ public class Settings extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.settings);
+
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_back_white);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         final ListView settingsList = (ListView)findViewById(R.id.settingsList);
         settingsListAdapter = new SettingsListAdapter();
@@ -85,6 +93,17 @@ public class Settings extends AppCompatActivity {
             }
         });
     }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if(id == android.R.id.home) {
+
+        }
+        finish();
+        return true;
+    }
+
 
     @Override
     protected void onResume() {

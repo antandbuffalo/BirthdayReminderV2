@@ -40,4 +40,6 @@
 
     <color name="bg_edit_text">#5D4037</color>
 
+    <color name="edit_text_bg">#F4F3F3</color>
+
 </resources>

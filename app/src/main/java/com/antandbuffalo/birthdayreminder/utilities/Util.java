@@ -291,7 +291,7 @@ public class Util {
         List<DateOfBirth> dobs = DateOfBirthDBHelper.selectAll();
         if(dobs == null || dobs.size() == 0) {
             if(context != null) {
-                Toast.makeText(context, "Not date of births available", Toast.LENGTH_LONG).show();
+                // Toast.makeText(context, "Not date of births available", Toast.LENGTH_LONG).show();
             }
             return null;
         }

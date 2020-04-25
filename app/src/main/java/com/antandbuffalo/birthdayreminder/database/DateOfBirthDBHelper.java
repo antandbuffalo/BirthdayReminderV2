@@ -194,7 +194,6 @@ public class DateOfBirthDBHelper {
                 Util.setDescription(dateOfBirth, "Completing", diff);
             }
         }
-
         return dobList;
     }
 

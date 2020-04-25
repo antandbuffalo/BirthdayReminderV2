@@ -1,6 +1,7 @@
 package com.antandbuffalo.birthdayreminder;
 
 import android.Manifest;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -10,11 +11,13 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
@@ -22,11 +25,12 @@ import androidx.core.content.ContextCompat;
 import com.antandbuffalo.birthdayreminder.about.About;
 import com.antandbuffalo.birthdayreminder.addnew.AddNew;
 import com.antandbuffalo.birthdayreminder.database.DBHelper;
+import com.antandbuffalo.birthdayreminder.models.DateOfBirth;
 import com.antandbuffalo.birthdayreminder.settings.Settings;
 import com.antandbuffalo.birthdayreminder.upcoming.UpcomingListAdapter;
+import com.antandbuffalo.birthdayreminder.update.Update;
 import com.antandbuffalo.birthdayreminder.utilities.Constants;
 import com.antandbuffalo.birthdayreminder.utilities.DataHolder;
-import com.antandbuffalo.birthdayreminder.utilities.Util;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -77,6 +81,30 @@ public class MainActivity extends AppCompatActivity {
         ListView upcomingListView = (ListView)findViewById(R.id.upcomingListView);
         upcomingListView.setAdapter(upcomingListAdapter);
 
+        upcomingListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                DateOfBirth dateOfBirth = upcomingListAdapter.getItem(position);
+                AlertDialog.Builder adb = new AlertDialog.Builder(MainActivity.this);
+                CharSequence items[] = new CharSequence[] {"Edit", "Wish"};
+                adb.setItems(items, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        switch (i) {
+                            case 0:
+                                startUpdate(position);
+                                break;
+                            case 1:
+                                break;
+                        }
+                    }
+                });
+                //adb.setNegativeButton("Cancel", null);
+                adb.setTitle("Select Option");
+                adb.show();
+            }
+        });
+
         EditText filter = (EditText)findViewById(R.id.upcomingFiler);
         filter.addTextChangedListener(new TextWatcher() {
             @Override
@@ -101,6 +129,14 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // startFirebaseAuth();
+    }
+
+    public void startUpdate(int position) {
+        DateOfBirth dateOfBirth = upcomingListAdapter.getItem(position);
+
+        Intent intent = new Intent(MainActivity.this, Update.class);
+        intent.putExtra("currentDOB", dateOfBirth);
+        startActivityForResult(intent, Constants.DELETE_MEMBER);
     }
 
     public FirebaseFirestore initFirebase() {

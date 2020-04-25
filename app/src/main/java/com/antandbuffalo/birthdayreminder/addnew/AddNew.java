@@ -57,7 +57,7 @@ public class AddNew extends AppCompatActivity {
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close_white);
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_back_white);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         DBHelper.createInstance(this);

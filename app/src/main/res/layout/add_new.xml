@@ -53,8 +53,13 @@
         android:layout_marginTop="20dp"
         android:layout_marginEnd="10dp"
         android:ems="10"
+        android:hint="Name"
         android:inputType="textPersonName"
         android:text="Name"
+        android:background="@color/edit_text_bg"
+        android:paddingBottom="10dp"
+        android:paddingTop="10dp"
+        android:paddingLeft="5dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolbar" />
@@ -66,8 +71,13 @@
         android:layout_marginStart="10dp"
         android:layout_marginTop="20dp"
         android:ems="10"
+        android:hint="Date"
         android:inputType="textPersonName"
         android:text="Date"
+        android:background="@color/edit_text_bg"
+        android:paddingBottom="8dp"
+        android:paddingTop="8dp"
+        android:paddingLeft="5dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/personName" />
 
@@ -77,7 +87,7 @@
         android:layout_height="40dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="20dp"
-        android:background="@color/browser_actions_bg_grey"
+        android:background="@color/edit_text_bg"
         android:dropDownSelector="@color/sub_text_color"
         app:layout_constraintStart_toEndOf="@+id/date"
         app:layout_constraintTop_toBottomOf="@+id/personName" />
@@ -91,6 +101,10 @@
         android:ems="10"
         android:inputType="textPersonName"
         android:text="Year"
+        android:background="@color/edit_text_bg"
+        android:paddingBottom="8dp"
+        android:paddingTop="8dp"
+        android:paddingLeft="5dp"
         app:layout_constraintStart_toEndOf="@+id/monthSpinner"
         app:layout_constraintTop_toBottomOf="@+id/personName" />
 

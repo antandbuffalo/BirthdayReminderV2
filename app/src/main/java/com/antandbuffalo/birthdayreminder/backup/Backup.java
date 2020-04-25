@@ -1,7 +1,9 @@
 package com.antandbuffalo.birthdayreminder.backup;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
@@ -18,11 +20,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 
+import com.antandbuffalo.birthdayreminder.MainActivity;
 import com.antandbuffalo.birthdayreminder.R;
+import com.antandbuffalo.birthdayreminder.database.DateOfBirthDBHelper;
 import com.antandbuffalo.birthdayreminder.models.DateOfBirth;
+import com.antandbuffalo.birthdayreminder.settings.Settings;
 import com.antandbuffalo.birthdayreminder.utilities.Constants;
 import com.antandbuffalo.birthdayreminder.utilities.DataHolder;
 import com.antandbuffalo.birthdayreminder.utilities.Storage;
+import com.antandbuffalo.birthdayreminder.utilities.UIUtil;
 import com.antandbuffalo.birthdayreminder.utilities.Util;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
@@ -52,7 +58,7 @@ public class Backup extends AppCompatActivity {
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close_white);
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_back_white);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         if(FirebaseAuth.getInstance().getCurrentUser() != null) {
@@ -79,8 +85,19 @@ public class Backup extends AppCompatActivity {
                     Toast.makeText(DataHolder.getInstance().getAppContext(), "Please provide permission to access local storage", Toast.LENGTH_SHORT).show();
                 }
                 if(FirebaseAuth.getInstance().getCurrentUser() != null) {
-                    syncNow();
+                    backupToFirebaseConfirmation();
                 }
+                else {
+                    UIUtil.showAlertWithOk(Backup.this, "Error", "Please select account to backup");
+                }
+            }
+        });
+
+        Button restoreNow = findViewById(R.id.restoreNow);
+        restoreNow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                restoreFromFirebase(FirebaseFirestore.getInstance(), FirebaseAuth.getInstance().getCurrentUser());
             }
         });
 
@@ -97,6 +114,24 @@ public class Backup extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 signoutFromFirebase();
+            }
+        });
+
+        Button selectFrequency = findViewById(R.id.frequency);
+        selectFrequency.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                androidx.appcompat.app.AlertDialog.Builder adb = new androidx.appcompat.app.AlertDialog.Builder(Backup.this);
+                CharSequence items[] = new CharSequence[] {"None", "Daily", "Weekly", "Monthly"};
+                adb.setSingleChoiceItems(items, 0, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        System.out.println("i = " + i);
+                    }
+                });
+                adb.setNegativeButton("Cancel", null);
+                adb.setTitle("Select Sync Frequency");
+                adb.show();
             }
         });
 
@@ -288,6 +323,7 @@ public class Backup extends AppCompatActivity {
                         Storage.setDbBackupTime(Util.getDateFromString(Storage.getServerBackupTime(), Constants.backupDateFormatToStore));
                         getLocalBackupTime();
                         DataHolder.getInstance().refresh = true;
+                        Toast.makeText(Backup.this, "Successfully Restored from server", Toast.LENGTH_SHORT).show();
                     } else {
                         Log.d("FirebaseGetData", "No such document");
                     }
@@ -356,6 +392,20 @@ public class Backup extends AppCompatActivity {
 
     public void getFirebaseLastUpdatedTime(FirebaseFirestore firebaseFirestore, FirebaseUser firebaseUser) {
         getFirebaseLastUpdatedTime(firebaseFirestore, firebaseUser, "");
+    }
+
+    public void backupToFirebaseConfirmation() {
+        new AlertDialog.Builder(Backup.this)
+            .setTitle("Confirmation")
+            .setMessage("This will replace existing server content with local content. Are you sure want to continue?")
+            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    backupToFirebase(FirebaseFirestore.getInstance(), FirebaseAuth.getInstance().getCurrentUser());
+                }
+            })
+            .setNegativeButton("No", null)
+            .show();
     }
 
     public void syncNow() {
