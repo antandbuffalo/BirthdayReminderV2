@@ -27,6 +27,7 @@
         android:ems="10"
         android:inputType="textMultiLine"
         android:maxHeight="250dp"
+        android:minHeight="50dp"
         android:paddingLeft="10dp"
         android:paddingTop="5dp"
         android:paddingRight="10dp"
