@@ -28,6 +28,7 @@ import com.antandbuffalo.birthdayreminder.utilities.Constants;
 import com.antandbuffalo.birthdayreminder.utilities.DataHolder;
 import com.antandbuffalo.birthdayreminder.utilities.Storage;
 import com.antandbuffalo.birthdayreminder.utilities.Util;
+import com.antandbuffalo.birthdayreminder.wishtemplate.WishTemplate;
 
 import java.util.Date;
 
@@ -66,6 +67,10 @@ public class Settings extends AppCompatActivity {
                 }
                 else if (selectedOption.getKey().equalsIgnoreCase(Constants.SETTINGS_NOTIFICATION_FREQUENCY)) {
                     Intent intent = new Intent(view.getContext(), NotificationFrequency.class);
+                    startActivityForResult(intent, Constants.REFRESH_SETTINGS);
+                }
+                else if (selectedOption.getKey().equalsIgnoreCase(Constants.SETTINGS_WISH_TEMPLATE)) {
+                    Intent intent = new Intent(view.getContext(), WishTemplate.class);
                     startActivityForResult(intent, Constants.REFRESH_SETTINGS);
                 }
                 else if (selectedOption.getKey().equalsIgnoreCase(Constants.SETTINGS_ABOUT)) {
