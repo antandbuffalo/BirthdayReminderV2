@@ -509,21 +509,39 @@ public class Util {
     }
 
     public static void setDescription(DateOfBirth dob, String info, Integer days) {
-        String upcomingDays = "";
-        if(days != null) {
-            upcomingDays = " in " + days + " days";
-            if(days <= 0) {
-                upcomingDays = " in " + days + " day";
+        if(dob.getRemoveYear()) {
+            if(days == null) {
+                dob.setDescription("Today");
+                return;
+            }
+            dob.setDescription("In " + days + " days");
+            if(days < 1) {
+                dob.setDescription("In " + days + " day");
+            }
+
+            return;
+        }
+        else {
+            String upcomingDaysText = "";
+            if(days != null) {
+                upcomingDaysText = " in " + days + " days";
+                if(days < 1) {
+                    upcomingDaysText = " in " + days + " day";
+                }
+            }
+            else {
+                upcomingDaysText = "";
+            }
+
+            if(dob.getAge() <= 1) {
+                //dob.setAge(0);
+                dob.setDescription(info + ": " + dob.getAge() + " year" + upcomingDaysText);
+            }
+            else {
+                dob.setDescription(info + ": " + dob.getAge() + " years" + upcomingDaysText);
             }
         }
 
-        if(dob.getAge() <= 1) {
-            //dob.setAge(0);
-            dob.setDescription(info + ": " + dob.getAge() + " year" + upcomingDays);
-        }
-        else {
-            dob.setDescription(info + ": " + dob.getAge() + " years" + upcomingDays);
-        }
     }
 
     public static List<String> getMonths() {
