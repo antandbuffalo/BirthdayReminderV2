@@ -268,7 +268,14 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 Toast.makeText(DataHolder.getInstance().getAppContext(), "Not able to sign in", Toast.LENGTH_SHORT).show();
             }
-        }
+         }
+         else if(requestCode == Constants.DELETE_MEMBER) {
+             System.out.println("after delete activity");
+             if(resultCode == RESULT_OK) {
+                 upcomingListAdapter.refreshData();
+             }
+         }
+
     }
 
     public Boolean getStoragePermission(int permissionType) {

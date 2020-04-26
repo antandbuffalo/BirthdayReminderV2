@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -20,6 +22,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.antandbuffalo.birthdayreminder.R;
@@ -41,9 +44,7 @@ public class Update extends AppCompatActivity {
     Spinner monthSpinner;
     EditText dateText, yearText;
     LinearLayout circle;
-    ImageButton update, cancel, delete;
     CheckBox removeYear;
-
     AdView mAdView;
 
     @Override
@@ -51,8 +52,12 @@ public class Update extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.update);
 
-        DBHelper.createInstance(this);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_back_white);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        DBHelper.createInstance(this);
         updateViewModel = ViewModelProviders.of(this).get(UpdateViewModel.class);
 
         currentDOB = (DateOfBirth)getIntent().getSerializableExtra("currentDOB");
@@ -163,74 +168,6 @@ public class Update extends AppCompatActivity {
         });
 
         intent = new Intent();
-
-        delete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            new AlertDialog.Builder(Update.this)
-                //.setIcon(android.R.drawable.ic_dialog_alert)
-                    .setIconAttribute(android.R.attr.alertDialogIcon)
-                .setTitle("Confirmation")
-                .setMessage("Are you sure you want to delete " + currentDOB.getName() + "?")
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener()
-                {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        updateViewModel.delete(currentDOB.getDobId());
-                        currentDOB = null;
-                        Toast toast = Toast.makeText(getApplicationContext(), Constants.NOTIFICATION_DELETE_MEMBER_SUCCESS, Toast.LENGTH_SHORT);
-                        toast.show();
-                        setResult(RESULT_OK, intent);
-                        clearInputs();
-                        finish();
-                    }
-                })
-                .setNegativeButton("No", null)
-                .show();
-            }
-        });
-
-        cancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setResult(RESULT_CANCELED, intent);
-                finish();
-            }
-        });
-
-        update.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                populateBirthdayInfo();
-                updateViewModel.setDateOfBirth(updateViewModel.birthdayInfo);
-
-                if (updateViewModel.isNameEmpty()) {
-                    //show error
-                    Toast.makeText(getApplicationContext(), Constants.NAME_EMPTY, Toast.LENGTH_SHORT).show();
-                } else {
-                    if (updateViewModel.isDOBAvailable(updateViewModel.dateOfBirth)) {
-                        //put confirmation here
-                        new AlertDialog.Builder(Update.this)
-                                //.setIcon(android.R.drawable.ic_dialog_info)
-                                .setIconAttribute(android.R.attr.alertDialogIcon)
-                                .setTitle(Constants.ERROR)
-                                .setMessage(Constants.USER_EXIST)
-                                .setPositiveButton(Constants.OK, null)
-                                .show();
-                    } else {
-                        Log.i("after update", currentDOB.getName());
-                        updateViewModel.update();
-                        String status = Constants.NOTIFICATION_UPDATE_MEMBER_SUCCESS + ". You will get notified at 12:00am and 12:00pm on " + Util.getStringFromDate(currentDOB.getDobDate(), "dd MMM") + " every year";
-                        status = Constants.NOTIFICATION_UPDATE_MEMBER_SUCCESS + ". " + Util.getNotificationMessageWithTime(getApplicationContext(), updateViewModel.dateOfBirth.getDobDate());
-                        Toast toast = Toast.makeText(getApplicationContext(), status, Toast.LENGTH_LONG);
-                        toast.show();
-                        setResult(RESULT_OK, intent);
-                        finish();
-                    }
-                }
-            }
-        });
     }
 
     public void addMonthsToSpinner(Spinner spinner) {
@@ -314,12 +251,6 @@ public class Update extends AppCompatActivity {
 
         removeYear = (CheckBox) findViewById(R.id.removeYear);
 
-        update = (ImageButton) findViewById(R.id.save);
-        update.setBackgroundResource(R.drawable.save_button);
-
-        cancel = (ImageButton)findViewById(R.id.cancel);
-        cancel.setBackgroundResource(R.drawable.cancel_button);
-
         namePreview = (TextView)findViewById(R.id.nameField);
         desc = (TextView)findViewById(R.id.ageField);
         dateField = (TextView)findViewById(R.id.dateField);
@@ -327,17 +258,87 @@ public class Update extends AppCompatActivity {
         yearField = (TextView)findViewById(R.id.yearField);
 
         circle = (LinearLayout)findViewById(R.id.circlebg);
-
-        delete = (ImageButton)findViewById(R.id.delete);
-        delete.setBackgroundResource(R.drawable.cancel_button);
-
-        cancel = (ImageButton)findViewById(R.id.cancel);
-        cancel.setBackgroundResource(R.drawable.cancel_button);
-
-        update = (ImageButton)findViewById(R.id.save);
-        update.setBackgroundResource(R.drawable.save_button);
-
         mAdView = findViewById(R.id.adView);
+    }
+
+    public void update() {
+        populateBirthdayInfo();
+        updateViewModel.setDateOfBirth(updateViewModel.birthdayInfo);
+
+        if (updateViewModel.isNameEmpty()) {
+            //show error
+            Toast.makeText(getApplicationContext(), Constants.NAME_EMPTY, Toast.LENGTH_SHORT).show();
+        } else {
+            if (updateViewModel.isDOBAvailable(updateViewModel.dateOfBirth)) {
+                //put confirmation here
+                new AlertDialog.Builder(Update.this)
+                        //.setIcon(android.R.drawable.ic_dialog_info)
+                        .setIconAttribute(android.R.attr.alertDialogIcon)
+                        .setTitle(Constants.ERROR)
+                        .setMessage(Constants.USER_EXIST)
+                        .setPositiveButton(Constants.OK, null)
+                        .show();
+            } else {
+                Log.i("after update", currentDOB.getName());
+                updateViewModel.update();
+                String status = Constants.NOTIFICATION_UPDATE_MEMBER_SUCCESS + ". You will get notified at 12:00am and 12:00pm on " + Util.getStringFromDate(currentDOB.getDobDate(), "dd MMM") + " every year";
+                status = Constants.NOTIFICATION_UPDATE_MEMBER_SUCCESS + ". " + Util.getNotificationMessageWithTime(getApplicationContext(), updateViewModel.dateOfBirth.getDobDate());
+                Toast toast = Toast.makeText(getApplicationContext(), status, Toast.LENGTH_LONG);
+                toast.show();
+                setResult(RESULT_OK, intent);
+                finish();
+            }
+        }
+    }
+
+    public void delete() {
+        new AlertDialog.Builder(Update.this)
+            //.setIcon(android.R.drawable.ic_dialog_alert)
+            //.setIconAttribute(android.R.attr.alertDialogIcon)
+            .setTitle("Confirmation")
+            .setMessage("Are you sure you want to delete " + currentDOB.getName() + "?")
+            .setPositiveButton("Yes", new DialogInterface.OnClickListener()
+            {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    updateViewModel.delete(currentDOB.getDobId());
+                    currentDOB = null;
+                    Toast toast = Toast.makeText(getApplicationContext(), Constants.NOTIFICATION_DELETE_MEMBER_SUCCESS, Toast.LENGTH_SHORT);
+                    toast.show();
+                    setResult(RESULT_OK, intent);
+                    clearInputs();
+                    finish();
+                }
+            })
+            .setNegativeButton("No", null)
+            .show();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_delete, menu);
+        getMenuInflater().inflate(R.menu.menu_done, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        switch (id) {
+            case R.id.action_menu_done: {
+                update();
+                break;
+            }
+            case R.id.action_menu_delete: {
+                delete();
+                break;
+            }
+            case android.R.id.home: {
+                setResult(RESULT_CANCELED, intent);
+                finish();
+            }
+        }
+        return true;
     }
 
     public void loadAd() {

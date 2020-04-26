@@ -1,38 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:paddingBottom="0dp"
-    tools:context="com.antandbuffalo.birthdayreminder.addnew.AddNew">
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimary"
-        app:titleTextColor="@color/white"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:popupTheme="@style/AppTheme.PopupOverlay" />
+    tools:context="com.antandbuffalo.birthdayreminder.update.Update">
 
     <EditText
-        android:id="@+id/personName"
         android:layout_width="wrap_content"
         android:layout_height="40sp"
+        android:inputType="textPersonName"
+        android:hint="Enter Name"
+        android:ems="10"
+        android:elevation="2dp"
+        android:paddingLeft="2dp"
+        android:id="@+id/personName"
+        android:background="@drawable/addnew_edittext"
         android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true"
         android:layout_marginLeft="2sp"
         android:layout_marginRight="2sp"
-        android:layout_marginTop="20dp"
-        android:elevation="2dp"
-        android:ems="10"
-        android:hint="Enter Name"
-        android:inputType="textPersonName"
-        android:paddingLeft="4dp"
-        android:layout_below="@+id/toolbar"
-        android:textColor="@color/addnew_font" />
+        android:textColor="@color/addnew_font"
+        android:layout_alignParentEnd="true" />
 
     <LinearLayout
         android:orientation="vertical"
@@ -57,6 +44,7 @@
                 android:layout_alignParentEnd="true"
                 android:layout_marginLeft="2sp"
                 android:layout_marginRight="2sp"
+                android:background="@drawable/addnew_edittext"
                 android:elevation="2dp"
                 android:ems="10"
                 android:hint="DD"
@@ -74,12 +62,12 @@
                 android:background="@drawable/addnew_edittext"
                 android:minWidth="80dp" />
 
-
             <EditText
                 android:id="@+id/year"
                 android:layout_width="60dp"
                 android:layout_height="40sp"
                 android:layout_marginLeft="15sp"
+                android:background="@drawable/addnew_edittext"
                 android:elevation="2dp"
                 android:ems="10"
                 android:hint="YYYY"
@@ -95,28 +83,31 @@
         android:id="@+id/removeYear"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/textView5"
         android:layout_below="@+id/linearLayout"
-        android:layout_alignStart="@+id/personName"
         android:layout_marginTop="10dp"
-        android:checked="true"
-        android:text="I don't know year"/>
+        android:buttonTint="@color/white"
+        android:textColor="@color/addnew_font"
+        android:text="I don't know year" />
 
     <TextView
         android:id="@+id/textView5"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignStart="@+id/removeYear"
+        android:layout_alignStart="@+id/personName"
         android:layout_below="@+id/removeYear"
         android:layout_marginTop="10dp"
+        android:phoneNumber="false"
         android:text="You cannot select a future date. Please change the year accordingly to select an upcoming date"
+        android:textColor="@color/sub_text_color"
         android:textSize="12sp" />
 
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/textView5"
-        android:layout_alignStart="@+id/personName"
-        android:layout_marginTop="30dp"
+        android:layout_above="@+id/buttonsLayout"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="10dp"
         android:background="@color/switch_thumb_normal_material_light">
 
         <LinearLayout
@@ -183,15 +174,73 @@
 
     </RelativeLayout>
 
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="70dp"
+        android:weightSum="1"
+        android:layout_alignParentBottom="true"
+        android:id="@+id/buttonsLayout">
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Delete"
+            android:id="@+id/delete"
+            android:background="@color/delete_button_default"
+            android:textColor="@color/white"
+            android:src="@drawable/ic_done_white"
+            android:elevation="2dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginBottom="2dp"
+            android:layout_marginLeft="2dp"
+            android:layout_marginRight="15dp"
+            android:padding="12dp" />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cancel"
+            android:id="@+id/cancel"
+            android:background="@color/cancel_button_default"
+            android:textColor="@color/white"
+            android:elevation="2dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginBottom="2dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:src="@drawable/ic_close_white"
+            android:padding="12dp" />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Update"
+            android:id="@+id/save"
+            android:textColor="@color/white"
+            android:background="@color/save_button_default"
+            android:src="@drawable/ic_done_white"
+            android:elevation="2dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginBottom="2dp"
+            android:layout_marginRight="2dp"
+            android:layout_marginLeft="15dp"
+            android:padding="12dp" />
+    </LinearLayout>
+
     <com.google.android.gms.ads.AdView xmlns:ads="http://schemas.android.com/apk/res-auto"
         android:id="@+id/adView"
-        android:layout_width="320dp"
-        android:layout_height="50dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:background="#00D33636"
         ads:adSize="BANNER"
-        android:layout_marginTop="10dp"
-        ads:adUnitId="@string/ad_addnew"></com.google.android.gms.ads.AdView>
+        android:layout_marginBottom="0dp"
+        ads:adUnitId="@string/ad_update"></com.google.android.gms.ads.AdView>
 
 </RelativeLayout>

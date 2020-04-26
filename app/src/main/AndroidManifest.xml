@@ -11,6 +11,7 @@
         android:theme="@style/AppTheme">
 
         <activity android:name=".wishtemplate.WishTemplate"
+            android:label="Wish Template"
             android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity
             android:name=".backup.Backup"
@@ -33,7 +34,8 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".update.Update"
-            android:label="Update" />
+            android:label="Update"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".about.About"
             android:label="About" />

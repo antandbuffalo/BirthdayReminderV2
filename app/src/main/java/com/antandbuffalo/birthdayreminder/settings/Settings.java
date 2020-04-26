@@ -116,3 +116,11 @@ public class Settings extends AppCompatActivity {
         settingsListAdapter.refreshData();
     }
 }
+
+// history
+// alarm
+// timeline
+// assignment
+// backup
+// delete
+
