@@ -106,12 +106,12 @@ public class UpcomingListAdapter extends BaseAdapter implements Filterable {
         }
 
         if(dob.getRemoveYear()) {
-            desc.setVisibility(View.INVISIBLE);
+            //desc.setVisibility(View.INVISIBLE);
             yearField.setVisibility(View.INVISIBLE);
         }
         else {
             if(dob.getAge() < 0) {
-                desc.setVisibility(View.INVISIBLE);
+                //desc.setVisibility(View.INVISIBLE);
             } else {
                 desc.setVisibility(View.VISIBLE);
             }

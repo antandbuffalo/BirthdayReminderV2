@@ -1,8 +1,11 @@
 package com.antandbuffalo.birthdayreminder;
 
 import android.Manifest;
+import android.app.AlarmManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.text.Editable;
@@ -32,6 +35,8 @@ import com.antandbuffalo.birthdayreminder.upcoming.UpcomingListAdapter;
 import com.antandbuffalo.birthdayreminder.update.Update;
 import com.antandbuffalo.birthdayreminder.utilities.Constants;
 import com.antandbuffalo.birthdayreminder.utilities.DataHolder;
+import com.antandbuffalo.birthdayreminder.utilities.Storage;
+import com.antandbuffalo.birthdayreminder.utilities.Util;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -132,6 +137,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // startFirebaseAuth();
+        setRepeatingAlarm();
     }
 
     public void startUpdate(int position) {
@@ -323,6 +329,17 @@ public class MainActivity extends AppCompatActivity {
             upcomingListAdapter.refreshData();
             DataHolder.getInstance().refresh = false;
         }
+    }
+
+    public void setRepeatingAlarm() {
+        Log.i("MAIN", "Setting repeating alarm in main activity");
+        SharedPreferences settings = Util.getSharedPreference();
+        int hour = Storage.getInt(settings, Constants.PREFERENCE_NOTIFICATION_TIME_HOURS, 0);
+        int minute = Storage.getInt(settings, Constants.PREFERENCE_NOTIFICATION_TIME_MINUTES, 0);
+
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        int frequency = Storage.getNotificationFrequency(settings);
+        Util.setRepeatingAlarm(this, alarmManager, hour, minute, frequency);
     }
 }
 

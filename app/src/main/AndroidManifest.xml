@@ -5,10 +5,26 @@
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
-        android:label="Backup and Restore"
+        android:label="Birthday Reminder"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
+        <receiver
+            android:name=".receiver.AlarmReceiver"
+            android:enabled="true"
+            android:exported="true" />
+
+        <receiver
+            android:name=".receiver.BootCompleteReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.REBOOT" /> <!-- This is for MIUI -->
+            </intent-filter>
+        </receiver>
+
         <activity android:name=".sharewish.ShareWish"
             android:label="Share Wish"
             android:theme="@style/AppTheme.NoActionBar"></activity>

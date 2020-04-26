@@ -53,7 +53,11 @@ public class AlarmReceiver extends BroadcastReceiver {
         //notification opening intent
         Intent resultingIntent = new Intent(context, MainActivity.class);
         PendingIntent contentIntent = PendingIntent.getActivity(context, 0, resultingIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context, CHANNEL_ID).setSmallIcon(R.drawable.ic_notification).setContentTitle(from).setContentText(message);
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context, CHANNEL_ID)
+                .setStyle(new NotificationCompat.BigTextStyle().bigText(message))
+                .setSmallIcon(R.drawable.ic_notification)
+                .setContentTitle(from)
+                .setContentText(message);
         mBuilder.setColor(Color.argb(255, 121, 85, 72));
         mBuilder.setAutoCancel(true);
 
@@ -78,7 +82,11 @@ public class AlarmReceiver extends BroadcastReceiver {
         //notification opening intent
         Intent resultingIntent = new Intent(context, MainActivity.class);
         PendingIntent contentIntent = PendingIntent.getActivity(context, 0, resultingIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context, CHANNEL_ID).setSmallIcon(R.drawable.ic_notification).setContentTitle(from).setContentText(message);
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context, CHANNEL_ID)
+                .setStyle(new NotificationCompat.BigTextStyle().bigText(message))
+                .setSmallIcon(R.drawable.ic_notification)
+                .setContentTitle(from)
+                .setContentText(message);
         mBuilder.setColor(Color.argb(255, 121, 85, 72));
         mBuilder.setAutoCancel(true);
 
@@ -120,7 +128,11 @@ public class AlarmReceiver extends BroadcastReceiver {
         //notification opening intent
         Intent resultingIntent = new Intent(context, MainActivity.class);
         PendingIntent contentIntent = PendingIntent.getActivity(context, 0, resultingIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context, CHANNEL_ID).setSmallIcon(R.drawable.ic_notification).setContentTitle(from).setContentText(message);
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context, CHANNEL_ID)
+                .setStyle(new NotificationCompat.BigTextStyle().bigText(message))
+                .setSmallIcon(R.drawable.ic_notification)
+                .setContentTitle(from)
+                .setContentText(message);
         mBuilder.setColor(Color.argb(255, 121, 85, 72));
         mBuilder.setAutoCancel(true);
 

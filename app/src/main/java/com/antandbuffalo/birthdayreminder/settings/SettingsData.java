@@ -76,19 +76,11 @@ public class SettingsData {
         data.add(datum);
 
         datum = SettingsModel.newInstance();
-        datum.setKey(Constants.SETTINGS_READ_FILE);
-        datum.setTitle(Constants.SETTINGS_READ_FILE_TITLE);
-        datum.setSubTitle(Constants.SETTINGS_READ_FILE_SUB_TITLE);
-        //datum.setUpdatedOn(new Date());
-        datum.setSno(6);
-        data.add(datum);
-
-        datum = SettingsModel.newInstance();
         datum.setKey(Constants.SETTINGS_DELETE_ALL);
         datum.setTitle(Constants.SETTINGS_DELETE_ALL_TITLE);
         datum.setSubTitle("");
         //datum.setUpdatedOn(new Date());
-        datum.setSno(7);
+        datum.setSno(6);
         data.add(datum);
 
         return data;
