@@ -539,7 +539,8 @@ public class Util {
 
     public static Integer getDefaultDayOfYear(Date date) {
         Calendar cal = Calendar.getInstance();
-        cal.setTime(date);
+        cal.set(Calendar.MONTH, date.getMonth());
+        cal.set(Calendar.DATE, date.getDate());
         return cal.get(Calendar.DAY_OF_YEAR);
     }
 
