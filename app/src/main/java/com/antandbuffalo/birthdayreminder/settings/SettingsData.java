@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import com.antandbuffalo.birthdayreminder.R;
 import com.antandbuffalo.birthdayreminder.database.DBHelper;
 import com.antandbuffalo.birthdayreminder.models.SettingsModel;
 import com.antandbuffalo.birthdayreminder.utilities.Constants;
@@ -39,6 +40,7 @@ public class SettingsData {
         if(days > 1) {
             datum.setValue(days + " days");
         }
+        datum.setIconId(R.drawable.ic_history_primary_dark);
         data.add(datum);
 
         datum = SettingsModel.newInstance();
@@ -48,6 +50,7 @@ public class SettingsData {
         datum.setIconLetter("N");
         datum.setSno(2);
         datum.setValue("00:00");
+        datum.setIconId(R.drawable.ic_alarm_primary_dark);
         data.add(datum);
 
         datum = SettingsModel.newInstance();
@@ -57,6 +60,7 @@ public class SettingsData {
         datum.setIconLetter("N");
         datum.setSno(3);
         datum.setValue(Storage.getNotificationFrequency(Util.getSharedPreference()) + "");
+        datum.setIconId(R.drawable.ic_timeline_primary_dark);
         data.add(datum);
 
         datum = SettingsModel.newInstance();
@@ -65,6 +69,7 @@ public class SettingsData {
         datum.setSubTitle("");
         datum.setIconLetter("W");
         datum.setSno(4);
+        datum.setIconId(R.drawable.ic_assignment_primary_dark);
         data.add(datum);
 
         datum = SettingsModel.newInstance();
@@ -73,6 +78,7 @@ public class SettingsData {
         datum.setSubTitle(Constants.SETTINGS_WRITE_FILE_SUB_TITLE);
         //datum.setUpdatedOn(new Date());
         datum.setSno(5);
+        datum.setIconId(R.drawable.ic_backup_primary_dark);
         data.add(datum);
 
         datum = SettingsModel.newInstance();
@@ -81,6 +87,7 @@ public class SettingsData {
         datum.setSubTitle("");
         //datum.setUpdatedOn(new Date());
         datum.setSno(6);
+        datum.setIconId(R.drawable.ic_delete_sweep_primary_dark);
         data.add(datum);
 
         return data;

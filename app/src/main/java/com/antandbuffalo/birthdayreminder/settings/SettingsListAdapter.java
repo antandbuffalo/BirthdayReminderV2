@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -76,101 +77,38 @@ public class SettingsListAdapter extends BaseAdapter {
         SettingsModel option = listData.get(position);
         int cellType = getCellType(option);
         if(convertView == null) {
-
-            if(cellType == Constants.SETTINGS_CELL_TYPE_DATE) {
-                LayoutInflater inflater = (LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                convertView = inflater.inflate(R.layout.settings_listitem, parent, false);
-            }
-            else if(cellType == Constants.SETTINGS_CELL_TYPE_1_LETTER) {
-                LayoutInflater inflater = (LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                convertView = inflater.inflate(R.layout.settings_listitem_other, parent, false);
-            }
-            else if(cellType == Constants.SETTINGS_CELL_TYPE_NA) {
-                LayoutInflater inflater = (LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                convertView = inflater.inflate(R.layout.settings_listitem_na, parent, false);
-            }
+            LayoutInflater inflater = (LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            convertView = inflater.inflate(R.layout.settings_listitem_default, parent, false);
         }
 
-        TextView name, dateField, monthField, yearField, desc;
-
-        name = (TextView)convertView.findViewById(R.id.nameField);
+        TextView name = (TextView)convertView.findViewById(R.id.nameField);
         name.setText(option.getTitle());
 
-        dateField = (TextView)convertView.findViewById(R.id.dateField);
+        ImageView listItemIcon = convertView.findViewById(R.id.listItemIcon);
+        listItemIcon.setBackgroundResource(option.getIconId());
 
-        LinearLayout circle = (LinearLayout)convertView.findViewById(R.id.circlebg);
+//        LinearLayout circle = (LinearLayout)convertView.findViewById(R.id.circlebg);
+//
+//        if(option.getKey().equalsIgnoreCase(Constants.SETTINGS_DELETE_ALL) || option.getKey().equalsIgnoreCase(Constants.SETTINGS_READ_FILE) || option.getKey().equalsIgnoreCase(Constants.SETTINGS_WRITE_FILE)) {
+//            circle.setBackgroundResource(R.drawable.cirlce_missed);
+//        }
+//        else {
+//            circle.setBackgroundResource(R.drawable.cirlce_normal);
+//        }
 
-        if(cellType == Constants.SETTINGS_CELL_TYPE_DATE) {
-            desc = (TextView)convertView.findViewById(R.id.ageField);
-            String description = option.getSubTitle();
-
-            monthField = (TextView)convertView.findViewById(R.id.monthField);
-            yearField = (TextView)convertView.findViewById(R.id.yearField);
-
-            cal.setTime(option.getUpdatedOn());
-            dateField.setText(cal.get(Calendar.DATE) + "");
-            monthField.setText(dateFormatter.format(cal.getTime()));
-            yearField.setText(cal.get(Calendar.YEAR) + "");
-
-            long daysDiff = Util.getDaysBetweenDates(option.getUpdatedOn());
-                if(daysDiff == 0) {
-                    description = description + " today";
-                    circle.setBackgroundResource(R.drawable.cirlce_today);
-                }
-                else if(daysDiff == 1) {
-                    description = description + " before " + daysDiff + " day";
-                    circle.setBackgroundResource(R.drawable.cirlce_today);
-                }
-                else if (daysDiff <= 30) {
-                    description = description + " before " + daysDiff + " days";
-                    circle.setBackgroundResource(R.drawable.cirlce_today);
-                }
-                else if (daysDiff <= 365) {
-                    description = description + " before " + daysDiff + " days";
-                    circle.setBackgroundResource(R.drawable.cirlce_recent);
-                }
-                else {
-                    description = description + " before " + daysDiff + " days";
-                    circle.setBackgroundResource(R.drawable.cirlce_missed);
-                }
-            desc.setText(description);
-        }
-        else if (cellType == Constants.SETTINGS_CELL_TYPE_1_LETTER) {
-            String extra = OptionsDBHelper.getExtraValue(option, Constants.SETTINGS_ICON_LETTER);
-            if(extra != null) {
-                dateField.setText(extra);
+        TextView currentValue = (TextView)convertView.findViewById(R.id.currentValue);
+        String givenKey = option.getKey().toUpperCase();
+        currentValue.setVisibility(View.VISIBLE);
+        currentValue.setText(option.getValue());
+        switch (givenKey) {
+            case Constants.SETTINGS_NOTIFICATION_TIME: {
+                currentValue.setText(Storage.getNotificationTime(Util.getSharedPreference(), parent.getContext()));
+                break;
             }
-            else {
-                dateField.setText(option.getTitle().substring(0, 1).toUpperCase());
+            case Constants.SETTINGS_NOTIFICATION_FREQUENCY: {
+                currentValue.setText(getSelectedFrequency(parent.getContext()));
+                break;
             }
-
-            if(option.getKey().equalsIgnoreCase(Constants.SETTINGS_DELETE_ALL) || option.getKey().equalsIgnoreCase(Constants.SETTINGS_READ_FILE) || option.getKey().equalsIgnoreCase(Constants.SETTINGS_WRITE_FILE)) {
-                circle.setBackgroundResource(R.drawable.cirlce_missed);
-            }
-            else {
-                circle.setBackgroundResource(R.drawable.cirlce_normal);
-            }
-
-            TextView currentValue = (TextView)convertView.findViewById(R.id.currentValue);
-            String givenKey = option.getKey().toUpperCase();
-            currentValue.setVisibility(View.VISIBLE);
-            currentValue.setText(option.getValue());
-            switch (givenKey) {
-                case Constants.SETTINGS_NOTIFICATION_TIME: {
-                    currentValue.setText(Storage.getNotificationTime(Util.getSharedPreference(), parent.getContext()));
-                    break;
-                }
-                case Constants.SETTINGS_NOTIFICATION_FREQUENCY: {
-                    currentValue.setText(getSelectedFrequency(parent.getContext()));
-                    break;
-                }
-            }
-        }
-        else {
-            dateField.setText("NA");
-            desc = (TextView)convertView.findViewById(R.id.ageField);
-            desc.setText(option.getSubTitle());
-            circle.setBackgroundResource(R.drawable.cirlce_missed);
         }
 
         return convertView;

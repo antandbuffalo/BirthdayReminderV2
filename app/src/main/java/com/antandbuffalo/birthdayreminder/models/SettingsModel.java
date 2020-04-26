@@ -18,6 +18,7 @@ public class SettingsModel {
     private int sno;
     private String iconLetter;
     private String value;
+    private int iconId;
 
     public String getKey() {
         return key;
@@ -101,5 +102,13 @@ public class SettingsModel {
 
     public void setValue(String value) {
         this.value = value;
+    }
+
+    public int getIconId() {
+        return iconId;
+    }
+
+    public void setIconId(int iconId) {
+        this.iconId = iconId;
     }
 }
