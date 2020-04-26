@@ -27,6 +27,7 @@ import com.antandbuffalo.birthdayreminder.addnew.AddNew;
 import com.antandbuffalo.birthdayreminder.database.DBHelper;
 import com.antandbuffalo.birthdayreminder.models.DateOfBirth;
 import com.antandbuffalo.birthdayreminder.settings.Settings;
+import com.antandbuffalo.birthdayreminder.sharewish.ShareWish;
 import com.antandbuffalo.birthdayreminder.upcoming.UpcomingListAdapter;
 import com.antandbuffalo.birthdayreminder.update.Update;
 import com.antandbuffalo.birthdayreminder.utilities.Constants;
@@ -95,6 +96,8 @@ public class MainActivity extends AppCompatActivity {
                                 startUpdate(position);
                                 break;
                             case 1:
+                                Intent shareWish = new Intent(MainActivity.this, ShareWish.class);
+                                startActivity(shareWish);
                                 break;
                         }
                     }
