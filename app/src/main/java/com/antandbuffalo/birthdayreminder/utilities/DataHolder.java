@@ -14,6 +14,7 @@ public class DataHolder {
 
     public List<Boolean> refreshTracker = null;
     public Boolean refresh = false;
+    public Boolean refreshSettings = false;
 
     private DataHolder() {
         this.refreshTracker = new ArrayList();

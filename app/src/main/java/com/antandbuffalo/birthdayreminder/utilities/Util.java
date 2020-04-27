@@ -324,6 +324,7 @@ public class Util {
             fOut.close();
             System.out.println("Write successful");
             System.out.println(new Date(myFile.lastModified()));
+            myFileBackup.delete();
 
         } catch (IOException e) {
             // TODO Auto-generated catch block

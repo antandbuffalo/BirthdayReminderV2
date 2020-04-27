@@ -28,6 +28,7 @@ import androidx.core.content.ContextCompat;
 import com.antandbuffalo.birthdayreminder.about.About;
 import com.antandbuffalo.birthdayreminder.addnew.AddNew;
 import com.antandbuffalo.birthdayreminder.database.DBHelper;
+import com.antandbuffalo.birthdayreminder.database.DateOfBirthDBHelper;
 import com.antandbuffalo.birthdayreminder.models.DateOfBirth;
 import com.antandbuffalo.birthdayreminder.settings.Settings;
 import com.antandbuffalo.birthdayreminder.sharewish.ShareWish;
@@ -52,6 +53,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -92,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 DateOfBirth dateOfBirth = upcomingListAdapter.getItem(position);
                 AlertDialog.Builder adb = new AlertDialog.Builder(MainActivity.this);
-                CharSequence items[] = new CharSequence[] {"Edit", "Wish"};
+                CharSequence items[] = new CharSequence[] {"Edit", "Wish", "Delete"};
                 adb.setItems(items, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
@@ -104,11 +106,29 @@ public class MainActivity extends AppCompatActivity {
                                 Intent shareWish = new Intent(MainActivity.this, ShareWish.class);
                                 startActivity(shareWish);
                                 break;
+                            case 2: {
+                                new android.app.AlertDialog.Builder(MainActivity.this)
+                                    .setTitle("Confirmation")
+                                    .setMessage("Are you sure you want to delete " + dateOfBirth.getName() + "?")
+                                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            DateOfBirthDBHelper.deleteRecordForTheId(dateOfBirth.getDobId());
+                                            Storage.setDbBackupTime(new Date());
+                                            Toast toast = Toast.makeText(getApplicationContext(), Constants.NOTIFICATION_DELETE_MEMBER_SUCCESS, Toast.LENGTH_SHORT);
+                                            toast.show();
+                                            upcomingListAdapter.refreshData();
+                                        }
+                                    })
+                                    .setNegativeButton("No", null)
+                                    .show();
+                                    break;
+                            }
                         }
                     }
                 });
                 //adb.setNegativeButton("Cancel", null);
-                adb.setTitle("Select Option");
+                adb.setTitle(dateOfBirth.getName());
                 adb.show();
             }
         });
@@ -281,7 +301,7 @@ public class MainActivity extends AppCompatActivity {
          else if(requestCode == Constants.DELETE_MEMBER) {
              System.out.println("after delete activity");
              if(resultCode == RESULT_OK) {
-                 upcomingListAdapter.refreshData();
+                 refreshList();
              }
          }
 
@@ -326,8 +346,17 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         if(DataHolder.getInstance().refresh) {
-            upcomingListAdapter.refreshData();
             DataHolder.getInstance().refresh = false;
+            refreshList();
+        }
+    }
+
+    public void refreshList() {
+        upcomingListAdapter.refreshData();
+        EditText filter = findViewById(R.id.upcomingFiler);
+        String filterText = filter.getText().toString();
+        if(!filterText.equalsIgnoreCase("")) {
+            upcomingListAdapter.getFilter().filter(filterText);
         }
     }
 

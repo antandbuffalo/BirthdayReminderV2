@@ -24,6 +24,7 @@ import com.antandbuffalo.birthdayreminder.MainActivity;
 import com.antandbuffalo.birthdayreminder.R;
 import com.antandbuffalo.birthdayreminder.database.DateOfBirthDBHelper;
 import com.antandbuffalo.birthdayreminder.models.DateOfBirth;
+import com.antandbuffalo.birthdayreminder.models.UserPreference;
 import com.antandbuffalo.birthdayreminder.settings.Settings;
 import com.antandbuffalo.birthdayreminder.utilities.Constants;
 import com.antandbuffalo.birthdayreminder.utilities.DataHolder;
@@ -65,7 +66,7 @@ public class Backup extends AppCompatActivity {
             Log.d("FirebaseUser", FirebaseAuth.getInstance().getCurrentUser().getEmail());
             TextView textView = findViewById(R.id.accountName);
             textView.setText("Account: " + FirebaseAuth.getInstance().getCurrentUser().getEmail());
-            getServerBackupTime();
+            getFirebaseLastUpdatedTime(FirebaseFirestore.getInstance(), FirebaseAuth.getInstance().getCurrentUser(), "updateUI");
         }
         else {
             Log.d("FirebaseError", "User Not found. Please login first");
@@ -78,8 +79,6 @@ public class Backup extends AppCompatActivity {
             public void onClick(View view) {
                 if(getStoragePermission(Constants.MY_PERMISSIONS_WRITE_EXTERNAL_STORAGE)) {
                     updateLocalBackup();
-                    // backupToFirebase(FirebaseFirestore.getInstance(), firebaseUser);
-                    // File file = Util.getLocalFile("dob.txt");
                 }
                 else {
                     Toast.makeText(DataHolder.getInstance().getAppContext(), "Please provide permission to access local storage", Toast.LENGTH_SHORT).show();
@@ -97,7 +96,8 @@ public class Backup extends AppCompatActivity {
         restoreNow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                restoreFromFirebase(FirebaseFirestore.getInstance(), FirebaseAuth.getInstance().getCurrentUser());
+                restoreDateOfBirthsFromFirebase(FirebaseFirestore.getInstance(), FirebaseAuth.getInstance().getCurrentUser());
+                restoreUserPreferenceFromFirebase(FirebaseFirestore.getInstance(), FirebaseAuth.getInstance().getCurrentUser());
             }
         });
 
@@ -134,13 +134,13 @@ public class Backup extends AppCompatActivity {
                 adb.show();
             }
         });
-
-        getLocalBackupTime();
-        //restoreFromFirebase(FirebaseFirestore.getInstance(), firebaseUser);
+        updateBackupTimeUI();
     }
 
     public void updateLocalBackup() {
-        Util.writeToFile(this);
+        File file = Util.writeToFile(this);
+        Storage.setDbBackupTime(new Date(file.lastModified()));
+        updateBackupTimeUI();
     }
 
     @Override
@@ -257,6 +257,7 @@ public class Backup extends AppCompatActivity {
             System.out.println(user.getUid());
             TextView accountName = findViewById(R.id.accountName);
             accountName.setText("Account: " + user.getEmail());
+            updateProfileToFirebase(FirebaseFirestore.getInstance(), FirebaseAuth.getInstance().getCurrentUser());
         } else {
             Toast.makeText(DataHolder.getInstance().getAppContext(), "Not able to sign in", Toast.LENGTH_SHORT).show();
         }
@@ -289,16 +290,18 @@ public class Backup extends AppCompatActivity {
             });
     }
 
-    public void backupToFirebase(FirebaseFirestore db, FirebaseUser firebaseUser) {
+    public void backupDateOfBirthsToFirebase(FirebaseFirestore firebaseFirestore, FirebaseUser firebaseUser) {
         // Create a new user with a first and last name
         Map<String, DateOfBirth> dateOfBirthMap = Util.getDateOfBirthMap();
-        DocumentReference documentReference = db.collection(firebaseUser.getUid()).document("friends");
+        DocumentReference documentReference = firebaseFirestore.collection(firebaseUser.getUid()).document("friends");
         documentReference.set(dateOfBirthMap).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
                 Log.d("Success", "data updated successfully");
-                updateLastUpdatedTime(db, firebaseUser);
-                Toast.makeText(DataHolder.getInstance().getAppContext(), "Successfully updated to server", Toast.LENGTH_SHORT).show();
+                //updateLastUpdatedTime(db, firebaseUser);
+                Storage.setServerBackupTime(Util.getDateFromString(Storage.getDbBackupTime(), Constants.backupDateFormatToStore));
+                backupUserPreferenceToFirebase(firebaseFirestore, firebaseUser);
+                Toast.makeText(DataHolder.getInstance().getAppContext(), "Birthday informations uploaded successfully", Toast.LENGTH_SHORT).show();
             }
         })
         .addOnFailureListener(new OnFailureListener() {
@@ -310,7 +313,49 @@ public class Backup extends AppCompatActivity {
         });
     }
 
-    public void restoreFromFirebase(FirebaseFirestore firebaseFirestore, FirebaseUser firebaseUser) {
+    public void backupUserPreferenceToFirebase(FirebaseFirestore db, FirebaseUser firebaseUser) {
+        DocumentReference documentReference = db.collection(firebaseUser.getUid()).document("settings");
+        documentReference.set(getUserPreference()).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Log.d("Success", "Preferences updated successfully");
+                Toast.makeText(DataHolder.getInstance().getAppContext(), "Your preferences uploaded successfully", Toast.LENGTH_SHORT).show();
+                updateBackupTimeUI();
+            }
+        })
+        .addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.e("F", e.getLocalizedMessage());
+                Toast.makeText(DataHolder.getInstance().getAppContext(), "Error while updating to server", Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    public void updateProfileToFirebase(FirebaseFirestore db, FirebaseUser firebaseUser) {
+        // Create a new user with a first and last name
+        Map<String, String> userProfile = new HashMap<>();
+        userProfile.put("uid", firebaseUser.getUid());
+        userProfile.put("displayName", firebaseUser.getDisplayName());
+        userProfile.put("email", firebaseUser.getEmail());
+        userProfile.put("providerId", firebaseUser.getProviderId());
+
+        DocumentReference documentReference = db.collection(firebaseUser.getUid()).document("profile");
+        documentReference.set(userProfile).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Log.d("Success", "Profile updated");
+            }
+        })
+        .addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.e("Profile", "Error updating profile: " + e.getLocalizedMessage());
+            }
+        });
+    }
+
+    public void restoreDateOfBirthsFromFirebase(FirebaseFirestore firebaseFirestore, FirebaseUser firebaseUser) {
         DocumentReference documentReference = firebaseFirestore.collection(firebaseUser.getUid()).document("friends");
         documentReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -320,10 +365,33 @@ public class Backup extends AppCompatActivity {
                     if (document.exists()) {
                         Log.d("FirebaseGetData", "DocumentSnapshot data: " + document.getData());
                         Util.inserDateOfBirthFromServer(document.getData());
-                        Storage.setDbBackupTime(Util.getDateFromString(Storage.getServerBackupTime(), Constants.backupDateFormatToStore));
-                        getLocalBackupTime();
+//                        Storage.setDbBackupTime(Util.getDateFromString(Storage.getServerBackupTime(), Constants.backupDateFormatToStore));
+//                        updateBackupTimeUI();
                         DataHolder.getInstance().refresh = true;
-                        Toast.makeText(Backup.this, "Successfully Restored from server", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(Backup.this, "Successfully Restored Birthday Informations from server", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Log.d("FirebaseGetData", "No such document");
+                    }
+                } else {
+                    Log.d("FirebaseGetData", "get failed with ", task.getException());
+                }
+            }
+        });
+    }
+
+    public void restoreUserPreferenceFromFirebase(FirebaseFirestore firebaseFirestore, FirebaseUser firebaseUser) {
+        DocumentReference documentReference = firebaseFirestore.collection(firebaseUser.getUid()).document("settings");
+        documentReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        Log.d("FirebaseGetData", "DocumentSnapshot data: " + document.getData());
+                        Storage.updateUserPreference(Storage.createUserPreferenceFromServer(document.getData()));
+                        updateBackupTimeUI();
+                        DataHolder.getInstance().refreshSettings = true;
+                        Toast.makeText(Backup.this, "Successfully Restored your preferences from server", Toast.LENGTH_SHORT).show();
                     } else {
                         Log.d("FirebaseGetData", "No such document");
                     }
@@ -367,8 +435,7 @@ public class Backup extends AppCompatActivity {
                     Storage.putString(Util.getSharedPreference(), Constants.serverBackupTime, formattedDate);
                     switch (caller) {
                         case "updateUI": {
-                            TextView cloudBackup = findViewById(R.id.cloudBackup);
-                            cloudBackup.setText("Server: " + formattedDate);
+                            updateBackupTimeUI();
                             break;
                         }
                         case "saveLocally": {
@@ -401,7 +468,7 @@ public class Backup extends AppCompatActivity {
             .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    backupToFirebase(FirebaseFirestore.getInstance(), FirebaseAuth.getInstance().getCurrentUser());
+                    backupDateOfBirthsToFirebase(FirebaseFirestore.getInstance(), FirebaseAuth.getInstance().getCurrentUser());
                 }
             })
             .setNegativeButton("No", null)
@@ -423,11 +490,11 @@ public class Backup extends AppCompatActivity {
         Date serverBackupDate = Util.getDateFromString(Storage.getServerBackupTime(), Constants.backupDateFormatToStore);
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         if(serverBackupDate == null) {
-            backupToFirebase(FirebaseFirestore.getInstance(), firebaseUser);
+            backupDateOfBirthsToFirebase(FirebaseFirestore.getInstance(), firebaseUser);
             return;
         }
         if(dbBackupDate == null) {
-            restoreFromFirebase(FirebaseFirestore.getInstance(), firebaseUser);
+            restoreDateOfBirthsFromFirebase(FirebaseFirestore.getInstance(), firebaseUser);
             return;
         }
         if(dbBackupDate.getTime() == serverBackupDate.getTime()) {
@@ -435,23 +502,32 @@ public class Backup extends AppCompatActivity {
         }
         if(dbBackupDate.getTime() > serverBackupDate.getTime()) {
             // Local data is latest. Upload to server
-            backupToFirebase(FirebaseFirestore.getInstance(), firebaseUser);
+            backupDateOfBirthsToFirebase(FirebaseFirestore.getInstance(), firebaseUser);
         }
         else {
             // Server data is latest. Download
-            restoreFromFirebase(FirebaseFirestore.getInstance(), firebaseUser);
+            restoreDateOfBirthsFromFirebase(FirebaseFirestore.getInstance(), firebaseUser);
         }
     }
 
-    public void getServerBackupTime() {
-        TextView cloudBackup = findViewById(R.id.cloudBackup);
-        cloudBackup.setText("Server: " + Storage.getServerBackupTime());
-        getFirebaseLastUpdatedTime(FirebaseFirestore.getInstance(), FirebaseAuth.getInstance().getCurrentUser(), "updateUI");
-    }
-
-    public void getLocalBackupTime() {
+    public void updateBackupTimeUI() {
         TextView localBackup = findViewById(R.id.localBackup);
         localBackup.setText("Local: " + Storage.getDbBackupTime());
+
+        TextView serverBackup = findViewById(R.id.cloudBackup);
+        serverBackup.setText("Server: " + Storage.getServerBackupTime());
+    }
+
+    public UserPreference getUserPreference() {
+        UserPreference userPreference = new UserPreference();
+        userPreference.notificationHours = Storage.getNotificationHours(Util.getSharedPreference());
+        userPreference.notificationMinutes = Storage.getNotificationMinutes(Util.getSharedPreference());
+        userPreference.numberOfNotifications = Storage.getNotificationPerDay(Util.getSharedPreference());
+        userPreference.preNotificationDays = Storage.getPreNotificationDays(Util.getSharedPreference());
+        userPreference.serverBackupTime = Util.getDateFromString(Storage.getServerBackupTime(), Constants.backupDateFormatToStore);
+        userPreference.wishTemplate = Storage.getWishTemplate(Util.getSharedPreference());
+        userPreference.localBackupTime = Util.getDateFromString(Storage.getDbBackupTime(), Constants.backupDateFormatToStore);
+        return userPreference;
     }
 
     // download prgress link

@@ -3,7 +3,11 @@ package com.antandbuffalo.birthdayreminder.utilities;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.antandbuffalo.birthdayreminder.models.UserPreference;
+import com.google.firebase.Timestamp;
+
 import java.util.Date;
+import java.util.Map;
 
 /**
  * Created by i677567 on 5/10/15.
@@ -54,11 +58,11 @@ public class Storage {
         return Storage.putString(preferences, key, dateTime);
     }
 
-    public static Integer getNotificationPerDay(SharedPreferences preferences, String key) {
-        return Storage.getInt(preferences, key, 1);
+    public static Integer getNotificationPerDay(SharedPreferences preferences) {
+        return Storage.getInt(preferences, Constants.PREFERENCE_NOTIFINCATION_FREQUENCY, 1);
     }
-    public static Boolean setNotificationPerDay(SharedPreferences preferences, String key, Integer days) {
-        return Storage.putInt(preferences, key, days);
+    public static Boolean setNotificationPerDay(SharedPreferences preferences, Integer days) {
+        return Storage.putInt(preferences, Constants.PREFERENCE_NOTIFINCATION_FREQUENCY, days);
     }
 
     public static Integer getNotificationHours(SharedPreferences preferences) {
@@ -68,11 +72,18 @@ public class Storage {
         return Storage.getInt(preferences, Constants.PREFERENCE_NOTIFICATION_TIME_MINUTES);
     }
 
-    public static Integer getPreNotificationDays(SharedPreferences preferences, String key) {
-        return Storage.getInt(preferences, key);
+    public static Boolean setNotificationHours(SharedPreferences preferences, Integer value) {
+        return Storage.putInt(preferences, Constants.PREFERENCE_NOTIFICATION_TIME_HOURS, value);
     }
-    public static Boolean setPreNotificationDays(SharedPreferences preferences, String key, Integer days) {
-        return Storage.putInt(preferences, key, days);
+    public static Boolean setNotificationMinutes(SharedPreferences preferences, Integer value) {
+        return Storage.putInt(preferences, Constants.PREFERENCE_NOTIFICATION_TIME_MINUTES, value);
+    }
+
+    public static Integer getPreNotificationDays(SharedPreferences preferences) {
+        return Storage.getInt(preferences, Constants.PREFERENCE_PRE_NOTIFICATION_DAYS);
+    }
+    public static Boolean setPreNotificationDays(SharedPreferences preferences, Integer days) {
+        return Storage.putInt(preferences, Constants.PREFERENCE_PRE_NOTIFICATION_DAYS, days);
     }
 
     public static Boolean putString(SharedPreferences preferences, String key, String value) {
@@ -99,6 +110,15 @@ public class Storage {
         return preferences.getInt(key, defaultValue);
     }
 
+    public static Boolean setWishTemplate(SharedPreferences sharedPreferences, String wishTemplate) {
+        return Storage.putString(sharedPreferences, Constants.PREFERENCE_WISH_TEMPLATE, wishTemplate);
+    }
+
+    public static String getWishTemplate(SharedPreferences sharedPreferences) {
+        return Storage.getString(sharedPreferences, Constants.PREFERENCE_WISH_TEMPLATE, Constants.WISH_TEMPLATE_DEFAULT);
+    }
+
+
     public static String getNotificationTime(SharedPreferences sharedPreferences, Context context) {
         int hours = Storage.getNotificationHours(sharedPreferences);
         int minutes = Storage.getNotificationMinutes(sharedPreferences);
@@ -116,5 +136,38 @@ public class Storage {
         }
     }
 
+    public static void updateUserPreference(UserPreference userPreference) {
+        Storage.setWishTemplate(Util.getSharedPreference(), userPreference.wishTemplate);
+        Storage.setPreNotificationDays(Util.getSharedPreference(), userPreference.preNotificationDays);
+        Storage.setNotificationPerDay(Util.getSharedPreference(), userPreference.numberOfNotifications);
+        Storage.setNotificationHours(Util.getSharedPreference(), userPreference.notificationHours);
+        Storage.setNotificationMinutes(Util.getSharedPreference(), userPreference.notificationMinutes);
+        Storage.setDbBackupTime(userPreference.localBackupTime);
+        Storage.setServerBackupTime(userPreference.serverBackupTime);
+    }
+
+    public static UserPreference createUserPreferenceFromServer(Map<String, Object> genericPreference) {
+        UserPreference userPreference = new UserPreference();
+        userPreference.wishTemplate = (String) genericPreference.get("wishTemplate");
+        if(genericPreference.get("preNotificationDays") != null) {
+            userPreference.preNotificationDays = ((Long) genericPreference.get("preNotificationDays")).intValue();
+        }
+        if(genericPreference.get("numberOfNotifications") != null) {
+            userPreference.numberOfNotifications = ((Long) genericPreference.get("numberOfNotifications")).intValue();
+        }
+        if(genericPreference.get("notificationHours") != null) {
+            userPreference.notificationHours = ((Long) genericPreference.get("notificationHours")).intValue();
+        }
+        if(genericPreference.get("notificationMinutes") != null) {
+            userPreference.notificationMinutes = ((Long) genericPreference.get("notificationMinutes")).intValue();
+        }
+
+        Timestamp local = (Timestamp) genericPreference.get("localBackupTime");
+        userPreference.localBackupTime = local.toDate();
+
+        Timestamp server = (Timestamp) genericPreference.get("serverBackupTime");
+        userPreference.serverBackupTime = server.toDate();
+        return userPreference;
+    }
 
 }

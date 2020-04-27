@@ -29,9 +29,12 @@ import com.antandbuffalo.birthdayreminder.R;
 import com.antandbuffalo.birthdayreminder.database.DBHelper;
 import com.antandbuffalo.birthdayreminder.models.DateOfBirth;
 import com.antandbuffalo.birthdayreminder.utilities.Constants;
+import com.antandbuffalo.birthdayreminder.utilities.Storage;
 import com.antandbuffalo.birthdayreminder.utilities.Util;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+
+import java.util.Date;
 
 public class Update extends AppCompatActivity {
     EditText name;
@@ -281,6 +284,7 @@ public class Update extends AppCompatActivity {
             } else {
                 Log.i("after update", currentDOB.getName());
                 updateViewModel.update();
+                Storage.setDbBackupTime(new Date());
                 String status = Constants.NOTIFICATION_UPDATE_MEMBER_SUCCESS + ". You will get notified at 12:00am and 12:00pm on " + Util.getStringFromDate(currentDOB.getDobDate(), "dd MMM") + " every year";
                 status = Constants.NOTIFICATION_UPDATE_MEMBER_SUCCESS + ". " + Util.getNotificationMessageWithTime(getApplicationContext(), updateViewModel.dateOfBirth.getDobDate());
                 Toast toast = Toast.makeText(getApplicationContext(), status, Toast.LENGTH_LONG);
@@ -302,6 +306,7 @@ public class Update extends AppCompatActivity {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     updateViewModel.delete(currentDOB.getDobId());
+                    Storage.setDbBackupTime(new Date());
                     currentDOB = null;
                     Toast toast = Toast.makeText(getApplicationContext(), Constants.NOTIFICATION_DELETE_MEMBER_SUCCESS, Toast.LENGTH_SHORT);
                     toast.show();
