@@ -110,7 +110,7 @@
         android:layout_marginTop="10dp"
         android:text="Select Frequency"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView9" />
+        app:layout_constraintTop_toBottomOf="@+id/syncFrequency" />
 
     <TextView
         android:id="@+id/accountName"
@@ -133,7 +133,7 @@
         app:layout_constraintTop_toBottomOf="@+id/selectAccount" />
 
     <TextView
-        android:id="@+id/textView9"
+        android:id="@+id/syncFrequency"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"

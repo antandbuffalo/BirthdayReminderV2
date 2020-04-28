@@ -42,4 +42,6 @@
 
     <color name="edit_text_bg">#F4F3F3</color>
 
+    <color name="dark_gray">#FF969696</color>
+
 </resources>

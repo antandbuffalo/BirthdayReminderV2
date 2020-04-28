@@ -14,6 +14,15 @@ import java.util.Map;
  */
 public class Storage {
 
+    public static String getAutoSyncFrequency() {
+        return Storage.getString(Util.getSharedPreference(), "autoSyncFrequency", AutoSyncOptions.getInstance().getValues().get(0).get("key"));
+    }
+
+    public static void setAutoSyncFrequency(String frequency) {
+        Storage.putString(Util.getSharedPreference(), "autoSyncFrequency", frequency.toLowerCase());
+    }
+
+
     public static String getServerBackupTime() {
         return Storage.getString(Util.getSharedPreference(), Constants.serverBackupTime);
     }
@@ -144,6 +153,18 @@ public class Storage {
         Storage.setNotificationMinutes(Util.getSharedPreference(), userPreference.notificationMinutes);
         Storage.setDbBackupTime(userPreference.localBackupTime);
         Storage.setServerBackupTime(userPreference.serverBackupTime);
+    }
+
+    public static UserPreference getUserPreference() {
+        UserPreference userPreference = new UserPreference();
+        userPreference.notificationHours = Storage.getNotificationHours(Util.getSharedPreference());
+        userPreference.notificationMinutes = Storage.getNotificationMinutes(Util.getSharedPreference());
+        userPreference.numberOfNotifications = Storage.getNotificationPerDay(Util.getSharedPreference());
+        userPreference.preNotificationDays = Storage.getPreNotificationDays(Util.getSharedPreference());
+        userPreference.serverBackupTime = Util.getDateFromString(Storage.getServerBackupTime(), Constants.backupDateFormatToStore);
+        userPreference.wishTemplate = Storage.getWishTemplate(Util.getSharedPreference());
+        userPreference.localBackupTime = Util.getDateFromString(Storage.getDbBackupTime(), Constants.backupDateFormatToStore);
+        return userPreference;
     }
 
     public static UserPreference createUserPreferenceFromServer(Map<String, Object> genericPreference) {

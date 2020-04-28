@@ -20,12 +20,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 
-import com.antandbuffalo.birthdayreminder.MainActivity;
 import com.antandbuffalo.birthdayreminder.R;
-import com.antandbuffalo.birthdayreminder.database.DateOfBirthDBHelper;
 import com.antandbuffalo.birthdayreminder.models.DateOfBirth;
-import com.antandbuffalo.birthdayreminder.models.UserPreference;
-import com.antandbuffalo.birthdayreminder.settings.Settings;
+import com.antandbuffalo.birthdayreminder.utilities.AutoSyncOptions;
 import com.antandbuffalo.birthdayreminder.utilities.Constants;
 import com.antandbuffalo.birthdayreminder.utilities.DataHolder;
 import com.antandbuffalo.birthdayreminder.utilities.Storage;
@@ -122,19 +119,41 @@ public class Backup extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 androidx.appcompat.app.AlertDialog.Builder adb = new androidx.appcompat.app.AlertDialog.Builder(Backup.this);
-                CharSequence items[] = new CharSequence[] {"None", "Daily", "Weekly", "Monthly"};
-                adb.setSingleChoiceItems(items, 0, new DialogInterface.OnClickListener() {
+                //CharSequence items[] = new CharSequence[] {AutoSyncFrequency.NONE.getFrequency(), AutoSyncFrequency.DAILY.name(), AutoSyncFrequency.WEEKLY.name(), AutoSyncFrequency.MONTHLY.name()};
+                List<Map<String, String>> optionsList = AutoSyncOptions.getInstance().getValues();
+                CharSequence options[] = new CharSequence[optionsList.size()];
+
+                Integer selectedItem = 0;
+                for(int i = 0; i < optionsList.size(); i++) {
+                    options[i] = optionsList.get(i).get("value");
+                    if(optionsList.get(i).get("value").equalsIgnoreCase(Storage.getAutoSyncFrequency())) {
+                        selectedItem = i;
+                    }
+                }
+                adb.setSingleChoiceItems(options, selectedItem, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         System.out.println("i = " + i);
+                        Storage.setAutoSyncFrequency(optionsList.get(i).get("key"));
+                        updateAutoFrequencyUI();
                     }
                 });
+                adb.setPositiveButton("OK", null);
                 adb.setNegativeButton("Cancel", null);
                 adb.setTitle("Select Sync Frequency");
-                adb.show();
+
+                androidx.appcompat.app.AlertDialog dialog = adb.create();
+                dialog.setOnShowListener( new DialogInterface.OnShowListener() {
+                    @Override
+                    public void onShow(DialogInterface arg0) {
+                        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(Backup.this, R.color.dark_gray));
+                    }
+                });
+                dialog.show();
             }
         });
         updateBackupTimeUI();
+        updateAutoFrequencyUI();
     }
 
     public void updateLocalBackup() {
@@ -315,7 +334,7 @@ public class Backup extends AppCompatActivity {
 
     public void backupUserPreferenceToFirebase(FirebaseFirestore db, FirebaseUser firebaseUser) {
         DocumentReference documentReference = db.collection(firebaseUser.getUid()).document("settings");
-        documentReference.set(getUserPreference()).addOnSuccessListener(new OnSuccessListener<Void>() {
+        documentReference.set(Storage.getUserPreference()).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
                 Log.d("Success", "Preferences updated successfully");
@@ -518,16 +537,14 @@ public class Backup extends AppCompatActivity {
         serverBackup.setText("Server: " + Storage.getServerBackupTime());
     }
 
-    public UserPreference getUserPreference() {
-        UserPreference userPreference = new UserPreference();
-        userPreference.notificationHours = Storage.getNotificationHours(Util.getSharedPreference());
-        userPreference.notificationMinutes = Storage.getNotificationMinutes(Util.getSharedPreference());
-        userPreference.numberOfNotifications = Storage.getNotificationPerDay(Util.getSharedPreference());
-        userPreference.preNotificationDays = Storage.getPreNotificationDays(Util.getSharedPreference());
-        userPreference.serverBackupTime = Util.getDateFromString(Storage.getServerBackupTime(), Constants.backupDateFormatToStore);
-        userPreference.wishTemplate = Storage.getWishTemplate(Util.getSharedPreference());
-        userPreference.localBackupTime = Util.getDateFromString(Storage.getDbBackupTime(), Constants.backupDateFormatToStore);
-        return userPreference;
+    public void updateAutoFrequencyUI() {
+        TextView localBackup = findViewById(R.id.syncFrequency);
+        for(int i=0; i < AutoSyncOptions.getInstance().getValues().size(); i++) {
+            if(AutoSyncOptions.getInstance().getValues().get(i).get("key").equalsIgnoreCase(Storage.getAutoSyncFrequency())) {
+                localBackup.setText("Auto Sync Frequency: " + AutoSyncOptions.getInstance().getValues().get(i).get("value"));
+                break;
+            }
+        }
     }
 
     // download prgress link
