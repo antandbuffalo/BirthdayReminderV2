@@ -25,6 +25,8 @@ import com.antandbuffalo.birthdayreminder.utilities.Util;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 
+import java.util.Date;
+
 public class NotificationFrequency extends AppCompatActivity {
     Intent intent;
     SharedPreferences settings;
@@ -66,8 +68,6 @@ public class NotificationFrequency extends AppCompatActivity {
         editor.commit();
         Toast toast = Toast.makeText(getApplicationContext(), "Number of Notifications per day updated Successfully", Toast.LENGTH_SHORT);
         toast.show();
-        setResult(RESULT_OK, intent);
-        finish();
     }
 
     @Override
@@ -82,6 +82,8 @@ public class NotificationFrequency extends AppCompatActivity {
         int id = item.getItemId();
         if (id == R.id.action_menu_done) {
             saveNotificationFrequency();
+            Storage.setDbBackupTime(new Date());
+            setResult(RESULT_OK, intent);
         }
         else if(id == android.R.id.home) {
             Log.d("BRJB", item.getItemId() + " : back");

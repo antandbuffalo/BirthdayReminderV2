@@ -14,6 +14,8 @@ import com.antandbuffalo.birthdayreminder.utilities.Constants;
 import com.antandbuffalo.birthdayreminder.utilities.Storage;
 import com.antandbuffalo.birthdayreminder.utilities.Util;
 
+import java.util.Date;
+
 public class WishTemplate extends AppCompatActivity {
 
     @Override
@@ -48,6 +50,7 @@ public class WishTemplate extends AppCompatActivity {
         int id = item.getItemId();
         if (id == R.id.action_menu_done) {
             save();
+            Storage.setDbBackupTime(new Date());
         }
         else if(id == android.R.id.home) {
 

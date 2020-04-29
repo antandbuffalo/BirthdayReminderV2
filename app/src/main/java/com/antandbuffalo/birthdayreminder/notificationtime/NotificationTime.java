@@ -25,6 +25,8 @@ import com.antandbuffalo.birthdayreminder.utilities.Util;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 
+import java.util.Date;
+
 public class NotificationTime extends AppCompatActivity {
     Intent intent;
     boolean is24HourFormat;
@@ -62,6 +64,8 @@ public class NotificationTime extends AppCompatActivity {
         int id = item.getItemId();
         if (id == R.id.action_menu_done) {
             saveNotificationTime();
+            Storage.setDbBackupTime(new Date());
+            setResult(RESULT_OK, intent);
         }
         else if(id == android.R.id.home) {
             Log.d("BRJB", item.getItemId() + " : back");
@@ -92,8 +96,6 @@ public class NotificationTime extends AppCompatActivity {
         editor.commit();
         Toast toast = Toast.makeText(getApplicationContext(), "Notification Time updated successfully", Toast.LENGTH_SHORT);
         toast.show();
-        setResult(RESULT_OK, intent);
-        finish();
     }
 
     public void populateInitialValues(TimePicker timePicker, int hours, int minutes, boolean is24Hours) {

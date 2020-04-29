@@ -21,6 +21,7 @@ import com.antandbuffalo.birthdayreminder.utilities.Storage;
 import com.antandbuffalo.birthdayreminder.utilities.Util;
 
 import java.lang.reflect.Field;
+import java.util.Date;
 
 public class PreNotification extends AppCompatActivity {
     Intent intent;
@@ -66,6 +67,7 @@ public class PreNotification extends AppCompatActivity {
 
             Toast toast = Toast.makeText(getApplicationContext(), Constants.NOTIFICATION_SUCCESSFULLY_UPDATED, Toast.LENGTH_SHORT);
             toast.show();
+            Storage.setDbBackupTime(new Date());
             setResult(RESULT_OK, intent);
         }
         else if(id == android.R.id.home) {
