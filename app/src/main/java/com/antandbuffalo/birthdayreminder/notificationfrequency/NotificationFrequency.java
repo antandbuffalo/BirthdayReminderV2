@@ -94,7 +94,7 @@ public class NotificationFrequency extends AppCompatActivity {
     }
 
     public void populateSpinnerFrequency(NumberPicker numberPicker) {
-        numberPicker.setValue(Storage.getNotificationFrequency(settings));
+        numberPicker.setValue(Storage.getNotificationFrequency());
     }
 
     public void loadAd() {

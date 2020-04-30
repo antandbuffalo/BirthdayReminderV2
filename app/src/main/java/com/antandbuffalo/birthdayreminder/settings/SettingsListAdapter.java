@@ -102,7 +102,7 @@ public class SettingsListAdapter extends BaseAdapter {
         currentValue.setText(option.getValue());
         switch (givenKey) {
             case Constants.SETTINGS_NOTIFICATION_TIME: {
-                currentValue.setText(Storage.getNotificationTime(Util.getSharedPreference(), parent.getContext()));
+                currentValue.setText(Storage.getNotificationTime(parent.getContext()));
                 break;
             }
             case Constants.SETTINGS_NOTIFICATION_FREQUENCY: {
@@ -126,7 +126,7 @@ public class SettingsListAdapter extends BaseAdapter {
     }
 
     public String getSelectedFrequency(Context context) {
-        Integer frequency = Storage.getNotificationFrequency(settingsPref);
+        Integer frequency = Storage.getNotificationFrequency();
         return frequency.toString();
     }
 

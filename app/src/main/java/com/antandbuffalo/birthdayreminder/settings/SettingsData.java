@@ -59,7 +59,7 @@ public class SettingsData {
         datum.setSubTitle("");
         datum.setIconLetter("N");
         datum.setSno(3);
-        datum.setValue(Storage.getNotificationFrequency(Util.getSharedPreference()) + "");
+        datum.setValue(Storage.getNotificationFrequency() + "");
         datum.setIconId(R.drawable.ic_timeline_primary_dark);
         data.add(datum);
 

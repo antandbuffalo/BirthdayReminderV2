@@ -28,10 +28,9 @@ public class BootCompleteReceiver extends BroadcastReceiver {
 
     public void setRepeatingAlarm(Context context) {
         DataHolder.getInstance().setAppContext(context);
-        SharedPreferences preference = Util.getSharedPreference();
-        Integer hours = Storage.getNotificationHours(preference);
-        Integer minutes = Storage.getNotificationMinutes(preference);
-        Integer frequency = Storage.getNotificationFrequency(preference);
+        Integer hours = Storage.getNotificationHours();
+        Integer minutes = Storage.getNotificationMinutes();
+        Integer frequency = Storage.getNotificationFrequency();
         Util.setRepeatingAlarm(context, am, hours, minutes, frequency);
     }
 }

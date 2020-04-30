@@ -1,6 +1,7 @@
 package com.antandbuffalo.birthdayreminder.backup;
 
 import android.Manifest;
+import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -407,7 +408,9 @@ public class Backup extends AppCompatActivity {
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
                         Log.d("FirebaseGetData", "DocumentSnapshot data: " + document.getData());
-                        Storage.updateUserPreference(Storage.createUserPreferenceFromServer(document.getData()));
+                        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+
+                        Storage.updateUserPreference(Storage.createUserPreferenceFromServer(document.getData()), alarmManager, getApplicationContext());
                         updateBackupTimeUI();
                         DataHolder.getInstance().refreshSettings = true;
                         Toast.makeText(Backup.this, "Successfully Restored your preferences from server", Toast.LENGTH_SHORT).show();
@@ -451,7 +454,7 @@ public class Backup extends AppCompatActivity {
 
                 if(serverTimestamp != null) {
                     String formattedDate = Util.getStringFromDate(serverTimestamp.toDate(), Constants.backupDateFormatToStore);
-                    Storage.putString(Util.getSharedPreference(), Constants.serverBackupTime, formattedDate);
+                    Storage.putString(Constants.serverBackupTime, formattedDate);
                     switch (caller) {
                         case "updateUI": {
                             updateBackupTimeUI();

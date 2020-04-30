@@ -367,7 +367,7 @@ public class MainActivity extends AppCompatActivity {
         int minute = Storage.getInt(settings, Constants.PREFERENCE_NOTIFICATION_TIME_MINUTES, 0);
 
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        int frequency = Storage.getNotificationFrequency(settings);
+        int frequency = Storage.getNotificationFrequency();
         Util.setRepeatingAlarm(this, alarmManager, hour, minute, frequency);
     }
 }

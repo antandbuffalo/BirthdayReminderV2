@@ -68,7 +68,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 
     public void showNewFeatureNotification(Context context) {
         SharedPreferences settings = Util.getSharedPreference();
-        Integer shown = Storage.getFeaturesNotificationStatus(settings, Constants.NEW_FEATURE_2_6_0_34);
+        Integer shown = Storage.getFeaturesNotificationStatus(Constants.NEW_FEATURE_2_6_0_34);
         if(shown > 0) {
             return;
         }
@@ -94,7 +94,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         int notificationId = 103;
         notificationManager.notify(notificationId, mBuilder.build());
 
-        Storage.setFeaturesNotificationStatus(settings, Constants.NEW_FEATURE_2_6_0_34, 1);
+        Storage.setFeaturesNotificationStatus(Constants.NEW_FEATURE_2_6_0_34, 1);
     }
 
     @Override

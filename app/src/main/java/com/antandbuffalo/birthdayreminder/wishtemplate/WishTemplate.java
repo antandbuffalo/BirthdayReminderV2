@@ -28,7 +28,7 @@ public class WishTemplate extends AppCompatActivity {
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_back_white);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        String currentTemplate = Storage.getWishTemplate(Util.getSharedPreference());
+        String currentTemplate = Storage.getWishTemplate();
 
         EditText wishTemplate = findViewById(R.id.wishTemplate);
         wishTemplate.setText(currentTemplate);
@@ -36,7 +36,7 @@ public class WishTemplate extends AppCompatActivity {
 
     public void save() {
         EditText wishTemplate = findViewById(R.id.wishTemplate);
-        Storage.setWishTemplate(Util.getSharedPreference(), wishTemplate.getText().toString());
+        Storage.setWishTemplate(wishTemplate.getText().toString());
     }
 
     @Override

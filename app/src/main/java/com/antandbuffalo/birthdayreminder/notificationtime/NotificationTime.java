@@ -87,7 +87,7 @@ public class NotificationTime extends AppCompatActivity {
             minute = picker.getCurrentMinute();
         }
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        int frequency = Storage.getNotificationFrequency(Util.getSharedPreference());
+        int frequency = Storage.getNotificationFrequency();
         Util.setRepeatingAlarm(getApplicationContext(), alarmManager, hour, minute, frequency);
 
         SharedPreferences.Editor editor = Util.getSharedPreference().edit();

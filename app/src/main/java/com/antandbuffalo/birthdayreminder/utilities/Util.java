@@ -659,8 +659,8 @@ public class Util {
         boolean is24HourFormat = android.text.format.DateFormat.is24HourFormat(context);
         String time = "";
         Integer hours, minutes;
-        hours = Storage.getNotificationHours(Util.getSharedPreference());
-        minutes = Storage.getNotificationMinutes(Util.getSharedPreference());
+        hours = Storage.getNotificationHours();
+        minutes = Storage.getNotificationMinutes();
         if(is24HourFormat) {
             time = Util.getTwoDigitsString(hours)
                     + ":"
