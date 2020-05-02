@@ -5,9 +5,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 
+import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -19,6 +22,7 @@ import android.widget.Toast;
 import com.antandbuffalo.birthdayreminder.R;
 import com.antandbuffalo.birthdayreminder.backup.Backup;
 import com.antandbuffalo.birthdayreminder.utilities.AutoSyncOptions;
+import com.antandbuffalo.birthdayreminder.utilities.AutoSyncService;
 import com.antandbuffalo.birthdayreminder.utilities.Constants;
 import com.antandbuffalo.birthdayreminder.utilities.DataHolder;
 import com.antandbuffalo.birthdayreminder.utilities.Storage;
@@ -123,6 +127,10 @@ public class AccountSetup extends AppCompatActivity {
             TextView accountName = findViewById(R.id.accountName);
             accountName.setText("Account: " + user.getEmail());
             updateProfileToFirebase(FirebaseFirestore.getInstance(), FirebaseAuth.getInstance().getCurrentUser());
+            AlarmManager alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
+            ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+            AutoSyncService autoSyncService = new AutoSyncService(alarmManager, AccountSetup.this, connectivityManager);
+            autoSyncService.syncNow();
         } else {
             Toast.makeText(DataHolder.getInstance().getAppContext(), "Not able to sign in", Toast.LENGTH_SHORT).show();
         }
