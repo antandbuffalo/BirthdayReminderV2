@@ -8,10 +8,10 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.net.ConnectivityManager;
 
 import androidx.core.app.NotificationCompat;
+import androidx.core.content.ContextCompat;
 
 import com.antandbuffalo.birthdayreminder.MainActivity;
 import com.antandbuffalo.birthdayreminder.R;
@@ -62,7 +62,8 @@ public class AlarmReceiver extends BroadcastReceiver {
                 .setSmallIcon(R.drawable.ic_notification)
                 .setContentTitle(from)
                 .setContentText(message);
-        mBuilder.setColor(Color.argb(255, 121, 85, 72));
+        //mBuilder.setColor(R.color.colorPrimary);
+        mBuilder.setColor(ContextCompat.getColor(context, R.color.colorPrimaryDark));
         mBuilder.setAutoCancel(true);
 
         mBuilder.setContentIntent(contentIntent);
@@ -91,7 +92,8 @@ public class AlarmReceiver extends BroadcastReceiver {
                 .setSmallIcon(R.drawable.ic_notification)
                 .setContentTitle(from)
                 .setContentText(message);
-        mBuilder.setColor(Color.argb(255, 121, 85, 72));
+        //mBuilder.setColor(Color.argb(255, 121, 85, 72));
+        mBuilder.setColor(ContextCompat.getColor(context, R.color.colorPrimaryDark));
         mBuilder.setAutoCancel(true);
 
         mBuilder.setContentIntent(contentIntent);
@@ -137,7 +139,8 @@ public class AlarmReceiver extends BroadcastReceiver {
                 .setSmallIcon(R.drawable.ic_notification)
                 .setContentTitle(from)
                 .setContentText(message);
-        mBuilder.setColor(Color.argb(255, 121, 85, 72));
+        //mBuilder.setColor(Color.argb(255, 121, 85, 72));
+        mBuilder.setColor(ContextCompat.getColor(context, R.color.colorPrimaryDark));
         mBuilder.setAutoCancel(true);
 
         mBuilder.setContentIntent(contentIntent);
