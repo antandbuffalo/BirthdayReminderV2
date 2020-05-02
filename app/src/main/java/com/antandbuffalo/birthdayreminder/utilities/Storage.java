@@ -18,6 +18,15 @@ import static com.firebase.ui.auth.AuthUI.getApplicationContext;
  */
 public class Storage {
 
+    public static String getAutoSyncDate() {
+        return Storage.getString("autoSyncDate", AutoSyncOptions.getInstance().getValues().get(0).get("key"));
+    }
+
+    public static void setAutoSyncDate(Date date) {
+        String value = Util.getStringFromDate(date, "dd/MM/yyyy");
+        Storage.putString("autoSyncDate", value);
+    }
+
     public static String getAutoSyncFrequency() {
         return Storage.getString("autoSyncFrequency", AutoSyncOptions.getInstance().getValues().get(0).get("key"));
     }
@@ -25,7 +34,6 @@ public class Storage {
     public static void setAutoSyncFrequency(String frequency) {
         Storage.putString("autoSyncFrequency", frequency.toLowerCase());
     }
-
 
     public static String getServerBackupTime() {
         return Storage.getString(Constants.serverBackupTime);
@@ -200,10 +208,14 @@ public class Storage {
         }
 
         Timestamp local = (Timestamp) genericPreference.get("localBackupTime");
-        userPreference.localBackupTime = local.toDate();
+        if(local != null) {
+            userPreference.localBackupTime = local.toDate();
+        }
 
         Timestamp server = (Timestamp) genericPreference.get("serverBackupTime");
-        userPreference.serverBackupTime = server.toDate();
+        if(server != null) {
+            userPreference.serverBackupTime = server.toDate();
+        }
         return userPreference;
     }
 

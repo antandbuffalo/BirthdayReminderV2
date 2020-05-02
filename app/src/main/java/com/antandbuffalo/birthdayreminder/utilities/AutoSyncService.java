@@ -1,13 +1,14 @@
 package com.antandbuffalo.birthdayreminder.utilities;
 
+import android.app.AlarmManager;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
 import com.antandbuffalo.birthdayreminder.models.DateOfBirth;
+import com.antandbuffalo.birthdayreminder.models.UserPreference;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -22,16 +23,40 @@ import java.util.Date;
 import java.util.Map;
 
 public class AutoSyncService {
-    public void syncNow(ConnectivityManager connectivityManager) {
-        // ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        // pass this from alarm manager
-        if(connectivityManager.getAllNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnected()) {
+    private UserPreference userPreference;
+    private AlarmManager alarmManager;
+    private Context context;
+    private ConnectivityManager connectivityManager;
 
+    public AutoSyncService(AlarmManager alarmManager, Context context, ConnectivityManager connectivityManager) {
+        this.alarmManager = alarmManager;
+        this.context = context;
+        this.connectivityManager = connectivityManager;
+    }
+
+    public void syncNow() {
+        if(connectivityManager.getAllNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnected()) {
+            if(!isSynced()) {
+                getUserPreferenceFromFirebase();
+            }
+            else {
+                Log.d("AutoSync", "Already synced today: " + Util.getStringFromDate(new Date()));
+            }
         }
         else {
             Log.d("AutoSync", "No internet connection");
         }
     }
+
+    public Boolean isSynced() {
+        String today = Util.getStringFromDate(new Date(), "dd/MM/yyyy");
+        String syncDate = Storage.getAutoSyncDate();
+        if(today.equalsIgnoreCase(syncDate)) {
+            return true;
+        }
+        return false;
+    }
+
     public void restoreFromFirebase() {
         restoreDateOfBirthsFromFirebase();
     }
@@ -65,7 +90,7 @@ public class AutoSyncService {
         });
     }
 
-    public void restoreUserPreferenceFromFirebase() {
+    public void getUserPreferenceFromFirebase() {
         FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         if(firebaseUser == null) {
@@ -78,7 +103,11 @@ public class AutoSyncService {
                 if (task.isSuccessful()) {
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
-                        //Storage.updateUserPreference(Storage.createUserPreferenceFromServer(document.getData()));
+                        userPreference = Storage.createUserPreferenceFromServer(document.getData());
+                        if(userPreference.serverBackupTime != null) {
+                            Storage.setServerBackupTime(userPreference.serverBackupTime);
+                        }
+                        compareBackupTimes();
                     } else {
                         Log.d("FirebaseGetData", "No such document");
                     }
@@ -133,25 +162,30 @@ public class AutoSyncService {
     public void compareBackupTimes() {
         Date dbBackupDate = Util.getDateFromString(Storage.getDbBackupTime(), Constants.backupDateFormatToStore);
         Date serverBackupDate = Util.getDateFromString(Storage.getServerBackupTime(), Constants.backupDateFormatToStore);
-        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        if(serverBackupDate == null && dbBackupDate == null) {
+            return;
+        }
+
         if(serverBackupDate == null) {
-            //backupDateOfBirthsToFirebase(FirebaseFirestore.getInstance(), firebaseUser);
+            backupDateOfBirthsToFirebase();
             return;
         }
         if(dbBackupDate == null) {
-//            restoreDateOfBirthsFromFirebase(FirebaseFirestore.getInstance(), firebaseUser);
+            restoreDateOfBirthsFromFirebase();
             return;
         }
         if(dbBackupDate.getTime() == serverBackupDate.getTime()) {
             return;
         }
-        if(dbBackupDate.getTime() > serverBackupDate.getTime()) {
-            // Local data is latest. Upload to server
-//            backupDateOfBirthsToFirebase(FirebaseFirestore.getInstance(), firebaseUser);
+        if(serverBackupDate.getTime() > dbBackupDate.getTime()) {
+            // server data is latest
+            restoreDateOfBirthsFromFirebase();
+            Storage.updateUserPreference(userPreference, alarmManager, context);
         }
         else {
-            // Server data is latest. Download
-//            restoreDateOfBirthsFromFirebase(FirebaseFirestore.getInstance(), firebaseUser);
+            // local data is latest
+            backupDateOfBirthsToFirebase();
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.antandbuffalo.birthdayreminder.receiver;
 
+import android.app.AlarmManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -8,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.net.ConnectivityManager;
 
 import androidx.core.app.NotificationCompat;
 
@@ -15,11 +17,13 @@ import com.antandbuffalo.birthdayreminder.MainActivity;
 import com.antandbuffalo.birthdayreminder.R;
 import com.antandbuffalo.birthdayreminder.database.DateOfBirthDBHelper;
 import com.antandbuffalo.birthdayreminder.models.DateOfBirth;
+import com.antandbuffalo.birthdayreminder.utilities.AutoSyncService;
 import com.antandbuffalo.birthdayreminder.utilities.Constants;
 import com.antandbuffalo.birthdayreminder.utilities.DataHolder;
 import com.antandbuffalo.birthdayreminder.utilities.Storage;
 import com.antandbuffalo.birthdayreminder.utilities.Util;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -141,6 +145,25 @@ public class AlarmReceiver extends BroadcastReceiver {
         notificationManager.notify(notificationId, mBuilder.build());
         // an Intent broadcast.
         //throw new UnsupportedOperationException("Not yet implemented");
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        autoSync(alarmManager, context, connectivityManager);
+    }
+
+    public void autoSync(AlarmManager alarmManager, Context context, ConnectivityManager connectivityManager) {
+        Calendar calendar = Util.getCalendar(new Date());
+        Integer dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+        Integer date = calendar.get(Calendar.DATE);
+        AutoSyncService autoSyncService = new AutoSyncService(alarmManager, context, connectivityManager);
+        if(Storage.getAutoSyncFrequency().equalsIgnoreCase("daily")) {
+            autoSyncService.syncNow();
+        }
+        else if(Storage.getAutoSyncFrequency().equalsIgnoreCase("weekly") && dayOfWeek == 1) {
+            autoSyncService.syncNow();
+        }
+        else if(Storage.getAutoSyncFrequency().equalsIgnoreCase("monthly") && date == 1) {
+            autoSyncService.syncNow();
+        }
     }
 
     public String setChannel(NotificationManager notificationManager) {
