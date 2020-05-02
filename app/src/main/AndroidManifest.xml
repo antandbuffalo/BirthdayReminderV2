@@ -9,29 +9,19 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".accountsetup.AccountSetup"
+            android:label="Account Setup"
+            android:theme="@style/AppTheme.NoActionBar" />
 
-        <receiver
-            android:name=".receiver.AlarmReceiver"
-            android:enabled="true"
-            android:exported="true" />
-
-        <receiver
-            android:name=".receiver.BootCompleteReceiver"
-            android:enabled="true"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-                <action android:name="android.intent.action.REBOOT" /> <!-- This is for MIUI -->
-            </intent-filter>
-        </receiver>
-
-        <activity android:name=".sharewish.ShareWish"
+        <activity
+            android:name=".sharewish.ShareWish"
             android:label="Share Wish"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".wishtemplate.WishTemplate"
             android:label="Wish Template"
             android:theme="@style/AppTheme.NoActionBar" />
+
         <activity
             android:name=".backup.Backup"
             android:theme="@style/AppTheme.NoActionBar" />
@@ -73,21 +63,34 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-7116389331562728~4210792343" />
+
+        <receiver
+            android:name=".receiver.AlarmReceiver"
+            android:enabled="true"
+            android:exported="true" />
+        <receiver
+            android:name=".receiver.BootCompleteReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.REBOOT" /> <!-- This is for MIUI -->
+            </intent-filter>
+        </receiver>
     </application>
-    <uses-permission android:name="android.permission.NETWORK" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.USE_CREDENTIALS" />
     <uses-permission android:name="android.permission.INTERNET" />
-
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+
+    <uses-permission android:name="android.permission.NETWORK" />
 
 </manifest>

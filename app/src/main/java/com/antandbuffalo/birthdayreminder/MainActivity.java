@@ -26,6 +26,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 
 import com.antandbuffalo.birthdayreminder.about.About;
+import com.antandbuffalo.birthdayreminder.accountsetup.AccountSetup;
 import com.antandbuffalo.birthdayreminder.addnew.AddNew;
 import com.antandbuffalo.birthdayreminder.database.DBHelper;
 import com.antandbuffalo.birthdayreminder.database.DateOfBirthDBHelper;
@@ -158,6 +159,16 @@ public class MainActivity extends AppCompatActivity {
 
         // startFirebaseAuth();
         setRepeatingAlarm();
+        launchAccountSetup();
+    }
+
+    public void launchAccountSetup() {
+        Storage.setFirstTimeLaunch(true);
+        if(Storage.isFirstTimeLaunch()) {
+            Intent intent = new Intent(MainActivity.this, AccountSetup.class);
+            startActivity(intent);
+            Storage.setFirstTimeLaunch(false);
+        }
     }
 
     public void startUpdate(int position) {

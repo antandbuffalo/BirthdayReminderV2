@@ -18,6 +18,16 @@ import static com.firebase.ui.auth.AuthUI.getApplicationContext;
  */
 public class Storage {
 
+    public static void setFirstTimeLaunch(Boolean flag) {
+        SharedPreferences.Editor editor = Util.getSharedPreference().edit();
+        editor.putBoolean("isFirstTimeLaunch", flag);
+        editor.commit();
+    }
+
+    public static Boolean isFirstTimeLaunch() {
+        return Util.getSharedPreference().getBoolean("isFirstTimeLaunch", true);
+    }
+
     public static String getAutoSyncDate() {
         return Storage.getString("autoSyncDate", AutoSyncOptions.getInstance().getValues().get(0).get("key"));
     }

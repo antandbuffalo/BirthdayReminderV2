@@ -63,7 +63,6 @@ public class AutoSyncService {
 
     public void backupToFirebase() {
         backupDateOfBirthsToFirebase();
-        backupUserPreferenceToFirebase();
     }
 
     public void restoreDateOfBirthsFromFirebase() {
@@ -80,6 +79,7 @@ public class AutoSyncService {
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
                         Util.inserDateOfBirthFromServer(document.getData());
+                        Storage.updateUserPreference(userPreference, alarmManager, context);
                     } else {
                         Log.d("FirebaseGetData", "No such document");
                     }
@@ -129,6 +129,8 @@ public class AutoSyncService {
         documentReference.set(dateOfBirthMap).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
+                Storage.setServerBackupTime(Util.getDateFromString(Storage.getDbBackupTime(), Constants.backupDateFormatToStore));
+                backupUserPreferenceToFirebase();
             }
         })
         .addOnFailureListener(new OnFailureListener() {
@@ -168,7 +170,7 @@ public class AutoSyncService {
         }
 
         if(serverBackupDate == null) {
-            backupDateOfBirthsToFirebase();
+            backupToFirebase();
             return;
         }
         if(dbBackupDate == null) {
@@ -181,11 +183,10 @@ public class AutoSyncService {
         if(serverBackupDate.getTime() > dbBackupDate.getTime()) {
             // server data is latest
             restoreDateOfBirthsFromFirebase();
-            Storage.updateUserPreference(userPreference, alarmManager, context);
         }
         else {
             // local data is latest
-            backupDateOfBirthsToFirebase();
+            backupToFirebase();
         }
     }
 }
