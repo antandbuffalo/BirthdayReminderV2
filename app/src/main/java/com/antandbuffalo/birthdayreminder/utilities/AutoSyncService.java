@@ -80,6 +80,7 @@ public class AutoSyncService {
                     if (document.exists()) {
                         Util.inserDateOfBirthFromServer(document.getData());
                         Storage.updateUserPreference(userPreference, alarmManager, context);
+                        Storage.setAutoSyncDate(new Date());
                     } else {
                         Log.d("FirebaseGetData", "No such document");
                     }
@@ -151,6 +152,7 @@ public class AutoSyncService {
         documentReference.set(Storage.getUserPreference()).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
+                Storage.setAutoSyncDate(new Date());
             }
         })
         .addOnFailureListener(new OnFailureListener() {

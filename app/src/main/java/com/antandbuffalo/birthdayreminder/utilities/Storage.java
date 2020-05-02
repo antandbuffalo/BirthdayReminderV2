@@ -18,9 +18,9 @@ import static com.firebase.ui.auth.AuthUI.getApplicationContext;
  */
 public class Storage {
 
-    public static void setFirstTimeLaunch(Boolean flag) {
+    public static void setFirstTimeLaunch() {
         SharedPreferences.Editor editor = Util.getSharedPreference().edit();
-        editor.putBoolean("isFirstTimeLaunch", flag);
+        editor.putBoolean("isFirstTimeLaunch", false);
         editor.commit();
     }
 

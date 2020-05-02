@@ -18,7 +18,7 @@
         app:popupTheme="@style/AppTheme.PopupOverlay" />
 
     <Button
-        android:id="@+id/frequency3"
+        android:id="@+id/frequency"
         style="@style/Widget.AppCompat.Button.Colored"
         android:layout_width="wrap_content"
         android:layout_height="48dp"
@@ -26,20 +26,20 @@
         android:layout_marginTop="20dp"
         android:text="Select Frequency"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/syncFrequency3" />
+        app:layout_constraintTop_toBottomOf="@+id/syncFrequency" />
 
     <TextView
-        android:id="@+id/syncFrequency3"
+        android:id="@+id/syncFrequency"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:layout_marginTop="30dp"
         android:text="Auto Sync Frequency:"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/selectAccount3" />
+        app:layout_constraintTop_toBottomOf="@+id/selectAccount" />
 
     <Button
-        android:id="@+id/selectAccount3"
+        android:id="@+id/selectAccount"
         style="@style/Widget.AppCompat.Button.Colored"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -47,10 +47,10 @@
         android:layout_marginTop="10dp"
         android:text="Select Account"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/accountName3" />
+        app:layout_constraintTop_toBottomOf="@+id/accountName" />
 
     <TextView
-        android:id="@+id/accountName3"
+        android:id="@+id/accountName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
@@ -79,5 +79,5 @@
         android:text="You can still setup your account later in settings. But we suggest you to setup now, so you don't forget"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/frequency3" />
+        app:layout_constraintTop_toBottomOf="@+id/frequency" />
 </androidx.constraintlayout.widget.ConstraintLayout>

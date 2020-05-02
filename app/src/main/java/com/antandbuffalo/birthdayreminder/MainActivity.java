@@ -148,14 +148,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable arg0) {}
         });
-        FirebaseUser firebaseUser = checkFirebaseUser();
-        if(firebaseUser != null) {
-            // addUserToFirebase(initFirebase(), firebaseUser);
-            getAllDocuments(initFirebase(), firebaseUser);
-        }
-        else {
-            Log.d("FirebaseError", "User Not found. Please login first");
-        }
+//        FirebaseUser firebaseUser = checkFirebaseUser();
+//        if(firebaseUser != null) {
+//            // addUserToFirebase(initFirebase(), firebaseUser);
+//            getAllDocuments(initFirebase(), firebaseUser);
+//        }
+//        else {
+//            Log.d("FirebaseError", "User Not found. Please login first");
+//        }
 
         // startFirebaseAuth();
         setRepeatingAlarm();
@@ -163,11 +163,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void launchAccountSetup() {
-        Storage.setFirstTimeLaunch(true);
         if(Storage.isFirstTimeLaunch()) {
             Intent intent = new Intent(MainActivity.this, AccountSetup.class);
             startActivity(intent);
-            Storage.setFirstTimeLaunch(false);
+            Storage.setFirstTimeLaunch();
         }
     }
 
