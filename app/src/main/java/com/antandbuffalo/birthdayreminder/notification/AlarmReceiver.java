@@ -1,4 +1,4 @@
-package com.antandbuffalo.birthdayreminder.receiver;
+package com.antandbuffalo.birthdayreminder.notification;
 
 import android.app.AlarmManager;
 import android.app.NotificationChannel;

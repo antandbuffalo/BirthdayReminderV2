@@ -71,11 +71,11 @@
             android:value="ca-app-pub-7116389331562728~4210792343" />
 
         <receiver
-            android:name=".receiver.AlarmReceiver"
+            android:name=".notification.AlarmReceiver"
             android:enabled="true"
             android:exported="true" />
         <receiver
-            android:name=".receiver.BootCompleteReceiver"
+            android:name=".notification.BootComplete"
             android:enabled="true"
             android:exported="true">
             <intent-filter>

@@ -1,4 +1,4 @@
-package com.antandbuffalo.birthdayreminder.receiver;
+package com.antandbuffalo.birthdayreminder.notification;
 
 import android.app.AlarmManager;
 import android.content.BroadcastReceiver;
@@ -10,8 +10,8 @@ import com.antandbuffalo.birthdayreminder.utilities.DataHolder;
 import com.antandbuffalo.birthdayreminder.utilities.Storage;
 import com.antandbuffalo.birthdayreminder.utilities.Util;
 
-public class BootCompleteReceiver extends BroadcastReceiver {
-    public BootCompleteReceiver() {
+public class BootComplete extends BroadcastReceiver {
+    public BootComplete() {
     }
     AlarmManager am;
 
