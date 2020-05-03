@@ -21,6 +21,9 @@ import android.widget.Toast;
 
 import com.antandbuffalo.birthdayreminder.R;
 import com.antandbuffalo.birthdayreminder.backup.Backup;
+import com.antandbuffalo.birthdayreminder.database.DBHelper;
+import com.antandbuffalo.birthdayreminder.database.DateOfBirthDBHelper;
+import com.antandbuffalo.birthdayreminder.models.UserPreference;
 import com.antandbuffalo.birthdayreminder.utilities.AutoSyncOptions;
 import com.antandbuffalo.birthdayreminder.utilities.AutoSyncService;
 import com.antandbuffalo.birthdayreminder.utilities.Constants;
@@ -28,11 +31,14 @@ import com.antandbuffalo.birthdayreminder.utilities.DataHolder;
 import com.antandbuffalo.birthdayreminder.utilities.Storage;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.Arrays;
@@ -41,6 +47,8 @@ import java.util.List;
 import java.util.Map;
 
 public class AccountSetup extends AppCompatActivity {
+
+    UserPreference userPreference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -127,10 +135,15 @@ public class AccountSetup extends AppCompatActivity {
             TextView accountName = findViewById(R.id.accountName);
             accountName.setText("Account: " + user.getEmail());
             updateProfileToFirebase(FirebaseFirestore.getInstance(), FirebaseAuth.getInstance().getCurrentUser());
-            AlarmManager alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
-            ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-            AutoSyncService autoSyncService = new AutoSyncService(alarmManager, AccountSetup.this, connectivityManager);
-            autoSyncService.syncNow();
+
+            getUserPreferenceFromFirebase();
+
+//            AlarmManager alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
+//            ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+//            AutoSyncService autoSyncService = new AutoSyncService(alarmManager, AccountSetup.this, connectivityManager);
+//            autoSyncService.syncNow();
+//            DataHolder.getInstance().refresh = true;
+
         } else {
             Toast.makeText(DataHolder.getInstance().getAppContext(), "Not able to sign in", Toast.LENGTH_SHORT).show();
         }
@@ -159,6 +172,53 @@ public class AccountSetup extends AppCompatActivity {
         });
     }
 
+    public void getUserPreferenceFromFirebase() {
+        FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
+        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        if(firebaseUser == null) {
+            return;
+        }
+        DocumentReference documentReference = firebaseFirestore.collection(firebaseUser.getUid()).document("settings");
+        documentReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        userPreference = Storage.createUserPreferenceFromServer(document.getData());
+                        backupOrRestore();
+                    } else {
+                        Log.d("FirebaseGetData", "No such document");
+                    }
+                } else {
+                    Log.d("FirebaseGetData", "get failed with ", task.getException());
+                }
+            }
+        });
+    }
+
+    public void backupOrRestore() {
+        AlarmManager alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        AutoSyncService autoSyncService = new AutoSyncService(alarmManager, AccountSetup.this, connectivityManager);
+        autoSyncService.userPreference = userPreference;
+
+        if(userPreference.serverBackupTime == null) {
+            // the server data is null. not backed up till now
+            if(DateOfBirthDBHelper.selectAll().size() == 0) {
+                // first time install and local db is empty. just return
+                return;
+            }
+            // local db is not empty. backup to server
+            autoSyncService.backupDateOfBirthsToFirebase();
+        }
+        else {
+            // server backup is available. so restore
+            autoSyncService.restoreDateOfBirthsFromFirebase();
+            DataHolder.getInstance().refresh = true;
+        }
+    }
+
     public void updateAutoFrequencyUI() {
         TextView localBackup = findViewById(R.id.syncFrequency);
         for(int i=0; i < AutoSyncOptions.getInstance().getValues().size(); i++) {
@@ -182,3 +242,5 @@ public class AccountSetup extends AppCompatActivity {
                 Constants.firebaseSignInCode);
     }
 }
+
+// notify parent after sync to refresh screen

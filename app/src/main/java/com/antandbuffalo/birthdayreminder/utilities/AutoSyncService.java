@@ -23,7 +23,7 @@ import java.util.Date;
 import java.util.Map;
 
 public class AutoSyncService {
-    private UserPreference userPreference;
+    public UserPreference userPreference;
     private AlarmManager alarmManager;
     private Context context;
     private ConnectivityManager connectivityManager;

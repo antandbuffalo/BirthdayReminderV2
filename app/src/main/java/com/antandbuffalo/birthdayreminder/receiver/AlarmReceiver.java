@@ -110,7 +110,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         // Need to set the context first to make the app work properly
         DataHolder.getInstance().setAppContext(context);
 
-        showNewFeatureNotification(context);
+        // showNewFeatureNotification(context);
         final SharedPreferences settings = Util.getSharedPreference();
         int preNotifDays = settings.getInt(Constants.PREFERENCE_PRE_NOTIFICATION_DAYS, 0);
         if(preNotifDays > 0) {
