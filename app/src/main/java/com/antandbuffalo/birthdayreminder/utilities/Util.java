@@ -515,7 +515,7 @@ public class Util {
                 return;
             }
             dob.setDescription("In " + days + " days");
-            if(days < 1) {
+            if(days < 2) {
                 dob.setDescription("In " + days + " day");
             }
 
@@ -525,7 +525,7 @@ public class Util {
             String upcomingDaysText = "";
             if(days != null) {
                 upcomingDaysText = " in " + days + " days";
-                if(days < 1) {
+                if(days < 2) {
                     upcomingDaysText = " in " + days + " day";
                 }
             }
@@ -533,7 +533,7 @@ public class Util {
                 upcomingDaysText = "";
             }
 
-            if(dob.getAge() <= 1) {
+            if(dob.getAge() < 2) {
                 //dob.setAge(0);
                 dob.setDescription(info + ": " + dob.getAge() + " year" + upcomingDaysText);
             }

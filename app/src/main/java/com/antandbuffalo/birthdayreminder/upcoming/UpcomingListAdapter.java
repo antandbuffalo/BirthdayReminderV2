@@ -60,64 +60,77 @@ public class UpcomingListAdapter extends BaseAdapter implements Filterable {
     }
 
     @Override
+    public int getViewTypeCount() {
+        return 2;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        DateOfBirth dob = dobs.get(position);
+        dayOfYear = Integer.parseInt(Util.getStringFromDate(dob.getDobDate(), Constants.DAY_OF_YEAR));
+        return dayOfYear == currentDayOfYear? 0 : 1;
+    }
+
+    @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
+        DateOfBirth dob = dobs.get(position);
+        dayOfYear = Integer.parseInt(Util.getStringFromDate(dob.getDobDate(), Constants.DAY_OF_YEAR));
         if(convertView == null) {
-            LayoutInflater inflater = (LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = inflater.inflate(R.layout.list_item_default, parent, false);
+            if(dayOfYear == currentDayOfYear) {
+                LayoutInflater inflater = (LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                convertView = inflater.inflate(R.layout.list_item_today, parent, false);
+            }
+            else {
+                LayoutInflater inflater = (LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                convertView = inflater.inflate(R.layout.list_item_default, parent, false);
+            }
         }
-
         TextView name = (TextView)convertView.findViewById(R.id.nameField);
         TextView desc = (TextView)convertView.findViewById(R.id.ageField);
-        TextView noBirthday = (TextView)convertView.findViewById(R.id.noBirthday);
-        noBirthday.setVisibility(View.INVISIBLE);
-
-        TextView dateField = (TextView)convertView.findViewById(R.id.dateField);
-        TextView monthField = (TextView)convertView.findViewById(R.id.monthField);
         TextView yearField = (TextView)convertView.findViewById(R.id.yearField);
-
-        DateOfBirth dob = dobs.get(position);
         name.setText(dob.getName());
         desc.setText(dob.getDescription());
         Date date = dob.getDobDate();
         cal.setTime(date);
-        dateField.setText(cal.get(Calendar.DATE) + "");
-        monthField.setText(dateFormatter.format(cal.getTime()));
         yearField.setText(cal.get(Calendar.YEAR) + "");
 
-        LinearLayout circle = (LinearLayout)convertView.findViewById(R.id.circlebg);
-        dayOfYear = Integer.parseInt(Util.getStringFromDate(dob.getDobDate(), Constants.DAY_OF_YEAR));
-        if(dayOfYear == currentDayOfYear) {
-            circle.setBackgroundResource(R.drawable.cirlce_today);
-        }
-        else if(recentDayOfYear < currentDayOfYear) {   //year end case
-            if(dayOfYear > currentDayOfYear || dayOfYear < recentDayOfYear) {
+        if(dayOfYear != currentDayOfYear) {
+            TextView dateField = (TextView)convertView.findViewById(R.id.dateField);
+            TextView monthField = (TextView)convertView.findViewById(R.id.monthField);
+
+            dateField.setText(cal.get(Calendar.DATE) + "");
+            monthField.setText(dateFormatter.format(cal.getTime()));
+
+            LinearLayout circle = (LinearLayout)convertView.findViewById(R.id.circlebg);
+            dayOfYear = Integer.parseInt(Util.getStringFromDate(dob.getDobDate(), Constants.DAY_OF_YEAR));
+            if(dayOfYear == currentDayOfYear) {
+                circle.setBackgroundResource(R.drawable.cirlce_today);
+            }
+            else if(recentDayOfYear < currentDayOfYear) {   //year end case
+                if(dayOfYear > currentDayOfYear || dayOfYear < recentDayOfYear) {
+                    circle.setBackgroundResource(R.drawable.cirlce_recent);
+                }
+                else {
+                    circle.setBackgroundResource(R.drawable.cirlce_normal);
+                }
+            }
+            else if(dayOfYear <= recentDayOfYear && dayOfYear > currentDayOfYear ){
                 circle.setBackgroundResource(R.drawable.cirlce_recent);
             }
             else {
                 circle.setBackgroundResource(R.drawable.cirlce_normal);
             }
         }
-        else if(dayOfYear <= recentDayOfYear && dayOfYear > currentDayOfYear ){
-            circle.setBackgroundResource(R.drawable.cirlce_recent);
-        }
-        else {
-            circle.setBackgroundResource(R.drawable.cirlce_normal);
-        }
-
         if(dob.getRemoveYear()) {
-            //desc.setVisibility(View.INVISIBLE);
             yearField.setVisibility(View.INVISIBLE);
         }
         else {
-            if(dob.getAge() < 0) {
-                //desc.setVisibility(View.INVISIBLE);
-            } else {
+            if(dob.getAge() >= 0) {
                 desc.setVisibility(View.VISIBLE);
             }
             yearField.setVisibility(View.VISIBLE);
         }
-
         return convertView;
     }
 

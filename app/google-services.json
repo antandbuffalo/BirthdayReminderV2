@@ -15,6 +15,22 @@
       },
       "oauth_client": [
         {
+          "client_id": "405608185466-n4vjpvhgg3of1qqukdakfm0q6i00eoi5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.antandbuffalo.birthdayreminder",
+            "certificate_hash": "7afe488fcb87eae40630f6d41d51972a7750ca4a"
+          }
+        },
+        {
+          "client_id": "405608185466-1ertijbnjfc99cgdvbmplv7r0c840vu6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.antandbuffalo.birthdayreminder",
+            "certificate_hash": "3eaaab0fe39cb122db2c92e9414151e356e02237"
+          }
+        },
+        {
           "client_id": "405608185466-3t2k5fdu70m29e40h8alqm6kkb3m0aq4.apps.googleusercontent.com",
           "client_type": 3
         }
