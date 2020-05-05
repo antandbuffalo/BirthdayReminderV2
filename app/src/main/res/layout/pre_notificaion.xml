@@ -7,6 +7,7 @@
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:id="@+id/appbar"
         android:theme="@style/AppTheme.AppBarOverlay">
 
         <androidx.appcompat.widget.Toolbar
@@ -22,9 +23,11 @@
         android:id="@+id/mtLable2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/appbar"
+        android:layout_marginTop="30dp"
         android:text="Please select the number of days, to get notified, before the actual birthday"
         android:textAlignment="center"
-        android:textColor="@color/white"
+        android:textColor="@color/dark_text_color"
         android:textSize="16sp" />
 
     <NumberPicker
@@ -36,15 +39,18 @@
         android:layout_marginTop="20dp"
         android:theme="@style/AppTheme"
         android:orientation="vertical" />
+
     <TextView
         android:id="@+id/mtLable3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/recentDaysToday"
+        android:layout_marginLeft="10dp"
         android:layout_marginTop="20dp"
+        android:layout_marginRight="10dp"
         android:text="You will also get notified on the day of the actual birthday"
         android:textAlignment="center"
-        android:textColor="@color/white"
+        android:textColor="@color/dark_text_color"
         android:textSize="16sp" />
 
     <com.google.android.gms.ads.AdView xmlns:ads="http://schemas.android.com/apk/res-auto"

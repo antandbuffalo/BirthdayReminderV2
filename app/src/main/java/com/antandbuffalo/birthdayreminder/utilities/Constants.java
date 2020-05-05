@@ -54,7 +54,7 @@ public class Constants {
     public static final String CIRCLE_BG_TODAY = "#1B5E20";
     public static final String CIRCLE_BG_DEFAULT = "#795548";
 
-    public static final int RECENT_DURATION = 3;
+    public static final int RECENT_DURATION = 1;
     public static final int HEALTHY_BACKUP_DURATION = 30;
     public static final int AVERAGE_BACKUP_DURATION = 365;
 

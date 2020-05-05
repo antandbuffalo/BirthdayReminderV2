@@ -18,7 +18,7 @@
             android:layout_height="match_parent"
             android:layout_gravity="center"
             android:layout_margin="5dp"
-            app:srcCompat="@drawable/ic_app_icon_primary_dark" />
+            app:srcCompat="@drawable/ic_app_icon_clipart_primary_dark" />
     </LinearLayout>
 
     <TextView
