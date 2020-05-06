@@ -7,12 +7,15 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -59,6 +62,8 @@ public class Backup extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_back_white);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        ProgressBar progressBar = findViewById(R.id.progresBar);
 
         if(FirebaseAuth.getInstance().getCurrentUser() != null) {
             Log.d("FirebaseUser", FirebaseAuth.getInstance().getCurrentUser().getEmail());
@@ -312,11 +317,13 @@ public class Backup extends AppCompatActivity {
 
     public void backupDateOfBirthsToFirebase(FirebaseFirestore firebaseFirestore, FirebaseUser firebaseUser) {
         // Create a new user with a first and last name
+        showProgressBar();
         Map<String, DateOfBirth> dateOfBirthMap = Util.getDateOfBirthMap();
         DocumentReference documentReference = firebaseFirestore.collection(firebaseUser.getUid()).document("friends");
         documentReference.set(dateOfBirthMap).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
+                hideProgressBar();
                 Log.d("Success", "data updated successfully");
                 //updateLastUpdatedTime(db, firebaseUser);
                 Storage.setServerBackupTime(Util.getDateFromString(Storage.getDbBackupTime(), Constants.backupDateFormatToStore));
@@ -327,6 +334,7 @@ public class Backup extends AppCompatActivity {
         .addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
+                hideProgressBar();
                 Log.e("F", e.getLocalizedMessage());
                 Toast.makeText(DataHolder.getInstance().getAppContext(), "Error while updating to server", Toast.LENGTH_LONG).show();
             }
@@ -334,10 +342,12 @@ public class Backup extends AppCompatActivity {
     }
 
     public void backupUserPreferenceToFirebase(FirebaseFirestore db, FirebaseUser firebaseUser) {
+        showProgressBar();
         DocumentReference documentReference = db.collection(firebaseUser.getUid()).document("settings");
         documentReference.set(Storage.getUserPreference()).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
+                hideProgressBar();
                 Log.d("Success", "Preferences updated successfully");
                 Toast.makeText(DataHolder.getInstance().getAppContext(), "Your preferences uploaded successfully", Toast.LENGTH_SHORT).show();
                 updateBackupTimeUI();
@@ -346,6 +356,7 @@ public class Backup extends AppCompatActivity {
         .addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
+                hideProgressBar();
                 Log.e("F", e.getLocalizedMessage());
                 Toast.makeText(DataHolder.getInstance().getAppContext(), "Error while updating to server", Toast.LENGTH_LONG).show();
             }
@@ -377,9 +388,11 @@ public class Backup extends AppCompatActivity {
 
     public void restoreDateOfBirthsFromFirebase(FirebaseFirestore firebaseFirestore, FirebaseUser firebaseUser) {
         DocumentReference documentReference = firebaseFirestore.collection(firebaseUser.getUid()).document("friends");
+        showProgressBar();
         documentReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                hideProgressBar();
                 if (task.isSuccessful()) {
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
@@ -401,9 +414,11 @@ public class Backup extends AppCompatActivity {
 
     public void restoreUserPreferenceFromFirebase(FirebaseFirestore firebaseFirestore, FirebaseUser firebaseUser) {
         DocumentReference documentReference = firebaseFirestore.collection(firebaseUser.getUid()).document("settings");
+        showProgressBar();
         documentReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                hideProgressBar();
                 if (task.isSuccessful()) {
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
@@ -548,6 +563,16 @@ public class Backup extends AppCompatActivity {
                 break;
             }
         }
+    }
+
+    public void showProgressBar() {
+        ProgressBar progressBar = findViewById(R.id.progresBar);
+        progressBar.setVisibility(View.VISIBLE);
+    }
+
+    public void hideProgressBar() {
+        ProgressBar progressBar = findViewById(R.id.progresBar);
+        progressBar.setVisibility(View.INVISIBLE);
     }
 
     // download prgress link

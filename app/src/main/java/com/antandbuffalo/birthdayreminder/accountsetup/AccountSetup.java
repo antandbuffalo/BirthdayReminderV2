@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -158,15 +159,18 @@ public class AccountSetup extends AppCompatActivity {
         userProfile.put("providerId", firebaseUser.getProviderId());
 
         DocumentReference documentReference = db.collection(firebaseUser.getUid()).document("profile");
+        showProgressBar();
         documentReference.set(userProfile).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
+                hideProgressBar();
                 Log.d("Success", "Profile updated");
             }
         })
         .addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
+                hideProgressBar();
                 Log.e("Profile", "Error updating profile: " + e.getLocalizedMessage());
             }
         });
@@ -179,9 +183,11 @@ public class AccountSetup extends AppCompatActivity {
             return;
         }
         DocumentReference documentReference = firebaseFirestore.collection(firebaseUser.getUid()).document("settings");
+        showProgressBar();
         documentReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                hideProgressBar();
                 if (task.isSuccessful()) {
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
@@ -241,6 +247,17 @@ public class AccountSetup extends AppCompatActivity {
                         .build(),
                 Constants.firebaseSignInCode);
     }
+
+    public void showProgressBar() {
+        ProgressBar progressBar = findViewById(R.id.progresBar);
+        progressBar.setVisibility(View.VISIBLE);
+    }
+
+    public void hideProgressBar() {
+        ProgressBar progressBar = findViewById(R.id.progresBar);
+        progressBar.setVisibility(View.INVISIBLE);
+    }
+
 }
 
 // notify parent after sync to refresh screen

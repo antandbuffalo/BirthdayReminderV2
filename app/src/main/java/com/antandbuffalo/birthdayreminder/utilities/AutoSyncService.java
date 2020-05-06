@@ -81,6 +81,7 @@ public class AutoSyncService {
                         Util.inserDateOfBirthFromServer(document.getData());
                         Storage.updateUserPreference(userPreference, alarmManager, context);
                         Storage.setAutoSyncDate(new Date());
+                        DataHolder.getInstance().refresh = true;
                     } else {
                         Log.d("FirebaseGetData", "No such document");
                     }
