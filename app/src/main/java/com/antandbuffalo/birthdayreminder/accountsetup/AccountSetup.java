@@ -216,6 +216,7 @@ public class AccountSetup extends AppCompatActivity implements FirebaseHandler {
         }
         else {
             // server backup is available. so restore
+            showProgressBar();
             autoSyncService.restoreDateOfBirthsFromFirebase();
             DataHolder.getInstance().refresh = true;
         }
@@ -257,6 +258,7 @@ public class AccountSetup extends AppCompatActivity implements FirebaseHandler {
     @Override
     public void onCompleteDateOfBirthSync() {
         System.out.println("onCompleteDateOfBirthSync");
+        hideProgressBar();
     }
 }
 
