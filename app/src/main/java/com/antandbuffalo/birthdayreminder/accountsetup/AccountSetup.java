@@ -29,6 +29,7 @@ import com.antandbuffalo.birthdayreminder.utilities.AutoSyncOptions;
 import com.antandbuffalo.birthdayreminder.utilities.AutoSyncService;
 import com.antandbuffalo.birthdayreminder.utilities.Constants;
 import com.antandbuffalo.birthdayreminder.utilities.DataHolder;
+import com.antandbuffalo.birthdayreminder.utilities.FirebaseHandler;
 import com.antandbuffalo.birthdayreminder.utilities.Storage;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
@@ -47,7 +48,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class AccountSetup extends AppCompatActivity {
+public class AccountSetup extends AppCompatActivity implements FirebaseHandler {
 
     UserPreference userPreference;
 
@@ -106,6 +107,7 @@ public class AccountSetup extends AppCompatActivity {
                 dialog.show();
             }
         });
+        updateAutoFrequencyUI();
     }
 
     @Override
@@ -138,13 +140,6 @@ public class AccountSetup extends AppCompatActivity {
             updateProfileToFirebase(FirebaseFirestore.getInstance(), FirebaseAuth.getInstance().getCurrentUser());
 
             getUserPreferenceFromFirebase();
-
-//            AlarmManager alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
-//            ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-//            AutoSyncService autoSyncService = new AutoSyncService(alarmManager, AccountSetup.this, connectivityManager);
-//            autoSyncService.syncNow();
-//            DataHolder.getInstance().refresh = true;
-
         } else {
             Toast.makeText(DataHolder.getInstance().getAppContext(), "Not able to sign in", Toast.LENGTH_SHORT).show();
         }
@@ -208,6 +203,7 @@ public class AccountSetup extends AppCompatActivity {
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         AutoSyncService autoSyncService = new AutoSyncService(alarmManager, AccountSetup.this, connectivityManager);
         autoSyncService.userPreference = userPreference;
+        autoSyncService.firebaseHandler = this;
 
         if(userPreference.serverBackupTime == null) {
             // the server data is null. not backed up till now
@@ -258,6 +254,10 @@ public class AccountSetup extends AppCompatActivity {
         progressBar.setVisibility(View.INVISIBLE);
     }
 
+    @Override
+    public void onCompleteDateOfBirthSync() {
+        System.out.println("onCompleteDateOfBirthSync");
+    }
 }
 
 // notify parent after sync to refresh screen

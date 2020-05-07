@@ -27,6 +27,7 @@ public class AutoSyncService {
     private AlarmManager alarmManager;
     private Context context;
     private ConnectivityManager connectivityManager;
+    public FirebaseHandler firebaseHandler;
 
     public AutoSyncService(AlarmManager alarmManager, Context context, ConnectivityManager connectivityManager) {
         this.alarmManager = alarmManager;
@@ -82,6 +83,9 @@ public class AutoSyncService {
                         Storage.updateUserPreference(userPreference, alarmManager, context);
                         Storage.setAutoSyncDate(new Date());
                         DataHolder.getInstance().refresh = true;
+                        if(firebaseHandler != null) {
+                            firebaseHandler.onCompleteDateOfBirthSync();
+                        }
                     } else {
                         Log.d("FirebaseGetData", "No such document");
                     }
