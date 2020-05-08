@@ -28,6 +28,7 @@ import androidx.core.content.ContextCompat;
 import com.antandbuffalo.birthdayreminder.about.About;
 import com.antandbuffalo.birthdayreminder.accountsetup.AccountSetup;
 import com.antandbuffalo.birthdayreminder.addnew.AddNew;
+import com.antandbuffalo.birthdayreminder.backup.Backup;
 import com.antandbuffalo.birthdayreminder.database.DBHelper;
 import com.antandbuffalo.birthdayreminder.database.DateOfBirthDBHelper;
 import com.antandbuffalo.birthdayreminder.models.DateOfBirth;
@@ -108,8 +109,8 @@ public class MainActivity extends AppCompatActivity {
                                 startActivity(shareWish);
                                 break;
                             case 2: {
-                                new android.app.AlertDialog.Builder(MainActivity.this)
-                                    .setTitle("Confirmation")
+                                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                                builder.setTitle("Confirmation")
                                     .setMessage("Are you sure you want to delete " + dateOfBirth.getName() + "?")
                                     .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                                         @Override
@@ -121,9 +122,16 @@ public class MainActivity extends AppCompatActivity {
                                             upcomingListAdapter.refreshData();
                                         }
                                     })
-                                    .setNegativeButton("No", null)
-                                    .show();
-                                    break;
+                                    .setNegativeButton("No", null);
+                                AlertDialog dialog = builder.create();
+                                dialog.setOnShowListener( new DialogInterface.OnShowListener() {
+                                    @Override
+                                    public void onShow(DialogInterface arg0) {
+                                        dialog.getButton(android.app.AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(MainActivity.this, R.color.dark_gray));
+                                    }
+                                });
+                                dialog.show();
+                                break;
                             }
                         }
                     }

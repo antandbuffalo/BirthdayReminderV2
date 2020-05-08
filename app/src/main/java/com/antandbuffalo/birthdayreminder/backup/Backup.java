@@ -26,6 +26,7 @@ import androidx.core.content.ContextCompat;
 
 import com.antandbuffalo.birthdayreminder.R;
 import com.antandbuffalo.birthdayreminder.models.DateOfBirth;
+import com.antandbuffalo.birthdayreminder.settings.Settings;
 import com.antandbuffalo.birthdayreminder.utilities.AutoSyncOptions;
 import com.antandbuffalo.birthdayreminder.utilities.Constants;
 import com.antandbuffalo.birthdayreminder.utilities.DataHolder;
@@ -499,8 +500,8 @@ public class Backup extends AppCompatActivity {
     }
 
     public void backupToFirebaseConfirmation() {
-        new AlertDialog.Builder(Backup.this)
-            .setTitle("Confirmation")
+        AlertDialog.Builder builder = new AlertDialog.Builder(Backup.this);
+        builder.setTitle("Confirmation")
             .setMessage("This will replace existing server content with local content. Are you sure want to continue?")
             .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                 @Override
@@ -508,8 +509,15 @@ public class Backup extends AppCompatActivity {
                     backupDateOfBirthsToFirebase(FirebaseFirestore.getInstance(), FirebaseAuth.getInstance().getCurrentUser());
                 }
             })
-            .setNegativeButton("No", null)
-            .show();
+            .setNegativeButton("No", null);
+        AlertDialog dialog = builder.create();
+        dialog.setOnShowListener( new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface arg0) {
+                dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(Backup.this, R.color.dark_gray));
+            }
+        });
+        dialog.show();
     }
 
     public void syncNow() {

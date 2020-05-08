@@ -2,6 +2,7 @@ package com.antandbuffalo.birthdayreminder.settings;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 
 import android.app.AlertDialog;
 import android.app.Notification;
@@ -79,10 +80,10 @@ public class Settings extends AppCompatActivity {
                 }
                 else if (selectedOption.getKey().equalsIgnoreCase(Constants.SETTINGS_DELETE_ALL)) {
                     //put confirmation here
-                    new AlertDialog.Builder(Settings.this)
-                        //.setIcon(android.R.drawable.ic_dialog_alert)
-                        .setIconAttribute(android.R.attr.alertDialogIcon)
-                        .setTitle("Confirmation")
+                    androidx.appcompat.app.AlertDialog.Builder alertDialogBuilder = new androidx.appcompat.app.AlertDialog.Builder(Settings.this);
+                        // .setIcon(android.R.drawable.ic_dialog_alert)
+                        // .setIconAttribute(android.R.attr.alertDialogIcon)
+                    alertDialogBuilder.setTitle("Confirmation")
                         .setMessage("Are you sure you want to delete all?")
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             @Override
@@ -92,8 +93,16 @@ public class Settings extends AppCompatActivity {
                                 Storage.setDbBackupTime(new Date());
                             }
                         })
-                        .setNegativeButton("No", null)
-                        .show();
+                        .setNegativeButton("No", null);
+
+                    androidx.appcompat.app.AlertDialog dialog = alertDialogBuilder.create();
+                    dialog.setOnShowListener( new DialogInterface.OnShowListener() {
+                        @Override
+                        public void onShow(DialogInterface arg0) {
+                            dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(Settings.this, R.color.dark_gray));
+                        }
+                    });
+                    dialog.show();
                 }
             }
         });

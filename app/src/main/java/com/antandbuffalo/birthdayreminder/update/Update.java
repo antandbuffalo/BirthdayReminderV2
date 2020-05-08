@@ -23,8 +23,10 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProviders;
 
+import com.antandbuffalo.birthdayreminder.MainActivity;
 import com.antandbuffalo.birthdayreminder.R;
 import com.antandbuffalo.birthdayreminder.database.DBHelper;
 import com.antandbuffalo.birthdayreminder.models.DateOfBirth;
@@ -276,7 +278,7 @@ public class Update extends AppCompatActivity {
                 //put confirmation here
                 new AlertDialog.Builder(Update.this)
                         //.setIcon(android.R.drawable.ic_dialog_info)
-                        .setIconAttribute(android.R.attr.alertDialogIcon)
+                        // .setIconAttribute(android.R.attr.alertDialogIcon)
                         .setTitle(Constants.ERROR)
                         .setMessage(Constants.USER_EXIST)
                         .setPositiveButton(Constants.OK, null)
@@ -296,13 +298,12 @@ public class Update extends AppCompatActivity {
     }
 
     public void delete() {
-        new AlertDialog.Builder(Update.this)
+        AlertDialog.Builder builder = new AlertDialog.Builder(Update.this);
             //.setIcon(android.R.drawable.ic_dialog_alert)
             //.setIconAttribute(android.R.attr.alertDialogIcon)
-            .setTitle("Confirmation")
+        builder.setTitle("Confirmation")
             .setMessage("Are you sure you want to delete " + currentDOB.getName() + "?")
-            .setPositiveButton("Yes", new DialogInterface.OnClickListener()
-            {
+            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     updateViewModel.delete(currentDOB.getDobId());
@@ -315,8 +316,16 @@ public class Update extends AppCompatActivity {
                     finish();
                 }
             })
-            .setNegativeButton("No", null)
-            .show();
+            .setNegativeButton("No", null);
+
+        AlertDialog dialog = builder.create();
+        dialog.setOnShowListener( new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface arg0) {
+                dialog.getButton(android.app.AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(Update.this, R.color.dark_gray));
+            }
+        });
+        dialog.show();
     }
 
     @Override
