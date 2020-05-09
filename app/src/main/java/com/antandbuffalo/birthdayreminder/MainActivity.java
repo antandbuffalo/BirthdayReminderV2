@@ -28,7 +28,6 @@ import androidx.core.content.ContextCompat;
 import com.antandbuffalo.birthdayreminder.about.About;
 import com.antandbuffalo.birthdayreminder.accountsetup.AccountSetup;
 import com.antandbuffalo.birthdayreminder.addnew.AddNew;
-import com.antandbuffalo.birthdayreminder.backup.Backup;
 import com.antandbuffalo.birthdayreminder.database.DBHelper;
 import com.antandbuffalo.birthdayreminder.database.DateOfBirthDBHelper;
 import com.antandbuffalo.birthdayreminder.models.DateOfBirth;
@@ -81,9 +80,6 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent(getApplicationContext(), AddNew.class);
                 startActivityForResult(intent, Constants.ADD_NEW_MEMBER);
-
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
             }
         });
 
@@ -208,58 +204,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-    }
-
-    public void addUserToFirebase(FirebaseFirestore db, FirebaseUser firebaseUser) {
-        // Create a new user with a first and last name
-        Map<String, Object> user = new HashMap<>();
-        user.put("first", "Ada");
-        user.put("last", "Lovelace");
-        user.put("born", 1815);
-
-
-        // Add a new document with a generated ID
-        db.collection("/" + firebaseUser.getUid() + "/" + firebaseUser.getUid())
-                .add(user)
-                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                    @Override
-                    public void onSuccess(DocumentReference documentReference) {
-                        Log.d("Firebase", "DocumentSnapshot added with ID: " + documentReference.getId());
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w("Firebase", "Error adding document", e);
-                    }
-                });
-    }
-
-    public FirebaseUser checkFirebaseUser() {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user != null) {
-            // User is signed in
-            System.out.println("User available");
-        } else {
-            // No user is signed in
-            System.out.println("User not available");
-        }
-        return user;
-    }
-
-    public void startFirebaseAuth() {
-        // Choose authentication providers
-        List<AuthUI.IdpConfig> providers = Arrays.asList(
-                new AuthUI.IdpConfig.EmailBuilder().build(),
-                new AuthUI.IdpConfig.PhoneBuilder().build(),
-                new AuthUI.IdpConfig.GoogleBuilder().build());
-// Create and launch sign-in intent
-        startActivityForResult(
-                AuthUI.getInstance()
-                        .createSignInIntentBuilder()
-                        .setAvailableProviders(providers)
-                        .build(),
-                Constants.firebaseSignInCode);
     }
 
     public void initValues() {

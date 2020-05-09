@@ -72,14 +72,13 @@ public class AlarmReceiver extends BroadcastReceiver {
     }
 
     public void showNewFeatureNotification(Context context) {
-        SharedPreferences settings = Util.getSharedPreference();
-        Integer shown = Storage.getFeaturesNotificationStatus(Constants.NEW_FEATURE_2_6_0_34);
+        Integer shown = Storage.getFeaturesNotificationStatus("newFeature");
         if(shown > 0) {
             return;
         }
 
         CharSequence from = "New Features added";
-        CharSequence message = "You can change the notification time, number of notifications per day in settings. Please have a look";
+        CharSequence message = "Complete revamp of UI. Sync with cloud. Multiple device support etc. Please have a look";
 
         notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         String CHANNEL_ID = setChannel(notificationManager);
@@ -100,7 +99,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         int notificationId = 103;
         notificationManager.notify(notificationId, mBuilder.build());
 
-        Storage.setFeaturesNotificationStatus(Constants.NEW_FEATURE_2_6_0_34, 1);
+        Storage.setFeaturesNotificationStatus("newFeature", 1);
     }
 
     @Override
@@ -110,7 +109,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         // Need to set the context first to make the app work properly
         DataHolder.getInstance().setAppContext(context);
 
-        // showNewFeatureNotification(context);
+        showNewFeatureNotification(context);
         final SharedPreferences settings = Util.getSharedPreference();
         int preNotifDays = settings.getInt(Constants.PREFERENCE_PRE_NOTIFICATION_DAYS, 0);
         if(preNotifDays > 0) {
