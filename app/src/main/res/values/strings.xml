@@ -40,6 +40,7 @@
     <string name="ad_notificationfrequency">ca-app-pub-3940256099942544/6300978111</string>
     <string name="ad_settings">ca-app-pub-3940256099942544/6300978111</string>
     <string name="ad_backup">ca-app-pub-3940256099942544/6300978111</string>
+    <string name="ad_account_setup">ca-app-pub-3940256099942544/6300978111</string>
 
     <!--Actual-->
     <!--<string name="ad_addnew">ca-app-pub-7116389331562728/6247898368</string>-->
@@ -53,7 +54,8 @@
     <!--<string name="ad_about">ca-app-pub-7116389331562728/4955417829</string>-->
     <!--<string name="ad_notificationtime">ca-app-pub-7116389331562728/2215332125</string>-->
     <!--<string name="ad_notificationfrequency">ca-app-pub-7116389331562728/4230766154</string>-->
-<!--    <string name="ad_settings"></string>-->
-<!--    <string name="ad_backup"></string>-->
+<!--    <string name="ad_settings">ca-app-pub-7116389331562728/2067178109</string>-->
+<!--    <string name="ad_backup">ca-app-pub-7116389331562728/8441014762</string>-->
+<!--    <string name="ad_account_setup">ca-app-pub-7116389331562728/8249443071</string>-->
 
 </resources>

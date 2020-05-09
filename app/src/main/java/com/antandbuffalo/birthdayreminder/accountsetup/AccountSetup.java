@@ -33,6 +33,8 @@ import com.antandbuffalo.birthdayreminder.utilities.FirebaseHandler;
 import com.antandbuffalo.birthdayreminder.utilities.Storage;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -49,8 +51,8 @@ import java.util.List;
 import java.util.Map;
 
 public class AccountSetup extends AppCompatActivity implements FirebaseHandler {
-
     UserPreference userPreference;
+    AdView mAdView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,6 +110,7 @@ public class AccountSetup extends AppCompatActivity implements FirebaseHandler {
             }
         });
         updateAutoFrequencyUI();
+        loadAd();
     }
 
     @Override
@@ -259,6 +262,12 @@ public class AccountSetup extends AppCompatActivity implements FirebaseHandler {
     public void onCompleteDateOfBirthSync() {
         System.out.println("onCompleteDateOfBirthSync");
         hideProgressBar();
+    }
+
+    public void loadAd() {
+        mAdView = this.findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
     }
 }
 

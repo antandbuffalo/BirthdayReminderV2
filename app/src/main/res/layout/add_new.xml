@@ -190,7 +190,7 @@
         android:layout_centerHorizontal="true"
         android:background="#00D33636"
         app:adSize="BANNER"
-        app:adUnitId="@string/ad_addnew"
+        app:adUnitId="@string/ad_account_setup"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"></com.google.android.gms.ads.AdView>
