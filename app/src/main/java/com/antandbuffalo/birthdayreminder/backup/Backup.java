@@ -35,6 +35,8 @@ import com.antandbuffalo.birthdayreminder.utilities.UIUtil;
 import com.antandbuffalo.birthdayreminder.utilities.Util;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -54,6 +56,7 @@ import java.util.List;
 import java.util.Map;
 
 public class Backup extends AppCompatActivity {
+    AdView mAdView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -161,6 +164,7 @@ public class Backup extends AppCompatActivity {
         });
         updateBackupTimeUI();
         updateAutoFrequencyUI();
+        loadAd();
     }
 
     public void updateLocalBackup() {
@@ -581,6 +585,12 @@ public class Backup extends AppCompatActivity {
     public void hideProgressBar() {
         ProgressBar progressBar = findViewById(R.id.progresBar);
         progressBar.setVisibility(View.INVISIBLE);
+    }
+
+    public void loadAd() {
+        mAdView = this.findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
     }
 
     // download prgress link

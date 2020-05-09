@@ -42,6 +42,8 @@ import com.antandbuffalo.birthdayreminder.utilities.Storage;
 import com.antandbuffalo.birthdayreminder.utilities.Util;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -62,6 +64,7 @@ import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
     UpcomingListAdapter upcomingListAdapter;
+    AdView mAdView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -168,6 +171,7 @@ public class MainActivity extends AppCompatActivity {
         // startFirebaseAuth();
         setRepeatingAlarm();
         launchAccountSetup();
+        loadAd();
     }
 
     public void launchAccountSetup() {
@@ -387,6 +391,12 @@ public class MainActivity extends AppCompatActivity {
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         int frequency = Storage.getNotificationFrequency();
         Util.setRepeatingAlarm(this, alarmManager, hour, minute, frequency);
+    }
+
+    public void loadAd() {
+        mAdView = this.findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
     }
 }
 

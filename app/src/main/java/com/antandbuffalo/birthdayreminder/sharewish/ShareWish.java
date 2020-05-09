@@ -10,8 +10,11 @@ import android.view.MenuItem;
 import android.widget.EditText;
 
 import com.antandbuffalo.birthdayreminder.R;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 
 public class ShareWish extends AppCompatActivity {
+    AdView mAdView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,6 +25,8 @@ public class ShareWish extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_back_white);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        loadAd();
     }
 
     @Override
@@ -49,5 +54,11 @@ public class ShareWish extends AppCompatActivity {
         String shareBody = editText.getText().toString();
         sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
         startActivity(Intent.createChooser(sharingIntent, "Send via..."));
+    }
+
+    public void loadAd() {
+        mAdView = this.findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
     }
 }

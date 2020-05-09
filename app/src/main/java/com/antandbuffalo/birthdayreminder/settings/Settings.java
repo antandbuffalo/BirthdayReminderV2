@@ -1,26 +1,23 @@
 package com.antandbuffalo.birthdayreminder.settings;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.content.ContextCompat;
-
 import android.app.AlertDialog;
-import android.app.Notification;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
+
 import com.antandbuffalo.birthdayreminder.R;
 import com.antandbuffalo.birthdayreminder.about.About;
 import com.antandbuffalo.birthdayreminder.backup.Backup;
 import com.antandbuffalo.birthdayreminder.database.DateOfBirthDBHelper;
-import com.antandbuffalo.birthdayreminder.models.DateOfBirth;
 import com.antandbuffalo.birthdayreminder.models.SettingsModel;
 import com.antandbuffalo.birthdayreminder.notificationfrequency.NotificationFrequency;
 import com.antandbuffalo.birthdayreminder.notificationtime.NotificationTime;
@@ -28,13 +25,15 @@ import com.antandbuffalo.birthdayreminder.prenotification.PreNotification;
 import com.antandbuffalo.birthdayreminder.utilities.Constants;
 import com.antandbuffalo.birthdayreminder.utilities.DataHolder;
 import com.antandbuffalo.birthdayreminder.utilities.Storage;
-import com.antandbuffalo.birthdayreminder.utilities.Util;
 import com.antandbuffalo.birthdayreminder.wishtemplate.WishTemplate;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 
 import java.util.Date;
 
 public class Settings extends AppCompatActivity {
     SettingsListAdapter settingsListAdapter;
+    AdView mAdView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -106,6 +105,7 @@ public class Settings extends AppCompatActivity {
                 }
             }
         });
+        loadAd();
     }
 
     @Override
@@ -118,11 +118,16 @@ public class Settings extends AppCompatActivity {
         return true;
     }
 
-
     @Override
     protected void onResume() {
         super.onResume();
         settingsListAdapter.refreshData();
+    }
+
+    public void loadAd() {
+        mAdView = this.findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
     }
 }
 

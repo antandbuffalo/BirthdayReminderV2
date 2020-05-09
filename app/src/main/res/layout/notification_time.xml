@@ -43,7 +43,6 @@
         android:layout_height="50dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="20dp"
         android:background="#00D33636"
         app:adSize="BANNER"
         app:adUnitId="@string/ad_notificationtime"

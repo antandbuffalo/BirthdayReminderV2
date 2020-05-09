@@ -19,12 +19,15 @@ import com.antandbuffalo.birthdayreminder.R;
 import com.antandbuffalo.birthdayreminder.utilities.Constants;
 import com.antandbuffalo.birthdayreminder.utilities.Storage;
 import com.antandbuffalo.birthdayreminder.utilities.Util;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 
 import java.lang.reflect.Field;
 import java.util.Date;
 
 public class PreNotification extends AppCompatActivity {
     Intent intent;
+    AdView mAdView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +51,8 @@ public class PreNotification extends AppCompatActivity {
 
         int preNotifDays = settings.getInt(Constants.PREFERENCE_PRE_NOTIFICATION_DAYS, 0);
         numberPicker.setValue(preNotifDays);
+
+        loadAd();
     }
 
     @Override
@@ -105,5 +110,10 @@ public class PreNotification extends AppCompatActivity {
             }
         }
         return false;
+    }
+    public void loadAd() {
+        mAdView = this.findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
     }
 }

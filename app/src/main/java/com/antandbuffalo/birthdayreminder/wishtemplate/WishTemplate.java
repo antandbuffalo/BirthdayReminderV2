@@ -13,10 +13,13 @@ import com.antandbuffalo.birthdayreminder.R;
 import com.antandbuffalo.birthdayreminder.utilities.Constants;
 import com.antandbuffalo.birthdayreminder.utilities.Storage;
 import com.antandbuffalo.birthdayreminder.utilities.Util;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 
 import java.util.Date;
 
 public class WishTemplate extends AppCompatActivity {
+    AdView mAdView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +35,8 @@ public class WishTemplate extends AppCompatActivity {
 
         EditText wishTemplate = findViewById(R.id.wishTemplate);
         wishTemplate.setText(currentTemplate);
+
+        loadAd();
     }
 
     public void save() {
@@ -57,5 +62,11 @@ public class WishTemplate extends AppCompatActivity {
         }
         finish();
         return true;
+    }
+
+    public void loadAd() {
+        mAdView = this.findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
     }
 }
