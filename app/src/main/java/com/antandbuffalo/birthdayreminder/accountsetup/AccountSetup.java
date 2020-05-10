@@ -187,10 +187,10 @@ public class AccountSetup extends AppCompatActivity implements FirebaseHandler {
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
                         userPreference = Storage.createUserPreferenceFromServer(document.getData());
-                        backupOrRestore();
                     } else {
                         Log.d("FirebaseGetData", "No such document");
                     }
+                    backupOrRestore();
                 } else {
                     Log.d("FirebaseGetData", "get failed with ", task.getException());
                 }
@@ -202,10 +202,16 @@ public class AccountSetup extends AppCompatActivity implements FirebaseHandler {
         AlarmManager alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         AutoSyncService autoSyncService = new AutoSyncService(alarmManager, AccountSetup.this, connectivityManager);
-        autoSyncService.userPreference = userPreference;
         autoSyncService.firebaseHandler = this;
 
-        if(userPreference.serverBackupTime == null) {
+        if(userPreference != null && userPreference.serverBackupTime != null) {
+            // server backup is available. so restore
+            autoSyncService.userPreference = userPreference;
+            showProgressBar();
+            autoSyncService.restoreDateOfBirthsFromFirebase();
+            DataHolder.getInstance().refresh = true;
+        }
+        else {
             // the server data is null. not backed up till now
             if(DateOfBirthDBHelper.selectAll().size() == 0) {
                 // first time install and local db is empty. just return
@@ -213,12 +219,6 @@ public class AccountSetup extends AppCompatActivity implements FirebaseHandler {
             }
             // local db is not empty. backup to server
             autoSyncService.backupDateOfBirthsToFirebase();
-        }
-        else {
-            // server backup is available. so restore
-            showProgressBar();
-            autoSyncService.restoreDateOfBirthsFromFirebase();
-            DataHolder.getInstance().refresh = true;
         }
     }
 
