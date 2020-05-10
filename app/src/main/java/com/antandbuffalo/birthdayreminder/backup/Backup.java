@@ -26,6 +26,7 @@ import androidx.core.content.ContextCompat;
 
 import com.antandbuffalo.birthdayreminder.R;
 import com.antandbuffalo.birthdayreminder.models.DateOfBirth;
+import com.antandbuffalo.birthdayreminder.models.UserProfile;
 import com.antandbuffalo.birthdayreminder.settings.Settings;
 import com.antandbuffalo.birthdayreminder.utilities.AutoSyncOptions;
 import com.antandbuffalo.birthdayreminder.utilities.Constants;
@@ -324,7 +325,7 @@ public class Backup extends AppCompatActivity {
         // Create a new user with a first and last name
         showProgressBar();
         Map<String, DateOfBirth> dateOfBirthMap = Util.getDateOfBirthMap();
-        DocumentReference documentReference = firebaseFirestore.collection(firebaseUser.getUid()).document("friends");
+        DocumentReference documentReference = firebaseFirestore.collection(Util.getCollectionId(firebaseUser)).document("friends");
         documentReference.set(dateOfBirthMap).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
@@ -348,7 +349,7 @@ public class Backup extends AppCompatActivity {
 
     public void backupUserPreferenceToFirebase(FirebaseFirestore db, FirebaseUser firebaseUser) {
         showProgressBar();
-        DocumentReference documentReference = db.collection(firebaseUser.getUid()).document("settings");
+        DocumentReference documentReference = db.collection(Util.getCollectionId(firebaseUser)).document("settings");
         documentReference.set(Storage.getUserPreference()).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
@@ -370,13 +371,8 @@ public class Backup extends AppCompatActivity {
 
     public void updateProfileToFirebase(FirebaseFirestore db, FirebaseUser firebaseUser) {
         // Create a new user with a first and last name
-        Map<String, String> userProfile = new HashMap<>();
-        userProfile.put("uid", firebaseUser.getUid());
-        userProfile.put("displayName", firebaseUser.getDisplayName());
-        userProfile.put("email", firebaseUser.getEmail());
-        userProfile.put("providerId", firebaseUser.getProviderId());
-
-        DocumentReference documentReference = db.collection(firebaseUser.getUid()).document("profile");
+        UserProfile userProfile = Util.getUserProfileFromFirebaseUser(firebaseUser);
+        DocumentReference documentReference = db.collection(Util.getCollectionId(firebaseUser)).document("profile");
         documentReference.set(userProfile).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
@@ -392,7 +388,7 @@ public class Backup extends AppCompatActivity {
     }
 
     public void restoreDateOfBirthsFromFirebase(FirebaseFirestore firebaseFirestore, FirebaseUser firebaseUser) {
-        DocumentReference documentReference = firebaseFirestore.collection(firebaseUser.getUid()).document("friends");
+        DocumentReference documentReference = firebaseFirestore.collection(Util.getCollectionId(firebaseUser)).document("friends");
         showProgressBar();
         documentReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -418,7 +414,7 @@ public class Backup extends AppCompatActivity {
     }
 
     public void restoreUserPreferenceFromFirebase(FirebaseFirestore firebaseFirestore, FirebaseUser firebaseUser) {
-        DocumentReference documentReference = firebaseFirestore.collection(firebaseUser.getUid()).document("settings");
+        DocumentReference documentReference = firebaseFirestore.collection(Util.getCollectionId(firebaseUser)).document("settings");
         showProgressBar();
         documentReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -447,7 +443,7 @@ public class Backup extends AppCompatActivity {
     public void updateLastUpdatedTime(FirebaseFirestore firebaseFirestore, FirebaseUser firebaseUser) {
         Map<String, Date> updateTime = new HashMap<>();
         updateTime.put(Constants.serverBackupTime, Util.getDateFromString(Storage.getDbBackupTime(), Constants.backupDateFormatToStore));
-        DocumentReference documentReference = firebaseFirestore.collection(firebaseUser.getUid()).document("settings");
+        DocumentReference documentReference = firebaseFirestore.collection(Util.getCollectionId(firebaseUser)).document("settings");
         documentReference.set(updateTime).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
@@ -466,7 +462,7 @@ public class Backup extends AppCompatActivity {
     }
 
     public void getFirebaseLastUpdatedTime(FirebaseFirestore firebaseFirestore, FirebaseUser firebaseUser, String caller) {
-        DocumentReference documentReference = firebaseFirestore.collection(firebaseUser.getUid()).document("settings");
+        DocumentReference documentReference = firebaseFirestore.collection(Util.getCollectionId(firebaseUser)).document("settings");
         documentReference.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {

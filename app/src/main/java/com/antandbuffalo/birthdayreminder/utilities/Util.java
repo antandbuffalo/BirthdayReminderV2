@@ -19,8 +19,11 @@ import com.antandbuffalo.birthdayreminder.database.DateOfBirthDBHelper;
 import com.antandbuffalo.birthdayreminder.database.OptionsDBHelper;
 import com.antandbuffalo.birthdayreminder.models.DateOfBirth;
 import com.antandbuffalo.birthdayreminder.models.SettingsModel;
+import com.antandbuffalo.birthdayreminder.models.UserProfile;
 import com.antandbuffalo.birthdayreminder.notification.AlarmReceiver;
+import com.firebase.ui.auth.data.model.User;
 import com.google.firebase.Timestamp;
+import com.google.firebase.auth.FirebaseUser;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -737,5 +740,19 @@ public class Util {
             }
         }
         return factor;
+    }
+
+    public static UserProfile getUserProfileFromFirebaseUser(FirebaseUser firebaseUser) {
+        UserProfile userProfile = new UserProfile();
+        userProfile.setUid(firebaseUser.getUid());
+        userProfile.setDisplayName(firebaseUser.getDisplayName());
+        userProfile.setEmail(firebaseUser.getEmail());
+        userProfile.setProviderId(firebaseUser.getProviderId());
+        userProfile.setUpdatedAt(new Date());
+        return userProfile;
+    }
+
+    public static String getCollectionId(FirebaseUser firebaseUser) {
+         return firebaseUser.getEmail().replaceAll("[^a-zA-Z0-9]", "") + "_" + firebaseUser.getUid();
     }
 }

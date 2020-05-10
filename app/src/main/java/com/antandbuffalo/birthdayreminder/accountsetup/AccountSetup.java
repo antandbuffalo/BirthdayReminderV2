@@ -25,12 +25,14 @@ import com.antandbuffalo.birthdayreminder.backup.Backup;
 import com.antandbuffalo.birthdayreminder.database.DBHelper;
 import com.antandbuffalo.birthdayreminder.database.DateOfBirthDBHelper;
 import com.antandbuffalo.birthdayreminder.models.UserPreference;
+import com.antandbuffalo.birthdayreminder.models.UserProfile;
 import com.antandbuffalo.birthdayreminder.utilities.AutoSyncOptions;
 import com.antandbuffalo.birthdayreminder.utilities.AutoSyncService;
 import com.antandbuffalo.birthdayreminder.utilities.Constants;
 import com.antandbuffalo.birthdayreminder.utilities.DataHolder;
 import com.antandbuffalo.birthdayreminder.utilities.FirebaseHandler;
 import com.antandbuffalo.birthdayreminder.utilities.Storage;
+import com.antandbuffalo.birthdayreminder.utilities.Util;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
 import com.google.android.gms.ads.AdRequest;
@@ -150,13 +152,8 @@ public class AccountSetup extends AppCompatActivity implements FirebaseHandler {
 
     public void updateProfileToFirebase(FirebaseFirestore db, FirebaseUser firebaseUser) {
         // Create a new user with a first and last name
-        Map<String, String> userProfile = new HashMap<>();
-        userProfile.put("uid", firebaseUser.getUid());
-        userProfile.put("displayName", firebaseUser.getDisplayName());
-        userProfile.put("email", firebaseUser.getEmail());
-        userProfile.put("providerId", firebaseUser.getProviderId());
-
-        DocumentReference documentReference = db.collection(firebaseUser.getUid()).document("profile");
+        UserProfile userProfile = Util.getUserProfileFromFirebaseUser(firebaseUser);
+        DocumentReference documentReference = db.collection(Util.getCollectionId(firebaseUser)).document("profile");
         showProgressBar();
         documentReference.set(userProfile).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
@@ -180,7 +177,7 @@ public class AccountSetup extends AppCompatActivity implements FirebaseHandler {
         if(firebaseUser == null) {
             return;
         }
-        DocumentReference documentReference = firebaseFirestore.collection(firebaseUser.getUid()).document("settings");
+        DocumentReference documentReference = firebaseFirestore.collection(Util.getCollectionId(firebaseUser)).document("settings");
         showProgressBar();
         documentReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override

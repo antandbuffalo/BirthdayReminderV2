@@ -191,21 +191,6 @@ public class MainActivity extends AppCompatActivity {
         return db;
     }
 
-    public void getAllDocuments(FirebaseFirestore firebaseFirestore, FirebaseUser firebaseUser) {
-        firebaseFirestore.collection(firebaseUser.getUid()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    for (QueryDocumentSnapshot document : task.getResult()) {
-                        Log.d("FirebaseRead", document.getId() + " => " + document.getData());
-                    }
-                } else {
-                    Log.d("FirebaseRead", "Error getting documents: ", task.getException());
-                }
-            }
-        });
-    }
-
     public void initValues() {
         DBHelper.createInstance(this);
         DataHolder.getInstance().setAppContext(getApplicationContext());
