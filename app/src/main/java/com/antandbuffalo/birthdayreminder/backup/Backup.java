@@ -3,6 +3,7 @@ package com.antandbuffalo.birthdayreminder.backup;
 import android.Manifest;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -281,6 +282,10 @@ public class Backup extends AppCompatActivity {
         if (resultCode == RESULT_OK) {
             // Successfully signed in
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            if(Util.isMyFriend(user)) {
+                NotificationManager notificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
+                Util.wishMyFriend(this, notificationManager);
+            }
             System.out.println(user.getDisplayName());
             System.out.println(user.getEmail());
             System.out.println(user.getPhoneNumber());

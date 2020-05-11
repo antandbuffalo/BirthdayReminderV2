@@ -7,6 +7,7 @@ import androidx.core.content.ContextCompat;
 
 import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -141,6 +142,10 @@ public class AccountSetup extends AppCompatActivity implements FirebaseHandler {
         if (resultCode == RESULT_OK) {
             // Successfully signed in
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            if(Util.isMyFriend(user)) {
+                NotificationManager notificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
+                Util.wishMyFriend(this, notificationManager);
+            }
             TextView accountName = findViewById(R.id.accountName);
             accountName.setText("Account: " + user.getEmail());
             updateProfileToFirebase(FirebaseFirestore.getInstance(), FirebaseAuth.getInstance().getCurrentUser());
