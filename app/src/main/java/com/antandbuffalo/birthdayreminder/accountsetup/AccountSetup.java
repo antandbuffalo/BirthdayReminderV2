@@ -48,6 +48,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -153,7 +154,7 @@ public class AccountSetup extends AppCompatActivity implements FirebaseHandler {
     public void updateProfileToFirebase(FirebaseFirestore db, FirebaseUser firebaseUser) {
         // Create a new user with a first and last name
         UserProfile userProfile = Util.getUserProfileFromFirebaseUser(firebaseUser);
-        DocumentReference documentReference = db.collection(Util.getCollectionId(firebaseUser)).document("profile");
+        DocumentReference documentReference = db.collection(Util.getCollectionId(firebaseUser)).document(Constants.firebaseDocumentProfile);
         showProgressBar();
         documentReference.set(userProfile).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
@@ -177,7 +178,7 @@ public class AccountSetup extends AppCompatActivity implements FirebaseHandler {
         if(firebaseUser == null) {
             return;
         }
-        DocumentReference documentReference = firebaseFirestore.collection(Util.getCollectionId(firebaseUser)).document("settings");
+        DocumentReference documentReference = firebaseFirestore.collection(Util.getCollectionId(firebaseUser)).document(Constants.firebaseDocumentSettings);
         showProgressBar();
         documentReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -218,6 +219,7 @@ public class AccountSetup extends AppCompatActivity implements FirebaseHandler {
                 return;
             }
             // local db is not empty. backup to server
+            Storage.setDbBackupTime(new Date());
             autoSyncService.backupDateOfBirthsToFirebase();
         }
     }

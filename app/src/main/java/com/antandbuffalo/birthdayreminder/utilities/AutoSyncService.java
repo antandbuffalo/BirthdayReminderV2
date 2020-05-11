@@ -72,7 +72,7 @@ public class AutoSyncService {
         if(firebaseUser == null) {
             return;
         }
-        DocumentReference documentReference = firebaseFirestore.collection(Util.getCollectionId(firebaseUser)).document("friends");
+        DocumentReference documentReference = firebaseFirestore.collection(Util.getCollectionId(firebaseUser)).document(Constants.firebaseDocumentFriends);
         documentReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -102,7 +102,7 @@ public class AutoSyncService {
         if(firebaseUser == null) {
             return;
         }
-        DocumentReference documentReference = firebaseFirestore.collection(Util.getCollectionId(firebaseUser)).document("settings");
+        DocumentReference documentReference = firebaseFirestore.collection(Util.getCollectionId(firebaseUser)).document(Constants.firebaseDocumentSettings);
         documentReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -131,7 +131,7 @@ public class AutoSyncService {
             return;
         }
         Map<String, DateOfBirth> dateOfBirthMap = Util.getDateOfBirthMap();
-        DocumentReference documentReference = firebaseFirestore.collection(Util.getCollectionId(firebaseUser)).document("friends");
+        DocumentReference documentReference = firebaseFirestore.collection(Util.getCollectionId(firebaseUser)).document(Constants.firebaseDocumentFriends);
         documentReference.set(dateOfBirthMap).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
@@ -153,7 +153,7 @@ public class AutoSyncService {
         if(firebaseUser == null) {
             return;
         }
-        DocumentReference documentReference = firebaseFirestore.collection(Util.getCollectionId(firebaseUser)).document("settings");
+        DocumentReference documentReference = firebaseFirestore.collection(Util.getCollectionId(firebaseUser)).document(Constants.firebaseDocumentSettings);
         documentReference.set(Storage.getUserPreference()).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {

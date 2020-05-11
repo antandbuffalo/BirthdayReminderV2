@@ -186,4 +186,8 @@ public class Constants {
     public static final String backupDateFormatToStore = "dd MMM yyyy, HH:mm:ss";
     public static final String dbBackupTime = "dbBackupTime";
     public static final String serverBackupTime = "serverBackupTime";
+
+    public static final String firebaseDocumentFriends = "zfriends";
+    public static final String firebaseDocumentProfile = "profile";
+    public static final String firebaseDocumentSettings = "settings";
 }
