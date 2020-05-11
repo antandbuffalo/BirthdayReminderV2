@@ -45,7 +45,7 @@ public class AddNew extends AppCompatActivity {
 
     TextView namePreview, desc, dateField, monthField, yearField;
     EditText dateInput, yearInput;
-    LinearLayout circle;
+    LinearLayout circle, todayImage;
     CheckBox removeYear;
     Spinner monthSpinner;
     AdView mAdView;
@@ -262,8 +262,12 @@ public class AddNew extends AppCompatActivity {
 
         if(dayOfYear == currentDayOfYear) {
             circle.setBackgroundResource(R.drawable.cirlce_today);
+            todayImage.setVisibility(View.VISIBLE);
+            circle.setVisibility(View.INVISIBLE);
         }
         else if(recentDayOfYear < currentDayOfYear) {   //year end case
+            todayImage.setVisibility(View.INVISIBLE);
+            circle.setVisibility(View.VISIBLE);
             if(dayOfYear > currentDayOfYear || dayOfYear < recentDayOfYear) {
                 circle.setBackgroundResource(R.drawable.cirlce_recent);
             }
@@ -272,9 +276,13 @@ public class AddNew extends AppCompatActivity {
             }
         }
         else if(dayOfYear <= recentDayOfYear && dayOfYear > currentDayOfYear ){
+            todayImage.setVisibility(View.INVISIBLE);
+            circle.setVisibility(View.VISIBLE);
             circle.setBackgroundResource(R.drawable.cirlce_recent);
         }
         else {
+            todayImage.setVisibility(View.INVISIBLE);
+            circle.setVisibility(View.VISIBLE);
             circle.setBackgroundResource(R.drawable.cirlce_normal);
         }
 
@@ -313,6 +321,7 @@ public class AddNew extends AppCompatActivity {
         yearField = (TextView)findViewById(R.id.yearField);
 
         circle = (LinearLayout)findViewById(R.id.circlebg);
+        todayImage = (LinearLayout)findViewById(R.id.todayImage);
     }
 
     public void initViewValues() {

@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // Util.copyFromAssetFileToDatabase("cse.txt");
+        Util.copyFromAssetFileToDatabase("cse.txt");
 
         upcomingListAdapter = new UpcomingListAdapter();
         //http://stackoverflow.com/questions/6495898/findviewbyid-in-fragment

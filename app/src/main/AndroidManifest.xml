@@ -44,7 +44,8 @@
         <activity
             android:name=".update.Update"
             android:label="Update"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".about.About"
             android:label="About" />
