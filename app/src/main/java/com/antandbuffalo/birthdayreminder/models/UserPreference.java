@@ -12,4 +12,6 @@ public class UserPreference {
     public Integer notificationMinutes;
     public Integer numberOfNotifications;
     public String wishTemplate;
+    public String versionName;
+    public Integer versionCode;
 }

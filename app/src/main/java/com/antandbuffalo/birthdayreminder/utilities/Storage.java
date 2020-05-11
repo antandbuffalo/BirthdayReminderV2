@@ -4,6 +4,7 @@ import android.app.AlarmManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.antandbuffalo.birthdayreminder.BuildConfig;
 import com.antandbuffalo.birthdayreminder.models.UserPreference;
 import com.google.firebase.Timestamp;
 
@@ -198,6 +199,8 @@ public class Storage {
         userPreference.serverBackupTime = Util.getDateFromString(Storage.getServerBackupTime(), Constants.backupDateFormatToStore);
         userPreference.wishTemplate = Storage.getWishTemplate();
         userPreference.localBackupTime = Util.getDateFromString(Storage.getDbBackupTime(), Constants.backupDateFormatToStore);
+        userPreference.versionName = BuildConfig.VERSION_NAME;
+        userPreference.versionCode =  BuildConfig.VERSION_CODE;
         return userPreference;
     }
 
@@ -225,6 +228,11 @@ public class Storage {
         Timestamp server = (Timestamp) genericPreference.get("serverBackupTime");
         if(server != null) {
             userPreference.serverBackupTime = server.toDate();
+        }
+
+        userPreference.versionName = (String) genericPreference.get("versionName");
+        if(genericPreference.get("versionCode") != null) {
+            userPreference.versionCode = ((Long) genericPreference.get("versionCode")).intValue();
         }
         return userPreference;
     }
