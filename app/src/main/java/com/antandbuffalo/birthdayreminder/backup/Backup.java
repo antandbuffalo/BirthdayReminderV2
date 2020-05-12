@@ -282,10 +282,6 @@ public class Backup extends AppCompatActivity {
         if (resultCode == RESULT_OK) {
             // Successfully signed in
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-            if(Util.isMyFriend(user)) {
-                NotificationManager notificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
-                Util.wishMyFriend(this, notificationManager);
-            }
             System.out.println(user.getDisplayName());
             System.out.println(user.getEmail());
             System.out.println(user.getPhoneNumber());
