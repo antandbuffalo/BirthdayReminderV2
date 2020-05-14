@@ -9,30 +9,29 @@
     android:focusableInTouchMode="true"
     tools:showIn="@layout/activity_main">
 
-    <EditText
+    <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/upcomingFiler"
-        android:layout_width="fill_parent"
-        android:layout_height="40sp"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:autoText="false"
-        android:background="@drawable/custom_edittext"
-        android:drawableRight="@drawable/ic_search_gray"
-        android:elevation="2dp"
-        android:ems="10"
-        android:hint="Filter"
-        android:inputType="textPersonName"
-        android:paddingLeft="3dp"
-        android:paddingRight="3dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:endIconMode="clear_text"
+        app:hintEnabled="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/filter"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Filter" />
+
+    </com.google.android.material.textfield.TextInputLayout>
 
     <ListView
         android:id="@+id/upcomingListView"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="2dp"
+        android:layout_marginTop="-10dp"
         android:layout_marginBottom="50dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

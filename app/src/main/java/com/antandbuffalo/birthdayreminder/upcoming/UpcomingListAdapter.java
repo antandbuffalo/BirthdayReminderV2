@@ -27,7 +27,7 @@ import java.util.List;
 /**
  * Created by i677567 on 23/9/15.
  */
-public class UpcomingListAdapter extends BaseAdapter implements Filterable {
+public class UpcomingListAdapter extends BaseAdapter {
 
     int currentDayOfYear, dayOfYear, recentDayOfYear;
     Calendar cal;
@@ -148,41 +148,20 @@ public class UpcomingListAdapter extends BaseAdapter implements Filterable {
         dobs = DateOfBirthDBHelper.selectUpcoming();
     }
 
-    @Override
-    public Filter getFilter() {
-        final Filter filter = new Filter() {
-
-            @SuppressWarnings("unchecked")
-            @Override
-            protected void publishResults(CharSequence constraint, FilterResults results) {
-                dobs = (List<DateOfBirth>) results.values;
-                notifyDataSetChanged();
+    public void filter(String input) {
+        filteredDobs.clear();
+        // perform your search here using the searchConstraint String.
+        DateOfBirth dob;
+        String dateString, monthString;
+        for (int i = 0; i < allDobs.size(); i++) {
+            dob = allDobs.get(i);
+            dateString = Util.getStringFromDate(dob.getDobDate());
+            monthString = dateFormatter.format(Util.getCalendar(dob.getDobDate()).getTime());
+            input = input.toLowerCase();
+            if (dob.getName().toLowerCase().contains(input) || dateString.contains(input) || monthString.toLowerCase().contains(input))  {
+                filteredDobs.add(dob);
             }
-
-            @Override
-            protected FilterResults performFiltering(CharSequence constraint) {
-                FilterResults results = new FilterResults();
-                filteredDobs.clear();
-                // perform your search here using the searchConstraint String.
-                constraint = constraint.toString().toLowerCase();
-                DateOfBirth dob;
-                String dateString;
-                for (int i = 0; i < allDobs.size(); i++) {
-                    dob = allDobs.get(i);
-                    dateString = Util.getStringFromDate(dob.getDobDate());
-                    if (dob.getName().toLowerCase().contains(constraint.toString()) || dateString.contains(constraint.toString()))  {
-                        filteredDobs.add(dob);
-                    }
-                }
-
-                results.count = filteredDobs.size();
-                results.values = filteredDobs;
-                Log.e("VALUES", results.count + "");
-                //filteredDobs = null;
-                return results;
-            }
-        };
-
-        return filter;
+        }
+        dobs = filteredDobs;
     }
 }

@@ -19,7 +19,6 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -39,27 +38,16 @@ import com.antandbuffalo.birthdayreminder.utilities.Constants;
 import com.antandbuffalo.birthdayreminder.utilities.DataHolder;
 import com.antandbuffalo.birthdayreminder.utilities.Storage;
 import com.antandbuffalo.birthdayreminder.utilities.Util;
-import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 
-import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
     UpcomingListAdapter upcomingListAdapter;
@@ -141,12 +129,16 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        EditText filter = (EditText)findViewById(R.id.upcomingFiler);
+        TextInputEditText filter = findViewById(R.id.filter);
+
+        //EditText filter = (EditText)findViewById(R.id.upcomingFiler);
         filter.addTextChangedListener(new TextWatcher() {
             @Override
             public void onTextChanged(CharSequence cs, int arg1, int arg2, int arg3) {
                 // When user changed the Text
-                upcomingListAdapter.getFilter().filter(cs);
+                //upcomingListAdapter.getFilter().filter(cs);
+                upcomingListAdapter.filter(cs.toString());
+                upcomingListAdapter.notifyDataSetChanged();
             }
 
             @Override
@@ -304,10 +296,11 @@ public class MainActivity extends AppCompatActivity {
 
     public void refreshList() {
         upcomingListAdapter.refreshData();
-        EditText filter = findViewById(R.id.upcomingFiler);
+        //EditText filter = findViewById(R.id.upcomingFiler);
+        TextInputEditText filter = findViewById(R.id.filter);
         String filterText = filter.getText().toString();
         if(!filterText.equalsIgnoreCase("")) {
-            upcomingListAdapter.getFilter().filter(filterText);
+            upcomingListAdapter.filter(filterText);
         }
     }
 

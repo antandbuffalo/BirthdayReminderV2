@@ -1,13 +1,7 @@
 package com.antandbuffalo.birthdayreminder.accountsetup;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.content.ContextCompat;
-
 import android.app.AlarmManager;
 import android.app.AlertDialog;
-import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -21,12 +15,16 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
+
 import com.antandbuffalo.birthdayreminder.R;
-import com.antandbuffalo.birthdayreminder.backup.Backup;
-import com.antandbuffalo.birthdayreminder.database.DBHelper;
 import com.antandbuffalo.birthdayreminder.database.DateOfBirthDBHelper;
 import com.antandbuffalo.birthdayreminder.models.UserPreference;
 import com.antandbuffalo.birthdayreminder.models.UserProfile;
+import com.antandbuffalo.birthdayreminder.settings.Settings;
 import com.antandbuffalo.birthdayreminder.utilities.AutoSyncOptions;
 import com.antandbuffalo.birthdayreminder.utilities.AutoSyncService;
 import com.antandbuffalo.birthdayreminder.utilities.Constants;
@@ -50,7 +48,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -122,8 +119,9 @@ public class AccountSetup extends AppCompatActivity implements FirebaseHandler {
         int id = item.getItemId();
         if(id == android.R.id.home) {
             Log.d("BRJB", item.getItemId() + " : back");
+            showConfirmationBeforeExit();
         }
-        finish();
+        //finish();
         return true;
     }
 
@@ -268,6 +266,51 @@ public class AccountSetup extends AppCompatActivity implements FirebaseHandler {
         mAdView = this.findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
+    }
+
+    public void showConfirmationBeforeExit() {
+        String message = "Are you sure want to continue without setting up your Account and Auto Sync frequency?";
+        int error = 0;
+        if(FirebaseAuth.getInstance().getCurrentUser() == null) {
+            message = "Are you sure want to continue without setting up your Account?";
+            error++;
+        }
+        if(Storage.getAutoSyncFrequency().equalsIgnoreCase("none")) {
+            message = "Are you sure want to continue without setting up Auto Sync Frequency?";
+            error++;
+        }
+        if(error == 2) {
+            message = "Are you sure want to continue without setting up your Account and Auto Sync frequency?";
+        }
+        if(error == 0) {
+            finish();
+            return;
+        }
+
+        androidx.appcompat.app.AlertDialog.Builder alertDialogBuilder = new androidx.appcompat.app.AlertDialog.Builder(AccountSetup.this);
+        alertDialogBuilder.setTitle("Confirmation")
+                .setMessage(message)
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        finish();
+                    }
+                })
+                .setNegativeButton("No", null);
+
+        androidx.appcompat.app.AlertDialog dialog = alertDialogBuilder.create();
+        dialog.setOnShowListener( new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface arg0) {
+                dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(AccountSetup.this, R.color.dark_gray));
+            }
+        });
+        dialog.show();
+    }
+
+    @Override
+    public void onBackPressed() {
+        showConfirmationBeforeExit();
     }
 }
 
