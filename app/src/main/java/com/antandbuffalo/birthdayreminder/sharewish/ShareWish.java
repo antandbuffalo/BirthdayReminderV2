@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import android.widget.EditText;
 
 import com.antandbuffalo.birthdayreminder.R;
+import com.antandbuffalo.birthdayreminder.utilities.Storage;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 
@@ -25,6 +26,8 @@ public class ShareWish extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_back_white);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        setCurrentValue();
 
         loadAd();
     }
@@ -54,6 +57,10 @@ public class ShareWish extends AppCompatActivity {
         String shareBody = editText.getText().toString();
         sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
         startActivity(Intent.createChooser(sharingIntent, "Send via..."));
+    }
+    public void setCurrentValue() {
+        EditText editText = findViewById(R.id.shareWishText);
+        editText.setText(Storage.getWishTemplate());
     }
 
     public void loadAd() {
