@@ -290,6 +290,10 @@ public class Util {
     }
 
     public static File writeToFile(Context context) {
+        return writeToFile(context, null);
+    }
+
+    public static File writeToFile(Context context, String backupFileNameSuffix) {
         String returnValue = "";
         String createFolderResult = Util.createEmptyFolder();
         if(!createFolderResult.equalsIgnoreCase(Constants.FLAG_SUCCESS)) {
@@ -310,7 +314,8 @@ public class Util {
         String currentDateTime = calendar.get(Calendar.YEAR) + getTwoDigitsString(calendar.get(Calendar.MONTH) + 1) + getTwoDigitsString(calendar.get(Calendar.DATE))
                 + getTwoDigitsString(calendar.get(Calendar.HOUR_OF_DAY)) + getTwoDigitsString(calendar.get(Calendar.MINUTE)) + getTwoDigitsString(calendar.get(Calendar.SECOND));
         String fileName = "/" + Constants.FOLDER_NAME + "/" + Constants.FILE_NAME + Constants.FILE_NAME_SUFFIX;
-        String fileNameBackup = "/" + Constants.FOLDER_NAME + "/" + Constants.FILE_NAME + "_" + currentDateTime + Constants.FILE_NAME_SUFFIX;
+        String fileNameBackup = "/" + Constants.FOLDER_NAME + "/" + Constants.FILE_NAME + "_" + currentDateTime;
+        fileNameBackup = backupFileNameSuffix != null? (fileNameBackup + "_" + backupFileNameSuffix + Constants.FILE_NAME_SUFFIX) : (fileNameBackup + Constants.FILE_NAME_SUFFIX);
 
         File myFile = new File(sdcard, fileName);
         File myFileBackup = new File(sdcard, fileNameBackup);
@@ -335,7 +340,7 @@ public class Util {
             fOut.close();
             System.out.println("Write successful");
             System.out.println(new Date(myFile.lastModified()));
-            myFileBackup.delete();
+            //myFileBackup.delete();
 
         } catch (IOException e) {
             // TODO Auto-generated catch block

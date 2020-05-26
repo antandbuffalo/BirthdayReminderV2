@@ -164,6 +164,8 @@ public class MainActivity extends AppCompatActivity {
 
     public void launchAccountSetup() {
         if(Storage.isFirstTimeLaunch()) {
+            // backup the older version of dob before upgrade to v2
+            Util.writeToFile(this, "v2");
             Intent intent = new Intent(MainActivity.this, AccountSetup.class);
             startActivity(intent);
             Storage.setFirstTimeLaunch();
