@@ -24,7 +24,6 @@ import com.antandbuffalo.birthdayreminder.R;
 import com.antandbuffalo.birthdayreminder.database.DateOfBirthDBHelper;
 import com.antandbuffalo.birthdayreminder.models.UserPreference;
 import com.antandbuffalo.birthdayreminder.models.UserProfile;
-import com.antandbuffalo.birthdayreminder.settings.Settings;
 import com.antandbuffalo.birthdayreminder.utilities.AutoSyncOptions;
 import com.antandbuffalo.birthdayreminder.utilities.AutoSyncService;
 import com.antandbuffalo.birthdayreminder.utilities.Constants;
@@ -94,6 +93,7 @@ public class AccountSetup extends AppCompatActivity implements FirebaseHandler {
                         System.out.println("i = " + i);
                         Storage.setAutoSyncFrequency(optionsList.get(i).get("key"));
                         updateAutoFrequencyUI();
+                        Storage.setDbBackupTime(new Date());
                     }
                 });
                 adb.setPositiveButton("OK", null);
@@ -142,8 +142,8 @@ public class AccountSetup extends AppCompatActivity implements FirebaseHandler {
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
             TextView accountName = findViewById(R.id.accountName);
             accountName.setText("Account: " + user.getEmail());
+            Storage.setDbBackupTime(new Date());
             updateProfileToFirebase(FirebaseFirestore.getInstance(), FirebaseAuth.getInstance().getCurrentUser());
-
             getUserPreferenceFromFirebase();
         } else {
             Toast.makeText(DataHolder.getInstance().getAppContext(), "Not able to sign in", Toast.LENGTH_SHORT).show();

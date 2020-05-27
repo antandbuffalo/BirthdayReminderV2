@@ -148,6 +148,7 @@ public class Backup extends AppCompatActivity {
                         System.out.println("i = " + i);
                         Storage.setAutoSyncFrequency(optionsList.get(i).get("key"));
                         updateAutoFrequencyUI();
+                        Storage.setDbBackupTime(new Date());
                     }
                 });
                 adb.setPositiveButton("OK", null);
@@ -290,6 +291,7 @@ public class Backup extends AppCompatActivity {
             TextView accountName = findViewById(R.id.accountName);
             accountName.setText("Account: " + user.getEmail());
             updateProfileToFirebase(FirebaseFirestore.getInstance(), FirebaseAuth.getInstance().getCurrentUser());
+            Storage.setDbBackupTime(new Date());
         } else {
             Toast.makeText(DataHolder.getInstance().getAppContext(), "Not able to sign in", Toast.LENGTH_SHORT).show();
         }

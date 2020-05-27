@@ -113,10 +113,10 @@ public class AutoSyncService {
                         if(userPreference.serverBackupTime != null) {
                             Storage.setServerBackupTime(userPreference.serverBackupTime);
                         }
-                        compareBackupTimes();
                     } else {
                         Log.d("FirebaseGetData", "No such document");
                     }
+                    compareBackupTimes();
                 } else {
                     Log.d("FirebaseGetData", "get failed with ", task.getException());
                 }

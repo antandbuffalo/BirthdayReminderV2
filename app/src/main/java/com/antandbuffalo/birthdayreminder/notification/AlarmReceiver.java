@@ -115,6 +115,10 @@ public class AlarmReceiver extends BroadcastReceiver {
         if(preNotifDays > 0) {
             showPreNotifications(context, preNotifDays);
         }
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        autoSync(alarmManager, context, connectivityManager);
+
         List<DateOfBirth> todayList = DateOfBirthDBHelper.selectToday(context);
         if(todayList == null || todayList.size() == 0) {
             return;
@@ -147,9 +151,6 @@ public class AlarmReceiver extends BroadcastReceiver {
         notificationManager.notify(notificationId, mBuilder.build());
         // an Intent broadcast.
         //throw new UnsupportedOperationException("Not yet implemented");
-        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        autoSync(alarmManager, context, connectivityManager);
     }
 
     public void autoSync(AlarmManager alarmManager, Context context, ConnectivityManager connectivityManager) {
