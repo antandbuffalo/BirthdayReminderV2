@@ -339,7 +339,9 @@ public class Util {
             myOutWriter.close();
             fOut.close();
             System.out.println("Write successful");
-            System.out.println(new Date(myFile.lastModified()));
+            if(myFile != null) {
+                System.out.println(new Date(myFile.lastModified()));
+            }
             //myFileBackup.delete();
 
         } catch (IOException e) {

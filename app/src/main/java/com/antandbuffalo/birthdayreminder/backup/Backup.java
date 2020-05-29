@@ -172,7 +172,9 @@ public class Backup extends AppCompatActivity {
 
     public void updateLocalBackup() {
         File file = Util.writeToFile(this);
-        Storage.setDbBackupTime(new Date(file.lastModified()));
+        if(file != null) {
+            Storage.setDbBackupTime(new Date(file.lastModified()));
+        }
         updateBackupTimeUI();
     }
 
@@ -325,6 +327,9 @@ public class Backup extends AppCompatActivity {
     }
 
     public void backupDateOfBirthsToFirebase(FirebaseFirestore firebaseFirestore, FirebaseUser firebaseUser) {
+        if(firebaseUser == null) {
+            return;
+        }
         // Create a new user with a first and last name
         showProgressBar();
         Map<String, DateOfBirth> dateOfBirthMap = Util.getDateOfBirthMap();
@@ -351,6 +356,9 @@ public class Backup extends AppCompatActivity {
     }
 
     public void backupUserPreferenceToFirebase(FirebaseFirestore db, FirebaseUser firebaseUser) {
+        if(firebaseUser == null) {
+            return;
+        }
         showProgressBar();
         DocumentReference documentReference = db.collection(Util.getCollectionId(firebaseUser)).document(Constants.firebaseDocumentSettings);
         documentReference.set(Storage.getUserPreference()).addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -373,6 +381,9 @@ public class Backup extends AppCompatActivity {
     }
 
     public void updateProfileToFirebase(FirebaseFirestore db, FirebaseUser firebaseUser) {
+        if(firebaseUser == null) {
+            return;
+        }
         // Create a new user with a first and last name
         UserProfile userProfile = Util.getUserProfileFromFirebaseUser(firebaseUser);
         DocumentReference documentReference = db.collection(Util.getCollectionId(firebaseUser)).document(Constants.firebaseDocumentProfile);
@@ -391,6 +402,9 @@ public class Backup extends AppCompatActivity {
     }
 
     public void restoreDateOfBirthsFromFirebase(FirebaseFirestore firebaseFirestore, FirebaseUser firebaseUser) {
+        if(firebaseUser == null) {
+            return;
+        }
         DocumentReference documentReference = firebaseFirestore.collection(Util.getCollectionId(firebaseUser)).document(Constants.firebaseDocumentFriends);
         showProgressBar();
         documentReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -417,6 +431,9 @@ public class Backup extends AppCompatActivity {
     }
 
     public void restoreUserPreferenceFromFirebase(FirebaseFirestore firebaseFirestore, FirebaseUser firebaseUser) {
+        if(firebaseUser == null) {
+            return;
+        }
         DocumentReference documentReference = firebaseFirestore.collection(Util.getCollectionId(firebaseUser)).document(Constants.firebaseDocumentSettings);
         showProgressBar();
         documentReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -444,6 +461,9 @@ public class Backup extends AppCompatActivity {
     }
 
     public void updateLastUpdatedTime(FirebaseFirestore firebaseFirestore, FirebaseUser firebaseUser) {
+        if(firebaseUser == null) {
+            return;
+        }
         Map<String, Date> updateTime = new HashMap<>();
         updateTime.put(Constants.serverBackupTime, Util.getDateFromString(Storage.getDbBackupTime(), Constants.backupDateFormatToStore));
         DocumentReference documentReference = firebaseFirestore.collection(Util.getCollectionId(firebaseUser)).document(Constants.firebaseDocumentSettings);
@@ -465,6 +485,9 @@ public class Backup extends AppCompatActivity {
     }
 
     public void getFirebaseLastUpdatedTime(FirebaseFirestore firebaseFirestore, FirebaseUser firebaseUser, String caller) {
+        if(firebaseUser == null) {
+            return;
+        }
         DocumentReference documentReference = firebaseFirestore.collection(Util.getCollectionId(firebaseUser)).document(Constants.firebaseDocumentSettings);
         documentReference.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
