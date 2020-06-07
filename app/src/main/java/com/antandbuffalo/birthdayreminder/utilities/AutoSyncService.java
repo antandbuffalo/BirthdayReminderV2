@@ -36,7 +36,8 @@ public class AutoSyncService {
     }
 
     public void syncNow() {
-        if(connectivityManager.getAllNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnected()) {
+        // even if connectivityManager is not null, connectivityManager.getActiveNetworkInfo() can be null. So added an extra check
+        if(connectivityManager != null && connectivityManager.getAllNetworkInfo() != null && connectivityManager.getActiveNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnected()) {
             if(!isSynced()) {
                 getUserPreferenceFromFirebase();
             }
