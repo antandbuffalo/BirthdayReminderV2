@@ -448,6 +448,7 @@ public class Backup extends AppCompatActivity {
 
                         Storage.updateUserPreference(Storage.createUserPreferenceFromServer(document.getData()), alarmManager, getApplicationContext());
                         updateBackupTimeUI();
+                        updateAutoFrequencyUI();
                         DataHolder.getInstance().refreshSettings = true;
                         Toast.makeText(Backup.this, "Successfully Restored your preferences from server", Toast.LENGTH_SHORT).show();
                     } else {

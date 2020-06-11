@@ -188,6 +188,10 @@ public class Storage {
         if(alarmManager != null && context != null && scheduleNotification) {
             Util.setRepeatingAlarm(context, alarmManager, userPreference.notificationHours, userPreference.notificationMinutes, userPreference.numberOfNotifications);
         }
+
+        if(userPreference.autoSyncFrequency != null) {
+            Storage.setAutoSyncFrequency(userPreference.autoSyncFrequency);
+        }
     }
 
     public static UserPreference getUserPreference() {
@@ -201,6 +205,7 @@ public class Storage {
         userPreference.localBackupTime = Util.getDateFromString(Storage.getDbBackupTime(), Constants.backupDateFormatToStore);
         userPreference.versionName = BuildConfig.VERSION_NAME;
         userPreference.versionCode =  BuildConfig.VERSION_CODE;
+        userPreference.autoSyncFrequency = Storage.getAutoSyncFrequency();
         return userPreference;
     }
 
@@ -233,6 +238,10 @@ public class Storage {
         userPreference.versionName = (String) genericPreference.get("versionName");
         if(genericPreference.get("versionCode") != null) {
             userPreference.versionCode = ((Long) genericPreference.get("versionCode")).intValue();
+        }
+
+        if(genericPreference.get("autoSyncFrequency") != null) {
+            userPreference.autoSyncFrequency = (String) genericPreference.get("autoSyncFrequency");
         }
         return userPreference;
     }

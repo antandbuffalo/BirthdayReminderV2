@@ -191,7 +191,7 @@ public class DateOfBirthDBHelper {
             }
             else {
                 dateOfBirth.setAge(dateOfBirth.getAge() + 1);
-                Util.setDescription(dateOfBirth, "Completing", diff);
+                Util.setDescription(dateOfBirth, "will be turning", diff);
             }
         }
         return dobList;

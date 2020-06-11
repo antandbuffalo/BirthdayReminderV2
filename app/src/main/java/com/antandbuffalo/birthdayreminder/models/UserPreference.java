@@ -14,4 +14,5 @@ public class UserPreference {
     public String wishTemplate;
     public String versionName;
     public Integer versionCode;
+    public String autoSyncFrequency;
 }
