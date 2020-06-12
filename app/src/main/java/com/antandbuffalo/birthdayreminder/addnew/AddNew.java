@@ -28,6 +28,7 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.antandbuffalo.birthdayreminder.R;
 import com.antandbuffalo.birthdayreminder.database.DBHelper;
+import com.antandbuffalo.birthdayreminder.models.DateOfBirth;
 import com.antandbuffalo.birthdayreminder.utilities.Constants;
 import com.antandbuffalo.birthdayreminder.utilities.DataHolder;
 import com.antandbuffalo.birthdayreminder.utilities.Storage;
@@ -286,11 +287,11 @@ public class AddNew extends AppCompatActivity {
             circle.setBackgroundResource(R.drawable.cirlce_normal);
         }
 
-        Util.setDescription(addNewViewModel.dateOfBirth, "Age");
+        populateDescription(addNewViewModel.dateOfBirth);
 
         if(addNewViewModel.birthdayInfo.isRemoveYear) {
             yearField.setVisibility(View.INVISIBLE);
-            desc.setVisibility(View.INVISIBLE);
+            //desc.setVisibility(View.INVISIBLE);
         }
         else {
             if(addNewViewModel.dateOfBirth.getAge() < 0) {
@@ -305,6 +306,24 @@ public class AddNew extends AppCompatActivity {
         monthField.setText(Util.getStringFromDate(addNewViewModel.dateOfBirth.getDobDate(), "MMM"));
         yearField.setText(addNewViewModel.birthdayInfo.year + "");
         desc.setText(addNewViewModel.dateOfBirth.getDescription());
+    }
+
+    public void populateDescription(DateOfBirth dateOfBirth) {
+        int currentDayInNumber = Integer.parseInt(Util.getStringFromDate(new Date(), Constants.DAY_OF_YEAR));
+        int birthdayInNumber = Integer.parseInt(Util.getStringFromDate(dateOfBirth.getDobDate(), Constants.DAY_OF_YEAR));
+
+        int diff = Util.getDefaultDayOfYear(dateOfBirth.getDobDate()) - Util.getDefaultDayOfYear(new Date());
+        if(diff < 0) {
+            diff = Util.getSubstractionFactor() + diff;
+        }
+
+        if(currentDayInNumber == birthdayInNumber) {
+            Util.setDescriptionForToday(dateOfBirth);
+        }
+        else {
+            dateOfBirth.setAge(dateOfBirth.getAge() + 1);
+            Util.setDescriptionForUpcoming(dateOfBirth, diff);
+        }
     }
 
     public void initLayout() {

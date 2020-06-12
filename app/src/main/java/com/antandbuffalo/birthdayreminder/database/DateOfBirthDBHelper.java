@@ -187,80 +187,13 @@ public class DateOfBirthDBHelper {
             }
 
             if(currentDayInNumber == birthdayInNumber) {
-                Util.setDescription(dateOfBirth, "Completed");
+                Util.setDescriptionForToday(dateOfBirth);
             }
             else {
                 dateOfBirth.setAge(dateOfBirth.getAge() + 1);
-                Util.setDescription(dateOfBirth, "will be turning", diff);
+                Util.setDescriptionForUpcoming(dateOfBirth, diff);
             }
         }
-        return dobList;
-    }
-
-    public static List selectTodayAndBelated() {
-        String selectionQuery;
-        SharedPreferences sharedPreferences = Util.getSharedPreference();
-        int recentDuration = sharedPreferences.getInt(Constants.PREFERENCE_RECENT_DAYS_TODAY, 0);
-
-        Calendar cal = Calendar.getInstance();
-        int currentDayOfYear = Integer.parseInt(Util.getStringFromDate(new Date(), Constants.DAY_OF_YEAR));
-        cal.setTime(new Date());
-        cal.add(Calendar.DATE, -recentDuration);
-        int belatedDate = Integer.parseInt(Util.getStringFromDate(cal.getTime(), Constants.DAY_OF_YEAR));
-
-        java.sql.Date today = new java.sql.Date(new Date().getTime());
-        java.sql.Date todayRecent = new java.sql.Date(cal.getTimeInMillis());
-
-        if(belatedDate > currentDayOfYear) {
-            selectionQuery = "select " + Constants.COLUMN_DOB_ID + ", "
-                    + Constants.COLUMN_DOB_NAME + ", "
-                    + Constants.COLUMN_DOB_DATE + ", "
-                    + Constants.COLUMN_DOB_OPTIONAL_YEAR + ", "
-                    + "0 as TYPE, "
-                    + "cast(strftime('%m%d', "
-                    + Constants.COLUMN_DOB_DATE + ") as int) as day from "
-                    + Constants.TABLE_DATE_OF_BIRTH + " where "
-                    + "day <= cast(strftime('%m%d', '"
-                    + today
-                    + "') as int) "
-                    + "UNION "
-                    + "select " + Constants.COLUMN_DOB_ID + ", "
-                    + Constants.COLUMN_DOB_NAME + ", "
-                    + Constants.COLUMN_DOB_DATE + ", "
-                    + Constants.COLUMN_DOB_OPTIONAL_YEAR + ", "
-                    + "1 as TYPE, "
-                    + "cast(strftime('%m%d', "
-                    + Constants.COLUMN_DOB_DATE + ") as int) as day from "
-                    + Constants.TABLE_DATE_OF_BIRTH + " where day >= cast(strftime('%m%d', date('"
-                    + today
-                    + "', '"
-                    + (-recentDuration)
-                    +" day')) as int) order by TYPE, day desc";
-        }
-        else {
-            selectionQuery = "select " + Constants.COLUMN_DOB_ID + ", "
-                    + Constants.COLUMN_DOB_NAME + ", "
-                    + Constants.COLUMN_DOB_DATE + ", "
-                    + Constants.COLUMN_DOB_OPTIONAL_YEAR + ", "
-                    + "cast(strftime('%m%d', "
-                    + Constants.COLUMN_DOB_DATE + ") as int) as day from "
-                    + Constants.TABLE_DATE_OF_BIRTH + " where day >= cast(strftime('%m%d', '"
-                    + todayRecent
-                    + "') as int)"
-                    + " AND day <= cast(strftime('%m%d', '"
-                    + today
-                    + "') as int) order by day desc";
-        }
-
-        System.out.println("query today and belated --" + selectionQuery);
-        SQLiteDatabase db = DBHelper.getInstace().getReadableDatabase();
-        Cursor cursor = db.rawQuery(selectionQuery, null);
-        List<DateOfBirth> dobList = getDateOfBirthsFromCursor(cursor);
-        for(DateOfBirth dateOfBirth : dobList) {
-            Util.setDescription(dateOfBirth, "Completed");
-        }
-        cursor.close();
-        db.close();
         return dobList;
     }
 

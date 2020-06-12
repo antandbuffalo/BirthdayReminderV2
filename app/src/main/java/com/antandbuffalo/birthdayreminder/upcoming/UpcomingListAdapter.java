@@ -129,6 +129,9 @@ public class UpcomingListAdapter extends BaseAdapter {
             if(dob.getAge() >= 0) {
                 desc.setVisibility(View.VISIBLE);
             }
+            else {
+                desc.setVisibility(View.INVISIBLE);
+            }
             yearField.setVisibility(View.VISIBLE);
         }
         return convertView;

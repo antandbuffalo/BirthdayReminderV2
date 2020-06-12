@@ -234,11 +234,11 @@ public class Update extends AppCompatActivity {
             circle.setBackgroundResource(R.drawable.cirlce_normal);
         }
 
-        Util.setDescription(updateViewModel.dateOfBirth, "Age");
+        populateDescription(updateViewModel.dateOfBirth);
 
         if(updateViewModel.getRemoveYear()) {
             yearField.setVisibility(View.INVISIBLE);
-            desc.setVisibility(View.INVISIBLE);
+            //desc.setVisibility(View.INVISIBLE);
         }
         else {
             if(updateViewModel.dateOfBirth.getAge() < 0) {
@@ -253,6 +253,24 @@ public class Update extends AppCompatActivity {
         monthField.setText(Util.getStringFromDate(updateViewModel.dateOfBirth.getDobDate(), "MMM"));
         yearField.setText(updateViewModel.birthdayInfo.year + "");
         desc.setText(updateViewModel.dateOfBirth.getDescription());
+    }
+
+    public void populateDescription(DateOfBirth dateOfBirth) {
+        int currentDayInNumber = Integer.parseInt(Util.getStringFromDate(new Date(), Constants.DAY_OF_YEAR));
+        int birthdayInNumber = Integer.parseInt(Util.getStringFromDate(dateOfBirth.getDobDate(), Constants.DAY_OF_YEAR));
+
+        int diff = Util.getDefaultDayOfYear(dateOfBirth.getDobDate()) - Util.getDefaultDayOfYear(new Date());
+        if(diff < 0) {
+            diff = Util.getSubstractionFactor() + diff;
+        }
+
+        if(currentDayInNumber == birthdayInNumber) {
+            Util.setDescriptionForToday(dateOfBirth);
+        }
+        else {
+            dateOfBirth.setAge(dateOfBirth.getAge() + 1);
+            Util.setDescriptionForUpcoming(dateOfBirth, diff);
+        }
     }
 
     public void initLayout() {
