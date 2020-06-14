@@ -525,30 +525,19 @@ public class Util {
     }
 
     public static void setDescriptionForToday(DateOfBirth dob) {
-        if(dob.getRemoveYear()) {
-            dob.setDescription("Today");
-        }
-        else {
-            if(dob.getAge() < 2) {
-                dob.setDescription("is " + dob.getAge() + " year old");
-            }
-            else {
-                dob.setDescription("is " + dob.getAge() + " years old");
-            }
-        }
+        String desc = dob.getRemoveYear()? "Today" : "turns " + dob.getAge() + " today";
+        dob.setDescription(desc);
     }
 
     public static void setDescriptionForUpcoming(DateOfBirth dob, Integer days) {
+        // if there is no year, just display as today or the number of days
         if(dob.getRemoveYear()) {
-            if(days == null) {
-                dob.setDescription("Today");
-                return;
-            }
             dob.setDescription("in " + days + " days");
             if(days < 2) {
                 dob.setDescription("in " + days + " day");
             }
         }
+        // year is there. display desc with age
         else {
             String upcomingDaysText = "";
             if(days != null) {
@@ -560,13 +549,7 @@ public class Util {
             else {
                 upcomingDaysText = "";
             }
-
-            if(dob.getAge() < 2) {
-                dob.setDescription("will be turning " + dob.getAge() + " year" + upcomingDaysText);
-            }
-            else {
-                dob.setDescription("will be turning " + dob.getAge() + " years" + upcomingDaysText);
-            }
+            dob.setDescription("will be turning " + dob.getAge() + upcomingDaysText);
         }
     }
 
