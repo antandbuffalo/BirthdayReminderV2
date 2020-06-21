@@ -249,7 +249,6 @@ public class MainActivity extends AppCompatActivity {
                  refreshList();
              }
          }
-
     }
 
     public Boolean getStoragePermission(int permissionType) {

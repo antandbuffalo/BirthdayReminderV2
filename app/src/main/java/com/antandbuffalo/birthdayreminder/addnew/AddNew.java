@@ -24,8 +24,10 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProviders;
 
+import com.antandbuffalo.birthdayreminder.MainActivity;
 import com.antandbuffalo.birthdayreminder.R;
 import com.antandbuffalo.birthdayreminder.database.DBHelper;
 import com.antandbuffalo.birthdayreminder.models.DateOfBirth;
@@ -190,7 +192,6 @@ public class AddNew extends AppCompatActivity {
         } else {
             final String fileName = addNewViewModel.getFileName();
             if (fileName != null) {
-                //if(plainName.equalsIgnoreCase("csea")) {
                 AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(AddNew.this);
                 alertDialogBuilder.setTitle("Confirmation");
                 alertDialogBuilder.setMessage("Are you sure want to merge current data with " + addNewViewModel.birthdayInfo.name + " data?");
@@ -201,11 +202,19 @@ public class AddNew extends AppCompatActivity {
                         toast.show();
                         intent.putExtra(Constants.IS_USER_ADDED, Constants.FLAG_SUCCESS.toString());
                         setResult(RESULT_OK, intent);
+                        DataHolder.getInstance().refresh = true;
                         finish();
                     }
                 });
                 alertDialogBuilder.setNegativeButton("No", null);
-                alertDialogBuilder.show();
+                AlertDialog dialog = alertDialogBuilder.create();
+                dialog.setOnShowListener( new DialogInterface.OnShowListener() {
+                    @Override
+                    public void onShow(DialogInterface arg0) {
+                        dialog.getButton(android.app.AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(AddNew.this, R.color.dark_gray));
+                    }
+                });
+                dialog.show();
             } else {
                 if(addNewViewModel.isValidDateOfBirth(addNewViewModel.birthdayInfo)) {
                     addNewViewModel.saveToDB();

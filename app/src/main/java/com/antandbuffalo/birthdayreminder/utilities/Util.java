@@ -294,7 +294,6 @@ public class Util {
     }
 
     public static File writeToFile(Context context, String backupFileNameSuffix) {
-        String returnValue = "";
         String createFolderResult = Util.createEmptyFolder();
         if(!createFolderResult.equalsIgnoreCase(Constants.FLAG_SUCCESS)) {
             if(context != null) {
