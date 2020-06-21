@@ -540,9 +540,9 @@ public class Util {
         else {
             String upcomingDaysText = "";
             if(days != null) {
-                upcomingDaysText = " In " + days + " days";
+                upcomingDaysText = " in " + days + " days";
                 if(days < 2) {
-                    upcomingDaysText = " In " + days + " day";
+                    upcomingDaysText = " in " + days + " day";
                 }
             }
             else {
