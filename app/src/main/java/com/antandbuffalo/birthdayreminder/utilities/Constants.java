@@ -172,8 +172,7 @@ public class Constants {
     public static final Integer REMOVE_YEAR_VALUE = 2016;
     public static final Integer LEAP_YEAR = 2016;
 
-    public static final int MY_PERMISSIONS_WRITE_EXTERNAL_STORAGE = 1;
-    public static final int MY_PERMISSIONS_READ_EXTERNAL_STORAGE = 2;
+    public static final int MY_PERMISSIONS_READ_WRITE = 3;
 
     public static final String WISH_TEMPLATE_DEFAULT = "Wish you many more happy returns of the day";
 

@@ -215,6 +215,8 @@ public class AddNew extends AppCompatActivity {
                     }
                 });
                 dialog.show();
+            } else if(addNewViewModel.isBackupFileFound()) {
+                showLoadBackupFileConfirmation(addNewViewModel.birthdayInfo.name + Constants.FILE_NAME_SUFFIX);
             } else {
                 if(addNewViewModel.isValidDateOfBirth(addNewViewModel.birthdayInfo)) {
                     addNewViewModel.saveToDB();
@@ -235,6 +237,32 @@ public class AddNew extends AppCompatActivity {
             }
 
         }
+    }
+
+    public void showLoadBackupFileConfirmation(String fileName) {
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(AddNew.this);
+        alertDialogBuilder.setTitle("Confirmation");
+        alertDialogBuilder.setMessage("Are you sure want to merge current data with the backup file " + fileName + " data?");
+        alertDialogBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                String status = addNewViewModel.loadFromBackupFileWithName(fileName);
+                Toast toast = Toast.makeText(getApplicationContext(), status, Toast.LENGTH_SHORT);
+                toast.show();
+                intent.putExtra(Constants.IS_USER_ADDED, Constants.FLAG_SUCCESS.toString());
+                setResult(RESULT_OK, intent);
+                DataHolder.getInstance().refresh = true;
+                finish();
+            }
+        });
+        alertDialogBuilder.setNegativeButton("No", null);
+        AlertDialog dialog = alertDialogBuilder.create();
+        dialog.setOnShowListener( new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface arg0) {
+                dialog.getButton(android.app.AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(AddNew.this, R.color.dark_gray));
+            }
+        });
+        dialog.show();
     }
 
     public void populateBirthdayInfo() {

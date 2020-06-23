@@ -86,7 +86,7 @@ public class Backup extends AppCompatActivity {
         backupNow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(getStoragePermission(Constants.MY_PERMISSIONS_WRITE_EXTERNAL_STORAGE)) {
+                if(getStoragePermission(Constants.MY_PERMISSIONS_READ_WRITE)) {
                     updateLocalBackup();
                 }
                 else {
@@ -199,27 +199,12 @@ public class Backup extends AppCompatActivity {
 
     public Boolean getStoragePermission(int permissionType) {
         switch (permissionType) {
-            case Constants.MY_PERMISSIONS_WRITE_EXTERNAL_STORAGE: {
-                if (ContextCompat.checkSelfPermission(this,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                        != PackageManager.PERMISSION_GRANTED) {
+            case Constants.MY_PERMISSIONS_READ_WRITE: {
+                if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+                    || ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
 
-                    requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                            Constants.MY_PERMISSIONS_WRITE_EXTERNAL_STORAGE);
-
-                    return false;
-                } else {
-                    // Permission has already been granted
-                    return true;
-                }
-            }
-            case Constants.MY_PERMISSIONS_READ_EXTERNAL_STORAGE: {
-                if (ContextCompat.checkSelfPermission(this,
-                        Manifest.permission.READ_EXTERNAL_STORAGE)
-                        != PackageManager.PERMISSION_GRANTED) {
-
-                    requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                            Constants.MY_PERMISSIONS_READ_EXTERNAL_STORAGE);
+                    requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE},
+                            Constants.MY_PERMISSIONS_READ_WRITE);
 
                     return false;
                 } else {
@@ -227,18 +212,11 @@ public class Backup extends AppCompatActivity {
                     return true;
                 }
             }
-
         }
         return false;
     }
 
-    public void readPermission(Boolean isGranted) {
-        if(isGranted) {
-            File file = Util.getLocalFile("dob.txt");
-        }
-    }
-
-    public void writePermission(Boolean isGranted) {
+    public void readWritePermission(Boolean isGranted) {
         if(isGranted) {
             updateLocalBackup();
         }
@@ -248,29 +226,16 @@ public class Backup extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         switch (requestCode) {
-            case Constants.MY_PERMISSIONS_READ_EXTERNAL_STORAGE: {
+            case Constants.MY_PERMISSIONS_READ_WRITE: {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     // permission was granted, yay! Do the
-                    readPermission(true);
+                    readWritePermission(true);
 
                 } else {
                     // permission denied, boo! Disable the
-                    readPermission(false);
-                }
-                return;
-            }
-            case Constants.MY_PERMISSIONS_WRITE_EXTERNAL_STORAGE: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // permission was granted, yay! Do the
-                    writePermission(true);
-
-                } else {
-                    // permission denied, boo! Disable the
-                    writePermission(false);
+                    readWritePermission(false);
                 }
                 return;
             }

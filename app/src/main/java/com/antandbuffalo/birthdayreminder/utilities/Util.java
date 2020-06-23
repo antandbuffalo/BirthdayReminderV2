@@ -216,7 +216,7 @@ public class Util {
         try {
             File sdcard = Environment.getExternalStorageDirectory();
             // Get the text file
-            File file = new File(sdcard, Constants.FOLDER_NAME + "/" + fileName + Constants.FILE_NAME_SUFFIX);
+            File file = new File(sdcard, Constants.FOLDER_NAME + "/" + fileName);
             if (!file.exists()) {
                 Toast.makeText(DataHolder.getInstance().getAppContext(), Constants.ERROR_NO_BACKUP_FILE, Toast.LENGTH_SHORT).show();
                 return Constants.ERROR_NO_BACKUP_FILE;
@@ -294,8 +294,7 @@ public class Util {
     }
 
     public static File writeToFile(Context context, String backupFileNameSuffix) {
-        String createFolderResult = Util.createEmptyFolder();
-        if(!createFolderResult.equalsIgnoreCase(Constants.FLAG_SUCCESS)) {
+        if(!Util.createEmptyFolder()) {
             if(context != null) {
                 Toast.makeText(context, "Not able to create folder", Toast.LENGTH_LONG).show();
             }
@@ -318,10 +317,12 @@ public class Util {
 
         File myFile = new File(sdcard, fileName);
         File myFileBackup = new File(sdcard, fileNameBackup);
-        myFile.renameTo(myFileBackup);
+        Boolean isBackUpFileCreated = myFile.renameTo(myFileBackup);
+        System.out.println(isBackUpFileCreated);
 
         try {
-            myFile.createNewFile();
+            Boolean isFileCreated = myFile.createNewFile();
+            System.out.println(isFileCreated);
             FileOutputStream fOut = new FileOutputStream(myFile);
             OutputStreamWriter myOutWriter = new OutputStreamWriter(fOut);
             for (DateOfBirth dob : dobs) {
@@ -353,9 +354,8 @@ public class Util {
 
     public static String updateFile(DateOfBirth dob) {
         String returnValue = "";
-        String createFolderStatus = Util.createEmptyFolder();
-        if(!createFolderStatus.equalsIgnoreCase(Constants.FLAG_SUCCESS)) {
-            return createFolderStatus;
+        if(!Util.createEmptyFolder()) {
+            return "Not able to create folder";
         }
         File sdcard = Environment.getExternalStorageDirectory();
         long currentMillis = System.currentTimeMillis();
@@ -446,18 +446,22 @@ public class Util {
             return false;
         }
     }
-    public static String createEmptyFolder() {
+    public static Boolean createEmptyFolder() {
         if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
             //throw error sd card not found
             //Toast.makeText(DataHolder.getInstance().getAppContext(), Constants.ERROR_READ_WRITE_1004, Toast.LENGTH_LONG).show();
-            return Constants.ERR_SD_CARD_NOT_FOUND;
+            return false;
         }
         File sdcard = Environment.getExternalStorageDirectory();
         File folder = new File(sdcard + File.separator + Constants.FOLDER_NAME);
         if(!folder.exists()) {
-            folder.mkdir();
+            Boolean isFolderCreated = folder.mkdir();
+            System.out.println(isFolderCreated);
+            return isFolderCreated;
         }
-        return Constants.FLAG_SUCCESS;
+        else {
+            return true;
+        }
     }
     public static String fileToLoad(String input) {
         String key = input.toLowerCase();
@@ -478,14 +482,14 @@ public class Util {
         }
         return null;
     }
-    public static Boolean isBackupFileFound() {
+    public static Boolean isBackupFileFound(String fileName) {
         if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
             //throw error sd card not found
             return false;
         }
         File sdcard = Environment.getExternalStorageDirectory();
         // Get the text file
-        File file = new File(sdcard, Constants.FOLDER_NAME + "/" + Constants.FILE_NAME + Constants.FILE_NAME_SUFFIX);
+        File file = new File(sdcard, Constants.FOLDER_NAME + "/" + fileName + Constants.FILE_NAME_SUFFIX);
         return file.exists();
     }
 

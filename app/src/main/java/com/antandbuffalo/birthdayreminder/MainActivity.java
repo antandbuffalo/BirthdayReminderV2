@@ -253,13 +253,13 @@ public class MainActivity extends AppCompatActivity {
 
     public Boolean getStoragePermission(int permissionType) {
         switch (permissionType) {
-            case Constants.MY_PERMISSIONS_WRITE_EXTERNAL_STORAGE: {
+            case Constants.MY_PERMISSIONS_READ_WRITE: {
                 if (ContextCompat.checkSelfPermission(this,
                         Manifest.permission.WRITE_EXTERNAL_STORAGE)
                         != PackageManager.PERMISSION_GRANTED) {
 
                     requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                            Constants.MY_PERMISSIONS_WRITE_EXTERNAL_STORAGE);
+                            Constants.MY_PERMISSIONS_READ_WRITE);
 
                     return false;
                 } else {
@@ -267,21 +267,6 @@ public class MainActivity extends AppCompatActivity {
                     return true;
                 }
             }
-            case Constants.MY_PERMISSIONS_READ_EXTERNAL_STORAGE: {
-                if (ContextCompat.checkSelfPermission(this,
-                        Manifest.permission.READ_EXTERNAL_STORAGE)
-                        != PackageManager.PERMISSION_GRANTED) {
-
-                    requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                            Constants.MY_PERMISSIONS_READ_EXTERNAL_STORAGE);
-
-                    return false;
-                } else {
-                    // Permission has already been granted
-                    return true;
-                }
-            }
-
         }
         return false;
     }

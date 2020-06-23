@@ -59,8 +59,16 @@ public class AddNewViewModel extends ViewModel {
         return Util.fileToLoad(dateOfBirth.getName());
     }
 
+    public Boolean isBackupFileFound() {
+        return Util.isBackupFileFound(dateOfBirth.getName());
+    }
+
     public Boolean loadFromFileWithName(String fileName) {
         return Util.copyFromAssetFileToDatabase(fileName);
+    }
+
+    public String loadFromBackupFileWithName(String fileName) {
+        return Util.readFromFile(fileName);
     }
 
     public Boolean setDateOfBirth(BirthdayInfo birthdayInfo) {
