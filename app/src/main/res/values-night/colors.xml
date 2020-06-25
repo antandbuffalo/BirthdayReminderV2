@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="aandb_primay_text_color">#FFFFFF</color>
+    <color name="aandb_sub_text_color">#F0F0F0</color>
+    <color name="aandb_icon_primay">#008577</color>
 </resources>

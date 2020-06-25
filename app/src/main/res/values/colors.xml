@@ -4,10 +4,13 @@
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
 
+    <color name="aandb_icon_primay">#00574B</color>
+
 
     <color name="white">#ffffff</color>
     <color name="black">#000000</color>
     <color name="aandb_primay_text_color">#333333</color>
+    <color name="aandb_sub_text_color">#323232</color>
     <color name="backgroud">#FBE9E7</color>
 
     <color name="transparent">#00000000</color>

@@ -53,11 +53,12 @@ import java.util.Date;
 public class MainActivity extends AppCompatActivity {
     UpcomingListAdapter upcomingListAdapter;
     AdView mAdView;
+    boolean darkMode = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        //AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
         // https://blog.prototypr.io/implementing-dark-theme-in-android-dfe63e62145d
         // https://developer.android.com/guide/topics/ui/look-and-feel/darktheme#java
         // https://medium.com/androiddevelopers/appcompat-v23-2-daynight-d10f90c83e94
@@ -66,13 +67,19 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         initValues();
-
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getApplicationContext(), AddNew.class);
                 startActivityForResult(intent, Constants.ADD_NEW_MEMBER);
+                if(darkMode) {
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                }
+                else {
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                }
+                darkMode = !darkMode;
             }
         });
 
