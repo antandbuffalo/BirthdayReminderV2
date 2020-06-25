@@ -57,9 +57,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        // AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
         // https://blog.prototypr.io/implementing-dark-theme-in-android-dfe63e62145d
         // https://developer.android.com/guide/topics/ui/look-and-feel/darktheme#java
+        // https://medium.com/androiddevelopers/appcompat-v23-2-daynight-d10f90c83e94
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
