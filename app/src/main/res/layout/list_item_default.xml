@@ -54,7 +54,7 @@
         android:layout_marginBottom="5dp"
         android:alpha="0.7"
         android:text="Description"
-        android:textColor="@android:color/secondary_text_light"
+        android:textColor="@color/aandb_sub_text_color"
         android:textSize="11sp" />
 
     <TextView
@@ -67,6 +67,6 @@
         android:alpha="0.38"
         android:text="1988"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textColor="@android:color/primary_text_light" />
+        android:textColor="@color/aandb_sub_text_color" />
 
 </RelativeLayout>
