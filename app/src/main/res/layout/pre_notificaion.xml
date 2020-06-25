@@ -27,7 +27,7 @@
         android:layout_marginTop="30dp"
         android:text="Please select the number of days, to get notified, before the actual birthday"
         android:textAlignment="center"
-        android:textColor="@color/dark_text_color"
+        android:textColor="@color/aandb_primay_text_color"
         android:textSize="16sp" />
 
     <NumberPicker
@@ -50,7 +50,7 @@
         android:layout_marginRight="10dp"
         android:text="You will also get notified on the day of the actual birthday"
         android:textAlignment="center"
-        android:textColor="@color/dark_text_color"
+        android:textColor="@color/aandb_primay_text_color"
         android:textSize="16sp" />
 
     <com.google.android.gms.ads.AdView xmlns:ads="http://schemas.android.com/apk/res-auto"

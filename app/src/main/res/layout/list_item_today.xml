@@ -30,7 +30,7 @@
         android:layout_toLeftOf="@+id/yearField"
         android:layout_toRightOf="@+id/circlebg"
         android:text="CodeLearn Chapter 1"
-        android:textColor="@color/dark_text_color"
+        android:textColor="@color/aandb_primay_text_color"
         android:textSize="18sp" />
 
     <TextView
