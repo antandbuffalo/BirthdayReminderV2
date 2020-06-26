@@ -4,6 +4,9 @@
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
 
+    <color name="aandb_btn_bg">#D81B60</color>
+    <color name="aandb_btn_text_color">#FFFFFF</color>
+
     <color name="aandb_icon_primay">#00574B</color>
 
 
