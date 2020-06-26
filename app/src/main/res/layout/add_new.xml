@@ -113,7 +113,7 @@
         android:layout_marginStart="10dp"
         android:layout_marginTop="30dp"
         android:layout_marginEnd="10dp"
-        android:background="@color/switch_thumb_normal_material_light"
+        android:background="@color/aandb_dob_preview"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView2">
@@ -171,6 +171,7 @@
             android:layout_toLeftOf="@+id/yearField"
             android:layout_toRightOf="@+id/circlebg"
             android:text="CodeLearn Chapter 1"
+            android:textColor="@color/aandb_primay_text_color"
             android:textSize="18sp" />
 
         <TextView
@@ -182,6 +183,7 @@
             android:layout_marginBottom="5dp"
             android:alpha="0.7"
             android:text="Description"
+            android:textColor="@color/aandb_sub_text_color"
             android:textSize="11sp" />
 
         <TextView
@@ -193,6 +195,7 @@
             android:layout_marginRight="10dp"
             android:alpha="0.38"
             android:text="1988"
+            android:textColor="@color/aandb_sub_text_color"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
     </RelativeLayout>

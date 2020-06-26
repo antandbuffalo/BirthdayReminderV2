@@ -51,4 +51,6 @@
 
     <color name="dark_gray">#FF969696</color>
 
+    <color name="aandb_dob_preview">#f1f1f1</color>
+
 </resources>
