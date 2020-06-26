@@ -11,4 +11,6 @@
     <color name="edit_text_bg">#282828</color>
 
     <color name="aandb_dob_preview">#282828</color>
+
+    <color name="aandb_toolbar_bg">#006a5f</color>
 </resources>

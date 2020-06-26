@@ -9,6 +9,7 @@
 
     <color name="aandb_icon_primay">#00574B</color>
 
+    <color name="aandb_toolbar_bg">#008577</color>
 
     <color name="white">#ffffff</color>
     <color name="black">#000000</color>
