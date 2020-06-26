@@ -53,7 +53,7 @@ import java.util.Date;
 public class MainActivity extends AppCompatActivity {
     UpcomingListAdapter upcomingListAdapter;
     AdView mAdView;
-    boolean darkMode = false;
+    boolean darkMode = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
