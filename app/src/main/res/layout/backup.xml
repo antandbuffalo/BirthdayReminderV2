@@ -66,6 +66,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:layout_marginTop="10dp"
+        android:backgroundTint="@color/aandb_btn_bg"
+        android:textColor="@color/aandb_btn_text_color"
         android:text="backup"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/cloudBackup" />
@@ -78,6 +80,8 @@
         android:layout_marginStart="20dp"
         android:layout_marginTop="10dp"
         android:text="Restore"
+        android:backgroundTint="@color/aandb_btn_bg"
+        android:textColor="@color/aandb_btn_text_color"
         app:layout_constraintStart_toEndOf="@+id/backupNow"
         app:layout_constraintTop_toBottomOf="@+id/cloudBackup" />
 
@@ -89,6 +93,8 @@
         android:layout_marginStart="20dp"
         android:layout_marginTop="10dp"
         android:text="Remove Account"
+        android:backgroundTint="@color/aandb_btn_bg"
+        android:textColor="@color/aandb_btn_text_color"
         app:layout_constraintStart_toEndOf="@+id/selectAccount"
         app:layout_constraintTop_toBottomOf="@+id/accountName" />
 
@@ -100,6 +106,8 @@
         android:layout_marginStart="20dp"
         android:layout_marginTop="10dp"
         android:text="Select Account"
+        android:backgroundTint="@color/aandb_btn_bg"
+        android:textColor="@color/aandb_btn_text_color"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/accountName" />
 
@@ -111,6 +119,8 @@
         android:layout_marginStart="20dp"
         android:layout_marginTop="10dp"
         android:text="Select Auto Sync Frequency"
+        android:backgroundTint="@color/aandb_btn_bg"
+        android:textColor="@color/aandb_btn_text_color"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/syncFrequency" />
 

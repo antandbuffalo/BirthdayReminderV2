@@ -5,6 +5,9 @@
     <color name="aandb_icon_primay">#008577</color>
     <color name="aandb_backgroud">#484848</color>
 
+    <color name="aandb_btn_bg">#00574B</color>
+    <color name="aandb_btn_text_color">#F0F0F0</color>
+
     <color name="edit_text_bg">#282828</color>
 
     <color name="aandb_dob_preview">#282828</color>
