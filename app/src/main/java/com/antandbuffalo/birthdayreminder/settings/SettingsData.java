@@ -82,11 +82,19 @@ public class SettingsData {
         data.add(datum);
 
         datum = SettingsModel.newInstance();
+        datum.setKey(Constants.SETTINGS_SELECT_THEME);
+        datum.setTitle("Theme");
+        datum.setSubTitle("");
+        datum.setSno(6);
+        datum.setIconId(R.drawable.ic_paint_primary_dark);
+        data.add(datum);
+
+        datum = SettingsModel.newInstance();
         datum.setKey(Constants.SETTINGS_DELETE_ALL);
         datum.setTitle(Constants.SETTINGS_DELETE_ALL_TITLE);
         datum.setSubTitle("");
         //datum.setUpdatedOn(new Date());
-        datum.setSno(6);
+        datum.setSno(7);
         datum.setIconId(R.drawable.ic_delete_sweep_primary_dark);
         data.add(datum);
 

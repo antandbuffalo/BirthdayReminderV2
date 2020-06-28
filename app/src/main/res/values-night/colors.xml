@@ -12,5 +12,6 @@
 
     <color name="aandb_dob_preview">#282828</color>
 
-    <color name="aandb_toolbar_bg">#006a5f</color>
+<!--    <color name="aandb_toolbar_bg">#006a5f</color>-->
+    <color name="aandb_toolbar_bg">#3a3a3a</color>
 </resources>
