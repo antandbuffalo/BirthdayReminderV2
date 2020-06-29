@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -58,13 +59,15 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
         // https://blog.prototypr.io/implementing-dark-theme-in-android-dfe63e62145d
         // https://developer.android.com/guide/topics/ui/look-and-feel/darktheme#java
         // https://medium.com/androiddevelopers/appcompat-v23-2-daynight-d10f90c83e94
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        checkTheme();
 
         initValues();
         FloatingActionButton fab = findViewById(R.id.fab);
@@ -172,6 +175,19 @@ public class MainActivity extends AppCompatActivity {
         setRepeatingAlarm();
         launchAccountSetup();
         loadAd();
+    }
+
+    public void checkTheme() {
+        int currentNightMode = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
+        System.out.println("Mode - " + currentNightMode);
+        switch (currentNightMode) {
+            case Configuration.UI_MODE_NIGHT_NO:
+                // Night mode is not active, we're using the light theme
+                break;
+            case Configuration.UI_MODE_NIGHT_YES:
+                // Night mode is active, we're using dark theme
+                break;
+        }
     }
 
     public void launchAccountSetup() {
