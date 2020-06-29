@@ -86,7 +86,7 @@ public class SettingsData {
         datum.setTitle("Theme");
         datum.setSubTitle("");
         datum.setSno(6);
-        datum.setIconId(R.drawable.ic_paint_primary_dark);
+        datum.setIconId(R.drawable.ic_brightness_primary_dark);
         data.add(datum);
 
         datum = SettingsModel.newInstance();

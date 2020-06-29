@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 
+import com.antandbuffalo.birthdayreminder.MainActivity;
 import com.antandbuffalo.birthdayreminder.R;
 import com.antandbuffalo.birthdayreminder.about.About;
 import com.antandbuffalo.birthdayreminder.backup.Backup;
@@ -22,14 +23,19 @@ import com.antandbuffalo.birthdayreminder.models.SettingsModel;
 import com.antandbuffalo.birthdayreminder.notificationfrequency.NotificationFrequency;
 import com.antandbuffalo.birthdayreminder.notificationtime.NotificationTime;
 import com.antandbuffalo.birthdayreminder.prenotification.PreNotification;
+import com.antandbuffalo.birthdayreminder.sharewish.ShareWish;
+import com.antandbuffalo.birthdayreminder.utilities.AutoSyncOptions;
 import com.antandbuffalo.birthdayreminder.utilities.Constants;
 import com.antandbuffalo.birthdayreminder.utilities.DataHolder;
 import com.antandbuffalo.birthdayreminder.utilities.Storage;
+import com.antandbuffalo.birthdayreminder.utilities.ThemeOptions;
 import com.antandbuffalo.birthdayreminder.wishtemplate.WishTemplate;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 public class Settings extends AppCompatActivity {
     SettingsListAdapter settingsListAdapter;
@@ -77,6 +83,9 @@ public class Settings extends AppCompatActivity {
                     Intent intent = new Intent(view.getContext(), About.class);
                     startActivityForResult(intent, Constants.REFRESH_SETTINGS);
                 }
+                else if (selectedOption.getKey().equalsIgnoreCase(Constants.SETTINGS_SELECT_THEME)) {
+                    selectTheme();
+                }
                 else if (selectedOption.getKey().equalsIgnoreCase(Constants.SETTINGS_DELETE_ALL)) {
                     //put confirmation here
                     androidx.appcompat.app.AlertDialog.Builder alertDialogBuilder = new androidx.appcompat.app.AlertDialog.Builder(Settings.this);
@@ -106,6 +115,41 @@ public class Settings extends AppCompatActivity {
             }
         });
         loadAd();
+    }
+
+    public void selectTheme() {
+        androidx.appcompat.app.AlertDialog.Builder adb = new androidx.appcompat.app.AlertDialog.Builder(Settings.this);
+        //CharSequence items[] = new CharSequence[] {AutoSyncFrequency.NONE.getFrequency(), AutoSyncFrequency.DAILY.name(), AutoSyncFrequency.WEEKLY.name(), AutoSyncFrequency.MONTHLY.name()};
+        List<Map<String, String>> optionsList = ThemeOptions.getInstance().getValues();
+        CharSequence options[] = new CharSequence[optionsList.size()];
+
+        Integer selectedItem = 0;
+        for(int i = 0; i < optionsList.size(); i++) {
+            options[i] = optionsList.get(i).get("value");
+            if(optionsList.get(i).get("value").equalsIgnoreCase(Storage.getAutoSyncFrequency())) {
+                selectedItem = i;
+            }
+        }
+        adb.setSingleChoiceItems(options, selectedItem, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                System.out.println("i = " + i);
+                Storage.setAutoSyncFrequency(optionsList.get(i).get("key"));
+                Storage.setDbBackupTime(new Date());
+            }
+        });
+        adb.setPositiveButton("OK", null);
+        adb.setNegativeButton("Cancel", null);
+        adb.setTitle("Select Theme");
+
+        androidx.appcompat.app.AlertDialog dialog = adb.create();
+        dialog.setOnShowListener( new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface arg0) {
+                dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(Settings.this, R.color.dark_gray));
+            }
+        });
+        dialog.show();
     }
 
     @Override
