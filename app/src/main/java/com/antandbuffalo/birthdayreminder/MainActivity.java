@@ -39,6 +39,7 @@ import com.antandbuffalo.birthdayreminder.update.Update;
 import com.antandbuffalo.birthdayreminder.utilities.Constants;
 import com.antandbuffalo.birthdayreminder.utilities.DataHolder;
 import com.antandbuffalo.birthdayreminder.utilities.Storage;
+import com.antandbuffalo.birthdayreminder.utilities.ThemeOptions;
 import com.antandbuffalo.birthdayreminder.utilities.Util;
 import com.firebase.ui.auth.IdpResponse;
 import com.google.android.gms.ads.AdRequest;
@@ -59,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        // AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
         // https://blog.prototypr.io/implementing-dark-theme-in-android-dfe63e62145d
         // https://developer.android.com/guide/topics/ui/look-and-feel/darktheme#java
         // https://medium.com/androiddevelopers/appcompat-v23-2-daynight-d10f90c83e94
@@ -67,9 +68,11 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        initValues();
+
+        applyTheme();
         checkTheme();
 
-        initValues();
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -175,6 +178,18 @@ public class MainActivity extends AppCompatActivity {
         setRepeatingAlarm();
         launchAccountSetup();
         loadAd();
+    }
+
+    public void applyTheme() {
+        if(Storage.getTheme().equalsIgnoreCase(ThemeOptions.KEY_DEFAULT)) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+        }
+        else if(Storage.getTheme().equalsIgnoreCase(ThemeOptions.KEY_LIGHT)) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        }
+        else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        }
     }
 
     public void checkTheme() {

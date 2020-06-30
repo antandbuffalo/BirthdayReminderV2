@@ -19,6 +19,14 @@ import static com.firebase.ui.auth.AuthUI.getApplicationContext;
  */
 public class Storage {
 
+    public static String getTheme() {
+        return Storage.getString("theme", ThemeOptions.getInstance().getValues().get(0).get("key"));
+    }
+
+    public static void setTheme(String theme) {
+        Storage.putString("theme", theme.toLowerCase());
+    }
+
     public static void setFirstTimeLaunch() {
         SharedPreferences.Editor editor = Util.getSharedPreference().edit();
         editor.putBoolean("isFirstTimeLaunch", false);

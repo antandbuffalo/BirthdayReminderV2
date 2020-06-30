@@ -11,6 +11,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 
@@ -119,26 +120,27 @@ public class Settings extends AppCompatActivity {
 
     public void selectTheme() {
         androidx.appcompat.app.AlertDialog.Builder adb = new androidx.appcompat.app.AlertDialog.Builder(Settings.this);
-        //CharSequence items[] = new CharSequence[] {AutoSyncFrequency.NONE.getFrequency(), AutoSyncFrequency.DAILY.name(), AutoSyncFrequency.WEEKLY.name(), AutoSyncFrequency.MONTHLY.name()};
         List<Map<String, String>> optionsList = ThemeOptions.getInstance().getValues();
         CharSequence options[] = new CharSequence[optionsList.size()];
 
         Integer selectedItem = 0;
         for(int i = 0; i < optionsList.size(); i++) {
             options[i] = optionsList.get(i).get("value");
-            if(optionsList.get(i).get("value").equalsIgnoreCase(Storage.getAutoSyncFrequency())) {
+            if(optionsList.get(i).get("key").equalsIgnoreCase(Storage.getTheme())) {
                 selectedItem = i;
             }
         }
-        adb.setSingleChoiceItems(options, selectedItem, new DialogInterface.OnClickListener() {
+        adb.setSingleChoiceItems(options, selectedItem, null);
+        adb.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                System.out.println("i = " + i);
-                Storage.setAutoSyncFrequency(optionsList.get(i).get("key"));
+                ListView lw = ((androidx.appcompat.app.AlertDialog) dialogInterface).getListView();
+                System.out.println("selected : " + lw.getCheckedItemPosition());
+                Storage.setTheme(optionsList.get(lw.getCheckedItemPosition()).get("key"));
                 Storage.setDbBackupTime(new Date());
+                applyTheme();
             }
         });
-        adb.setPositiveButton("OK", null);
         adb.setNegativeButton("Cancel", null);
         adb.setTitle("Select Theme");
 
@@ -150,6 +152,18 @@ public class Settings extends AppCompatActivity {
             }
         });
         dialog.show();
+    }
+
+    public void applyTheme() {
+        if(Storage.getTheme().equalsIgnoreCase(ThemeOptions.KEY_DEFAULT)) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+        }
+        else if(Storage.getTheme().equalsIgnoreCase(ThemeOptions.KEY_LIGHT)) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        }
+        else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        }
     }
 
     @Override
