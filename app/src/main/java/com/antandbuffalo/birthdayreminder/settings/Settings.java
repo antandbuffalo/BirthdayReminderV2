@@ -139,6 +139,8 @@ public class Settings extends AppCompatActivity {
                 Storage.setTheme(optionsList.get(lw.getCheckedItemPosition()).get("key"));
                 Storage.setDbBackupTime(new Date());
                 applyTheme();
+                // refresh the list to update selected theme
+                settingsListAdapter.refreshData();
             }
         });
         adb.setNegativeButton("Cancel", null);

@@ -15,6 +15,7 @@ import com.antandbuffalo.birthdayreminder.database.OptionsDBHelper;
 import com.antandbuffalo.birthdayreminder.models.SettingsModel;
 import com.antandbuffalo.birthdayreminder.utilities.Constants;
 import com.antandbuffalo.birthdayreminder.utilities.Storage;
+import com.antandbuffalo.birthdayreminder.utilities.ThemeOptions;
 import com.antandbuffalo.birthdayreminder.utilities.Util;
 
 import java.security.cert.PKIXRevocationChecker;
@@ -87,15 +88,6 @@ public class SettingsListAdapter extends BaseAdapter {
         ImageView listItemIcon = convertView.findViewById(R.id.listItemIcon);
         listItemIcon.setBackgroundResource(option.getIconId());
 
-//        LinearLayout circle = (LinearLayout)convertView.findViewById(R.id.circlebg);
-//
-//        if(option.getKey().equalsIgnoreCase(Constants.SETTINGS_DELETE_ALL) || option.getKey().equalsIgnoreCase(Constants.SETTINGS_READ_FILE) || option.getKey().equalsIgnoreCase(Constants.SETTINGS_WRITE_FILE)) {
-//            circle.setBackgroundResource(R.drawable.cirlce_missed);
-//        }
-//        else {
-//            circle.setBackgroundResource(R.drawable.cirlce_normal);
-//        }
-
         TextView currentValue = (TextView)convertView.findViewById(R.id.currentValue);
         String givenKey = option.getKey().toUpperCase();
         currentValue.setVisibility(View.VISIBLE);
@@ -109,9 +101,22 @@ public class SettingsListAdapter extends BaseAdapter {
                 currentValue.setText(getSelectedFrequency(parent.getContext()));
                 break;
             }
+            case Constants.SETTINGS_SELECT_THEME: {
+                currentValue.setText(getTheme());
+                break;
+            }
         }
 
         return convertView;
+    }
+
+    public String getTheme() {
+        for(int i = 0; i < ThemeOptions.getInstance().getValues().size(); i++) {
+            if(Storage.getTheme().equalsIgnoreCase(ThemeOptions.getInstance().getValues().get(i).get("key"))) {
+                return ThemeOptions.getInstance().getValues().get(i).get("value");
+            }
+        }
+        return "";
     }
 
     public int getSelectedValueForKey(String givenKey) {
