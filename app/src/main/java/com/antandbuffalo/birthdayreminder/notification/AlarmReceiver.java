@@ -22,6 +22,9 @@ import com.antandbuffalo.birthdayreminder.utilities.Constants;
 import com.antandbuffalo.birthdayreminder.utilities.DataHolder;
 import com.antandbuffalo.birthdayreminder.utilities.Storage;
 import com.antandbuffalo.birthdayreminder.utilities.Util;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -30,6 +33,44 @@ import java.util.List;
 public class AlarmReceiver extends BroadcastReceiver {
     NotificationManager notificationManager;
     public AlarmReceiver() {
+    }
+
+    public void showAccountAndFrequencyReminder(Context context) {
+        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        CharSequence from = "Birthday Reminder";
+        CharSequence message = null;
+        if(firebaseUser == null) {
+            message = "Don't forget to setup your Google account to backup your data";
+        }
+        if("none".equalsIgnoreCase(Storage.getAutoSyncFrequency())) {
+            message = "Don't have to backup manually. Please select auto sync frequency to backup automatically";
+        }
+        if("none".equalsIgnoreCase(Storage.getAutoSyncFrequency()) && firebaseUser == null) {
+            message = "Don't forget to setup your Google account and auto sync frequency to backup your data";
+        }
+
+        if(message == null) {
+            return;
+        }
+
+        notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        String CHANNEL_ID = setChannel(notificationManager);
+
+        //notification opening intent
+        Intent resultingIntent = new Intent(context, MainActivity.class);
+        PendingIntent contentIntent = PendingIntent.getActivity(context, 0, resultingIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context, CHANNEL_ID)
+                .setStyle(new NotificationCompat.BigTextStyle().bigText(message))
+                .setSmallIcon(R.drawable.ic_notification)
+                .setContentTitle(from)
+                .setContentText(message);
+        //mBuilder.setColor(R.color.colorPrimary);
+        mBuilder.setColor(ContextCompat.getColor(context, R.color.colorPrimaryDark));
+        mBuilder.setAutoCancel(true);
+
+        mBuilder.setContentIntent(contentIntent);
+        int notificationId = 104;
+        notificationManager.notify(notificationId, mBuilder.build());
     }
   
     public void showPreNotifications(Context context, int preNotifDays) {
@@ -119,6 +160,11 @@ public class AlarmReceiver extends BroadcastReceiver {
         ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         autoSync(alarmManager, context, connectivityManager);
 
+        // check whether account and frequency has been setup and show notification
+        if(checkAccountAndFrequency(context)) {
+            showAccountAndFrequencyReminder(context);
+        }
+
         List<DateOfBirth> todayList = DateOfBirthDBHelper.selectToday(context);
         if(todayList == null || todayList.size() == 0) {
             return;
@@ -151,6 +197,15 @@ public class AlarmReceiver extends BroadcastReceiver {
         notificationManager.notify(notificationId, mBuilder.build());
         // an Intent broadcast.
         //throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    public boolean checkAccountAndFrequency(Context context) {
+        Calendar calendar = Util.getCalendar(new Date());
+        Integer date = calendar.get(Calendar.DATE);
+        if(date == 4) {
+            return true;
+        }
+        return false;
     }
 
     public void autoSync(AlarmManager alarmManager, Context context, ConnectivityManager connectivityManager) {
