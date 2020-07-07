@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="colorPrimary">#484848</color>
+    <color name="colorPrimaryDark">#222222</color>
+    <color name="colorAccent">#008577</color>
+
     <color name="aandb_primay_text_color">#FFFFFF</color>
     <color name="aandb_sub_text_color">#F0F0F0</color>
     <color name="aandb_icon_primay">#008577</color>
