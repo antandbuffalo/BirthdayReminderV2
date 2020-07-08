@@ -1,11 +1,12 @@
 package com.antandbuffalo.birthdayreminder.about;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.antandbuffalo.birthdayreminder.BuildConfig;
 import com.antandbuffalo.birthdayreminder.R;
@@ -13,7 +14,7 @@ import com.antandbuffalo.birthdayreminder.utilities.Constants;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 
-public class About extends Activity {
+public class About extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
