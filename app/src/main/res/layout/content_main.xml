@@ -17,7 +17,14 @@
         app:hintEnabled="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        app:boxStrokeWidth="1dp"
+        app:boxStrokeWidthFocused="1dp"
+        app:boxCornerRadiusTopStart="0dp"
+        app:boxCornerRadiusTopEnd="0dp"
+        app:boxCornerRadiusBottomStart="0dp"
+        app:boxCornerRadiusBottomEnd="0dp"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/filter"
