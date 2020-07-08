@@ -138,7 +138,7 @@ public class Backup extends AppCompatActivity {
                 Integer selectedItem = 0;
                 for(int i = 0; i < optionsList.size(); i++) {
                     options[i] = optionsList.get(i).get("value");
-                    if(optionsList.get(i).get("value").equalsIgnoreCase(Storage.getAutoSyncFrequency())) {
+                    if(optionsList.get(i).get("key").equalsIgnoreCase(Storage.getAutoSyncFrequency())) {
                         selectedItem = i;
                     }
                 }

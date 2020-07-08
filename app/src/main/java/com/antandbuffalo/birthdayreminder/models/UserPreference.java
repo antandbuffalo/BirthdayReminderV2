@@ -15,4 +15,5 @@ public class UserPreference {
     public String versionName;
     public Integer versionCode;
     public String autoSyncFrequency;
+    public String theme;
 }

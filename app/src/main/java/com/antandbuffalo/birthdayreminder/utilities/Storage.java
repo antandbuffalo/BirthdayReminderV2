@@ -200,6 +200,13 @@ public class Storage {
         if(userPreference.autoSyncFrequency != null) {
             Storage.setAutoSyncFrequency(userPreference.autoSyncFrequency);
         }
+
+        if(userPreference.theme != null) {
+            Storage.setTheme(userPreference.theme);
+        }
+        else {
+            Storage.setTheme(ThemeOptions.getInstance().getValues().get(0).get("key"));
+        }
     }
 
     public static UserPreference getUserPreference() {
@@ -214,6 +221,7 @@ public class Storage {
         userPreference.versionName = BuildConfig.VERSION_NAME;
         userPreference.versionCode =  BuildConfig.VERSION_CODE;
         userPreference.autoSyncFrequency = Storage.getAutoSyncFrequency();
+        userPreference.theme = Storage.getTheme();
         return userPreference;
     }
 
@@ -251,6 +259,11 @@ public class Storage {
         if(genericPreference.get("autoSyncFrequency") != null) {
             userPreference.autoSyncFrequency = (String) genericPreference.get("autoSyncFrequency");
         }
+
+        if(genericPreference.get("theme") != null) {
+            userPreference.theme = (String) genericPreference.get("theme");
+        }
+
         return userPreference;
     }
 
