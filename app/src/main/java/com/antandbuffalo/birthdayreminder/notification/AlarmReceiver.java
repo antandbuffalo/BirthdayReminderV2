@@ -202,7 +202,7 @@ public class AlarmReceiver extends BroadcastReceiver {
     public boolean checkAccountAndFrequency(Context context) {
         Calendar calendar = Util.getCalendar(new Date());
         Integer date = calendar.get(Calendar.DATE);
-        if(date == 4) {
+        if(date == 12) {
             return true;
         }
         return false;
