@@ -28,7 +28,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
-        android:backgroundTint="@color/aandb_btn_bg"
+        android:backgroundTint="@color/colorAccent"
         app:tint="@color/aandb_btn_text_color"
         app:borderWidth="0dp"
         app:srcCompat="@drawable/ic_add_white" />

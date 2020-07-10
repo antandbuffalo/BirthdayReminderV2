@@ -26,6 +26,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 
 import com.antandbuffalo.birthdayreminder.R;
+import com.antandbuffalo.birthdayreminder.database.DateOfBirthDBHelper;
 import com.antandbuffalo.birthdayreminder.models.DateOfBirth;
 import com.antandbuffalo.birthdayreminder.models.UserProfile;
 import com.antandbuffalo.birthdayreminder.settings.Settings;
@@ -492,9 +493,9 @@ public class Backup extends AppCompatActivity {
     }
 
     public void backupToFirebaseConfirmation() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(Backup.this);
-        builder.setTitle("Confirmation")
-            .setMessage("This will replace existing server content with local content. Are you sure want to continue?")
+        androidx.appcompat.app.AlertDialog.Builder alertDialogBuilder = new androidx.appcompat.app.AlertDialog.Builder(Backup.this);
+        alertDialogBuilder.setTitle("Confirmation")
+            .setMessage("This action will replace existing server content with local content. Are you sure want to continue?")
             .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
@@ -502,7 +503,7 @@ public class Backup extends AppCompatActivity {
                 }
             })
             .setNegativeButton("No", null);
-        AlertDialog dialog = builder.create();
+        androidx.appcompat.app.AlertDialog dialog = alertDialogBuilder.create();
         dialog.setOnShowListener( new DialogInterface.OnShowListener() {
             @Override
             public void onShow(DialogInterface arg0) {

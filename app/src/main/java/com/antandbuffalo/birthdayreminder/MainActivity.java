@@ -55,7 +55,6 @@ import java.util.Date;
 public class MainActivity extends AppCompatActivity {
     UpcomingListAdapter upcomingListAdapter;
     AdView mAdView;
-    boolean darkMode = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,13 +78,6 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent(getApplicationContext(), AddNew.class);
                 startActivityForResult(intent, Constants.ADD_NEW_MEMBER);
-                if(darkMode) {
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-                }
-                else {
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-                }
-                darkMode = !darkMode;
             }
         });
 
