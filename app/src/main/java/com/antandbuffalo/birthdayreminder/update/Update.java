@@ -326,9 +326,7 @@ public class Update extends AppCompatActivity {
     }
 
     public void delete() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(Update.this);
-            //.setIcon(android.R.drawable.ic_dialog_alert)
-            //.setIconAttribute(android.R.attr.alertDialogIcon)
+        androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(Update.this);
         builder.setTitle("Confirmation")
             .setMessage("Are you sure you want to delete " + currentDOB.getName() + "?")
             .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
@@ -346,7 +344,7 @@ public class Update extends AppCompatActivity {
             })
             .setNegativeButton("No", null);
 
-        AlertDialog dialog = builder.create();
+        androidx.appcompat.app.AlertDialog dialog = builder.create();
         dialog.setOnShowListener( new DialogInterface.OnShowListener() {
             @Override
             public void onShow(DialogInterface arg0) {
