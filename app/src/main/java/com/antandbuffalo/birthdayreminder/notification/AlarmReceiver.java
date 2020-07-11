@@ -119,7 +119,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         }
 
         CharSequence from = "New Features added";
-        CharSequence message = "Complete revamp of UI. Sync with cloud. Multiple device support etc. Please have a look";
+        CharSequence message = "Complete revamp of UI. Sync with cloud. Multiple device support, Dark theme etc. Please have a look";
 
         notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         String CHANNEL_ID = setChannel(notificationManager);

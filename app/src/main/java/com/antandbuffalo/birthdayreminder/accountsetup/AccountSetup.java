@@ -190,6 +190,9 @@ public class AccountSetup extends AppCompatActivity implements FirebaseHandler {
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
                         userPreference = Storage.createUserPreferenceFromServer(document.getData());
+                        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+                        Storage.updateUserPreference(userPreference, alarmManager, getApplicationContext());
+                        updateAutoFrequencyUI();
                     } else {
                         Log.d("FirebaseGetData", "No such document");
                     }

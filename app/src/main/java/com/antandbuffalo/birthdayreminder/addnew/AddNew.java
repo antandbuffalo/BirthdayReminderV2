@@ -229,6 +229,7 @@ public class AddNew extends AppCompatActivity {
                     clearInputs();
                     intent.putExtra(Constants.IS_USER_ADDED, Constants.FLAG_SUCCESS.toString());
                     setResult(RESULT_OK, intent);
+                    finish();
                 }
                 else {
                     Toast toast = Toast.makeText(getApplicationContext(), "Please enter valid date", Toast.LENGTH_LONG);
