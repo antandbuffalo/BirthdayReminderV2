@@ -43,7 +43,7 @@ public class AlarmReceiver extends BroadcastReceiver {
             message = "Don't forget to setup your Google account to backup your data";
         }
         if("none".equalsIgnoreCase(Storage.getAutoSyncFrequency())) {
-            message = "Don't have to backup manually. Please select auto sync frequency to backup automatically";
+            message = "Don't forget to select auto sync frequency to backup automatically";
         }
         if("none".equalsIgnoreCase(Storage.getAutoSyncFrequency()) && firebaseUser == null) {
             message = "Don't forget to setup your Google account and auto sync frequency to backup your data";
@@ -71,6 +71,9 @@ public class AlarmReceiver extends BroadcastReceiver {
         mBuilder.setContentIntent(contentIntent);
         int notificationId = 104;
         notificationManager.notify(notificationId, mBuilder.build());
+
+        // set that notification is shown
+        Storage.setAccountSetupSyncReminder(true);
     }
   
     public void showPreNotifications(Context context, int preNotifDays) {
@@ -161,7 +164,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         autoSync(alarmManager, context, connectivityManager);
 
         // check whether account and frequency has been setup and show notification
-        if(checkAccountAndFrequency(context)) {
+        if(checkAccountAndFrequency()) {
             showAccountAndFrequencyReminder(context);
         }
 
@@ -199,13 +202,17 @@ public class AlarmReceiver extends BroadcastReceiver {
         //throw new UnsupportedOperationException("Not yet implemented");
     }
 
-    public boolean checkAccountAndFrequency(Context context) {
+    public boolean checkAccountAndFrequency() {
         Calendar calendar = Util.getCalendar(new Date());
         Integer date = calendar.get(Calendar.DATE);
-        if(date == 12) {
-            return true;
+        // it is an important date. Hope you remember ;)
+        if(date == Constants.DATE_ACCOUNT_SETUP_SYNC) {
+            return !Storage.getAccountSetupSyncReminder();
         }
-        return false;
+        else {
+            Storage.setAccountSetupSyncReminder(false);
+            return false;
+        }
     }
 
     public void autoSync(AlarmManager alarmManager, Context context, ConnectivityManager connectivityManager) {

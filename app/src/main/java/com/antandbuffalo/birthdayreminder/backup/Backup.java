@@ -123,7 +123,7 @@ public class Backup extends AppCompatActivity {
         removeAccount.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                signoutFromFirebase();
+                removeAccountConfirmation();
             }
         });
 
@@ -580,6 +580,27 @@ public class Backup extends AppCompatActivity {
         mAdView = this.findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
+    }
+
+    public void removeAccountConfirmation() {
+        androidx.appcompat.app.AlertDialog.Builder alertDialogBuilder = new androidx.appcompat.app.AlertDialog.Builder(Backup.this);
+        alertDialogBuilder.setTitle("Confirmation")
+                .setMessage("Are you sure want to remove your account?")
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        signoutFromFirebase();
+                    }
+                })
+                .setNegativeButton("No", null);
+        androidx.appcompat.app.AlertDialog dialog = alertDialogBuilder.create();
+        dialog.setOnShowListener( new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface arg0) {
+                dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(Backup.this, R.color.dark_gray));
+            }
+        });
+        dialog.show();
     }
 
     // download prgress link

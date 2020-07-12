@@ -343,6 +343,10 @@ public class MainActivity extends AppCompatActivity {
     }
 }
 
+// TODO:
+// Show confirmation for remove account
+//
+
 // Get all documents
 // https://firebase.google.com/docs/firestore/query-data/get-data#java_2
 // add document with custom id

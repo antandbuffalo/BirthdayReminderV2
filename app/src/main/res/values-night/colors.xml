@@ -2,7 +2,9 @@
 <resources>
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#222222</color>
-    <color name="colorAccent">#008577</color>
+    <color name="colorAccent">#00AB99</color>
+
+    <color name="aandb_normal_circle_bg">#00574B</color>
 
     <color name="aandb_primay_text_color">#FFFFFF</color>
     <color name="aandb_sub_text_color">#F0F0F0</color>
