@@ -19,6 +19,16 @@ import static com.firebase.ui.auth.AuthUI.getApplicationContext;
  */
 public class Storage {
 
+    public static Boolean getAccountSetupSyncReminder() {
+        return Util.getSharedPreference().getBoolean(Constants.ACCOUNT_SETUP_SYNC, false);
+    }
+
+    public static void setAccountSetupSyncReminder(Boolean status) {
+        SharedPreferences.Editor editor = Util.getSharedPreference().edit();
+        editor.putBoolean(Constants.ACCOUNT_SETUP_SYNC, status);
+        editor.commit();
+    }
+
     public static String getTheme() {
         return Storage.getString("theme", ThemeOptions.getInstance().getValues().get(0).get("key"));
     }

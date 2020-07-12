@@ -4,6 +4,8 @@
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
 
+    <color name="aandb_normal_circle_bg">#00574B</color>
+
     <color name="aandb_btn_bg">#D81B60</color>
     <color name="aandb_btn_text_color">#FFFFFF</color>
 
