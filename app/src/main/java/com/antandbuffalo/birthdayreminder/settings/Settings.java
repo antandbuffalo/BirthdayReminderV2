@@ -30,6 +30,7 @@ import com.antandbuffalo.birthdayreminder.utilities.Constants;
 import com.antandbuffalo.birthdayreminder.utilities.DataHolder;
 import com.antandbuffalo.birthdayreminder.utilities.Storage;
 import com.antandbuffalo.birthdayreminder.utilities.ThemeOptions;
+import com.antandbuffalo.birthdayreminder.utilities.Util;
 import com.antandbuffalo.birthdayreminder.wishtemplate.WishTemplate;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
@@ -138,7 +139,7 @@ public class Settings extends AppCompatActivity {
                 System.out.println("selected : " + lw.getCheckedItemPosition());
                 Storage.setTheme(optionsList.get(lw.getCheckedItemPosition()).get("key"));
                 Storage.setDbBackupTime(new Date());
-                applyTheme();
+                Util.applyTheme();
                 // refresh the list to update selected theme
                 settingsListAdapter.refreshData();
             }
@@ -154,18 +155,6 @@ public class Settings extends AppCompatActivity {
             }
         });
         dialog.show();
-    }
-
-    public void applyTheme() {
-        if(Storage.getTheme().equalsIgnoreCase(ThemeOptions.KEY_DEFAULT)) {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
-        }
-        else if(Storage.getTheme().equalsIgnoreCase(ThemeOptions.KEY_LIGHT)) {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-        }
-        else {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-        }
     }
 
     @Override
