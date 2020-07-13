@@ -33,6 +33,8 @@ import com.antandbuffalo.birthdayreminder.settings.Settings;
 import com.antandbuffalo.birthdayreminder.utilities.AutoSyncOptions;
 import com.antandbuffalo.birthdayreminder.utilities.Constants;
 import com.antandbuffalo.birthdayreminder.utilities.DataHolder;
+import com.antandbuffalo.birthdayreminder.utilities.FirebaseHandler;
+import com.antandbuffalo.birthdayreminder.utilities.FirebaseUtil;
 import com.antandbuffalo.birthdayreminder.utilities.Storage;
 import com.antandbuffalo.birthdayreminder.utilities.UIUtil;
 import com.antandbuffalo.birthdayreminder.utilities.Util;
@@ -58,7 +60,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Backup extends AppCompatActivity {
+public class Backup extends AppCompatActivity implements FirebaseHandler {
     AdView mAdView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -260,6 +262,9 @@ public class Backup extends AppCompatActivity {
             accountName.setText("Account: " + user.getEmail());
             updateProfileToFirebase(FirebaseFirestore.getInstance(), FirebaseAuth.getInstance().getCurrentUser());
             Storage.setDbBackupTime(new Date());
+
+            showProgressBar();
+            FirebaseUtil.restoreDateOfBirthAndUserPreferenceFromFirebase(FirebaseFirestore.getInstance(), FirebaseAuth.getInstance().getCurrentUser(), Backup.this);
         } else {
             Toast.makeText(DataHolder.getInstance().getAppContext(), "Not able to sign in", Toast.LENGTH_SHORT).show();
         }
@@ -371,60 +376,16 @@ public class Backup extends AppCompatActivity {
         if(firebaseUser == null) {
             return;
         }
-        DocumentReference documentReference = firebaseFirestore.collection(Util.getCollectionId(firebaseUser)).document(Constants.firebaseDocumentFriends);
         showProgressBar();
-        documentReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                hideProgressBar();
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document.exists()) {
-                        Log.d("FirebaseGetData", "DocumentSnapshot data: " + document.getData());
-                        Util.inserDateOfBirthFromServer(document.getData());
-//                        Storage.setDbBackupTime(Util.getDateFromString(Storage.getServerBackupTime(), Constants.backupDateFormatToStore));
-//                        updateBackupTimeUI();
-                        DataHolder.getInstance().refresh = true;
-                        Toast.makeText(Backup.this, "Successfully Restored Birthday Informations from server", Toast.LENGTH_SHORT).show();
-                    } else {
-                        Log.d("FirebaseGetData", "No such document");
-                    }
-                } else {
-                    Log.d("FirebaseGetData", "get failed with ", task.getException());
-                }
-            }
-        });
+        FirebaseUtil.restoreDateOfBirthsFromFirebase(firebaseFirestore, firebaseUser, Backup.this);
     }
 
     public void restoreUserPreferenceFromFirebase(FirebaseFirestore firebaseFirestore, FirebaseUser firebaseUser) {
         if(firebaseUser == null) {
             return;
         }
-        DocumentReference documentReference = firebaseFirestore.collection(Util.getCollectionId(firebaseUser)).document(Constants.firebaseDocumentSettings);
         showProgressBar();
-        documentReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                hideProgressBar();
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document.exists()) {
-                        Log.d("FirebaseGetData", "DocumentSnapshot data: " + document.getData());
-                        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-
-                        Storage.updateUserPreference(Storage.createUserPreferenceFromServer(document.getData()), alarmManager, getApplicationContext());
-                        updateBackupTimeUI();
-                        updateAutoFrequencyUI();
-                        DataHolder.getInstance().refreshSettings = true;
-                        Toast.makeText(Backup.this, "Successfully Restored your preferences from server", Toast.LENGTH_SHORT).show();
-                    } else {
-                        Log.d("FirebaseGetData", "No such document");
-                    }
-                } else {
-                    Log.d("FirebaseGetData", "get failed with ", task.getException());
-                }
-            }
-        });
+        FirebaseUtil.restoreUserPreferenceFromFirebase(firebaseFirestore, firebaseUser, Backup.this);
     }
 
     public void updateLastUpdatedTime(FirebaseFirestore firebaseFirestore, FirebaseUser firebaseUser) {
@@ -601,6 +562,76 @@ public class Backup extends AppCompatActivity {
             }
         });
         dialog.show();
+    }
+
+    public void autoRestoreConfirmation() {
+        androidx.appcompat.app.AlertDialog.Builder alertDialogBuilder = new androidx.appcompat.app.AlertDialog.Builder(Backup.this);
+        alertDialogBuilder.setTitle("Confirmation")
+                .setMessage("We found a backup of this account. Do you want to restore now? You can always restore later using the Restore option")
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        restoreDateOfBirthsFromFirebase(FirebaseFirestore.getInstance(), FirebaseAuth.getInstance().getCurrentUser());
+                        restoreUserPreferenceFromFirebase(FirebaseFirestore.getInstance(), FirebaseAuth.getInstance().getCurrentUser());
+                    }
+                })
+                .setNegativeButton("No", null);
+        androidx.appcompat.app.AlertDialog dialog = alertDialogBuilder.create();
+        dialog.setOnShowListener( new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface arg0) {
+                dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(Backup.this, R.color.dark_gray));
+            }
+        });
+        dialog.show();
+    }
+
+    @Override
+    public void onCompleteDateOfBirthSync(Task<DocumentSnapshot> task) {
+        hideProgressBar();
+        if (task.isSuccessful()) {
+            DocumentSnapshot document = task.getResult();
+            if (document.exists()) {
+                Log.d("FirebaseGetData", "DocumentSnapshot data: " + document.getData());
+                Util.inserDateOfBirthFromServer(document.getData());
+                DataHolder.getInstance().refresh = true;
+                Toast.makeText(Backup.this, "Successfully Restored Birthday Informations from server", Toast.LENGTH_SHORT).show();
+            } else {
+                Log.d("FirebaseGetData", "No such document");
+            }
+        } else {
+            Log.d("FirebaseGetData", "get failed with ", task.getException());
+        }
+    }
+
+    @Override
+    public void onCompleteUserPreferenceSync(Task<DocumentSnapshot> task) {
+        hideProgressBar();
+        if (task.isSuccessful()) {
+            DocumentSnapshot document = task.getResult();
+            if (document.exists()) {
+                Log.d("FirebaseGetData", "DocumentSnapshot data: " + document.getData());
+                AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+
+                Storage.updateUserPreference(Storage.createUserPreferenceFromServer(document.getData()), alarmManager, getApplicationContext());
+                updateBackupTimeUI();
+                updateAutoFrequencyUI();
+                Util.applyTheme();
+                DataHolder.getInstance().refreshSettings = true;
+                Toast.makeText(Backup.this, "Successfully Restored your preferences from server", Toast.LENGTH_SHORT).show();
+            } else {
+                Log.d("FirebaseGetData", "No such document");
+            }
+        } else {
+            Log.d("FirebaseGetData", "get failed with ", task.getException());
+        }
+    }
+
+    @Override
+    public void onCompleteDateOfBirthUserPreferenceSync(Task<DocumentSnapshot> dobTask, Task<DocumentSnapshot> preferenceTask) {
+        if(dobTask != null && preferenceTask != null) {
+            hideProgressBar();
+        }
     }
 
     // download prgress link

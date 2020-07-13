@@ -85,7 +85,7 @@ public class AutoSyncService {
                         Storage.setAutoSyncDate(new Date());
                         DataHolder.getInstance().refresh = true;
                         if(firebaseHandler != null) {
-                            firebaseHandler.onCompleteDateOfBirthSync();
+                            firebaseHandler.onCompleteDateOfBirthSync(task);
                         }
                     } else {
                         Log.d("FirebaseGetData", "No such document");

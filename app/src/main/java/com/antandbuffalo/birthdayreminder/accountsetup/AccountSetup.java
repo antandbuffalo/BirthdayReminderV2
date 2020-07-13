@@ -263,7 +263,7 @@ public class AccountSetup extends AppCompatActivity implements FirebaseHandler {
     }
 
     @Override
-    public void onCompleteDateOfBirthSync() {
+    public void onCompleteDateOfBirthSync(Task<DocumentSnapshot> task) {
         System.out.println("onCompleteDateOfBirthSync");
         hideProgressBar();
     }
