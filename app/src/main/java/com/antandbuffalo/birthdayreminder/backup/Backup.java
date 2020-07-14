@@ -564,15 +564,15 @@ public class Backup extends AppCompatActivity implements FirebaseHandler {
         dialog.show();
     }
 
-    public void autoRestoreConfirmation() {
+    public void autoRestoreConfirmation(Task<DocumentSnapshot> dobTask, Task<DocumentSnapshot> preferenceTask) {
         androidx.appcompat.app.AlertDialog.Builder alertDialogBuilder = new androidx.appcompat.app.AlertDialog.Builder(Backup.this);
         alertDialogBuilder.setTitle("Confirmation")
-                .setMessage("We found a backup of this account. Do you want to restore now? You can always restore later using the Restore option")
+                .setMessage("We found a backup for this account. Do you want to restore now? You can always restore later using the Restore option")
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        restoreDateOfBirthsFromFirebase(FirebaseFirestore.getInstance(), FirebaseAuth.getInstance().getCurrentUser());
-                        restoreUserPreferenceFromFirebase(FirebaseFirestore.getInstance(), FirebaseAuth.getInstance().getCurrentUser());
+                        postProcessDateOfBirths(dobTask);
+                        postProcessUserPreference(preferenceTask);
                     }
                 })
                 .setNegativeButton("No", null);
@@ -586,9 +586,7 @@ public class Backup extends AppCompatActivity implements FirebaseHandler {
         dialog.show();
     }
 
-    @Override
-    public void onCompleteDateOfBirthSync(Task<DocumentSnapshot> task) {
-        hideProgressBar();
+    public void postProcessDateOfBirths(Task<DocumentSnapshot> task) {
         if (task.isSuccessful()) {
             DocumentSnapshot document = task.getResult();
             if (document.exists()) {
@@ -605,8 +603,12 @@ public class Backup extends AppCompatActivity implements FirebaseHandler {
     }
 
     @Override
-    public void onCompleteUserPreferenceSync(Task<DocumentSnapshot> task) {
+    public void onCompleteDateOfBirthSync(Task<DocumentSnapshot> task) {
         hideProgressBar();
+        postProcessDateOfBirths(task);
+    }
+
+    public void postProcessUserPreference(Task<DocumentSnapshot> task) {
         if (task.isSuccessful()) {
             DocumentSnapshot document = task.getResult();
             if (document.exists()) {
@@ -628,9 +630,16 @@ public class Backup extends AppCompatActivity implements FirebaseHandler {
     }
 
     @Override
+    public void onCompleteUserPreferenceSync(Task<DocumentSnapshot> task) {
+        hideProgressBar();
+        postProcessUserPreference(task);
+    }
+
+    @Override
     public void onCompleteDateOfBirthUserPreferenceSync(Task<DocumentSnapshot> dobTask, Task<DocumentSnapshot> preferenceTask) {
         if(dobTask != null && preferenceTask != null) {
             hideProgressBar();
+            autoRestoreConfirmation(dobTask, preferenceTask);
         }
     }
 
