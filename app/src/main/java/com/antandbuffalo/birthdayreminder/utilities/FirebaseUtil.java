@@ -1,13 +1,9 @@
 package com.antandbuffalo.birthdayreminder.utilities;
 
-import android.app.AlarmManager;
-import android.content.Context;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
-import com.antandbuffalo.birthdayreminder.backup.Backup;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseUser;
@@ -47,8 +43,9 @@ public class FirebaseUtil {
         documentReferenceDob.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                Log.i("AUTO_RESTORE", "Date of birth ready");
                 snapshots.add(0, task);
-                firebaseHandler.onCompleteDateOfBirthUserPreferenceSync(snapshots.get(0), snapshots.get(1));
+                firebaseHandler.onCompleteDateOfBirthUserPreferenceSync("dob", task);
             }
         });
 
@@ -56,8 +53,9 @@ public class FirebaseUtil {
         documentReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                Log.i("AUTO_RESTORE", "User pref ready");
                 snapshots.add(1, task);
-                firebaseHandler.onCompleteDateOfBirthUserPreferenceSync(snapshots.get(0), snapshots.get(1));
+                firebaseHandler.onCompleteDateOfBirthUserPreferenceSync("preference", task);
             }
         });
     }

@@ -62,6 +62,8 @@ import java.util.Map;
 
 public class Backup extends AppCompatActivity implements FirebaseHandler {
     AdView mAdView;
+    Integer progressCounter = 0;
+    Task<DocumentSnapshot> dobDone, preferenceDone;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -263,7 +265,11 @@ public class Backup extends AppCompatActivity implements FirebaseHandler {
             updateProfileToFirebase(FirebaseFirestore.getInstance(), FirebaseAuth.getInstance().getCurrentUser());
             Storage.setDbBackupTime(new Date());
 
+            Log.i("AUTO_RESTORE", "Calling auto restore");
             showProgressBar();
+            showProgressBar();
+            dobDone = null;
+            preferenceDone = null;
             FirebaseUtil.restoreDateOfBirthAndUserPreferenceFromFirebase(FirebaseFirestore.getInstance(), FirebaseAuth.getInstance().getCurrentUser(), Backup.this);
         } else {
             Toast.makeText(DataHolder.getInstance().getAppContext(), "Not able to sign in", Toast.LENGTH_SHORT).show();
@@ -529,12 +535,18 @@ public class Backup extends AppCompatActivity implements FirebaseHandler {
 
     public void showProgressBar() {
         ProgressBar progressBar = findViewById(R.id.progresBar);
-        progressBar.setVisibility(View.VISIBLE);
+        if(progressCounter == 0) {
+            progressBar.setVisibility(View.VISIBLE);
+        }
+        progressCounter++;
     }
 
     public void hideProgressBar() {
         ProgressBar progressBar = findViewById(R.id.progresBar);
-        progressBar.setVisibility(View.INVISIBLE);
+        progressCounter--;
+        if(progressCounter == 0) {
+            progressBar.setVisibility(View.INVISIBLE);
+        }
     }
 
     public void loadAd() {
@@ -565,6 +577,7 @@ public class Backup extends AppCompatActivity implements FirebaseHandler {
     }
 
     public void autoRestoreConfirmation(Task<DocumentSnapshot> dobTask, Task<DocumentSnapshot> preferenceTask) {
+        Log.i("AUTO_RESTORE", "Going to show confirmation");
         androidx.appcompat.app.AlertDialog.Builder alertDialogBuilder = new androidx.appcompat.app.AlertDialog.Builder(Backup.this);
         alertDialogBuilder.setTitle("Confirmation")
                 .setMessage("We found a backup for this account. Do you want to restore now? You can always restore later using the Restore option")
@@ -637,9 +650,29 @@ public class Backup extends AppCompatActivity implements FirebaseHandler {
 
     @Override
     public void onCompleteDateOfBirthUserPreferenceSync(Task<DocumentSnapshot> dobTask, Task<DocumentSnapshot> preferenceTask) {
+        Log.i("AUTO_RESTORE", "One is done");
+
+        hideProgressBar();
         if(dobTask != null && preferenceTask != null) {
-            hideProgressBar();
+            Log.i("AUTO_RESTORE", "Both done");
             autoRestoreConfirmation(dobTask, preferenceTask);
+        }
+    }
+
+    @Override
+    public void onCompleteDateOfBirthUserPreferenceSync(String type, Task<DocumentSnapshot> task) {
+        Log.i("AUTO_RESTORE", "One is done");
+        hideProgressBar();
+        if(type.equalsIgnoreCase("dob")) {
+            dobDone = task;
+        }
+        else if(type.equalsIgnoreCase("preference")) {
+            preferenceDone = task;
+        }
+
+        if(dobDone != null && preferenceDone != null) {
+            Log.i("AUTO_RESTORE", "Both done");
+            autoRestoreConfirmation(dobDone, preferenceDone);
         }
     }
 
