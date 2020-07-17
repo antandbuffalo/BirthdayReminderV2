@@ -15,6 +15,7 @@ import androidx.core.content.ContextCompat;
 
 import com.antandbuffalo.birthdayreminder.MainActivity;
 import com.antandbuffalo.birthdayreminder.R;
+import com.antandbuffalo.birthdayreminder.backup.Backup;
 import com.antandbuffalo.birthdayreminder.database.DateOfBirthDBHelper;
 import com.antandbuffalo.birthdayreminder.models.DateOfBirth;
 import com.antandbuffalo.birthdayreminder.utilities.AutoSyncService;
@@ -58,9 +59,17 @@ public class AlarmReceiver extends BroadcastReceiver {
         notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         String CHANNEL_ID = setChannel(notificationManager);
 
+        Intent backIntent = new Intent(context, MainActivity.class);
+        backIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
         //notification opening intent
-        Intent resultingIntent = new Intent(context, MainActivity.class);
-        PendingIntent contentIntent = PendingIntent.getActivity(context, 0, resultingIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        Intent resultingIntent = new Intent(context, Backup.class);
+
+        // reference
+        // https://stackoverflow.com/questions/13800680/back-to-main-activity-from-notification-created-activity
+
+        // PendingIntent contentIntent = PendingIntent.getActivity(context, 0, resultingIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent contentIntent = PendingIntent.getActivities(context, 0, new Intent[] { backIntent, resultingIntent }, PendingIntent.FLAG_ONE_SHOT);
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(message))
                 .setSmallIcon(notificationIcon)

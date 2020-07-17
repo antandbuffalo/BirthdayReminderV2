@@ -192,5 +192,5 @@ public class Constants {
     public static final String firebaseDocumentSettings = "settings";
 
     public static final String ACCOUNT_SETUP_SYNC = "ACCOUNT_SETUP_SYNC";
-    public static final Integer DATE_ACCOUNT_SETUP_SYNC = 12;
+    public static final Integer DATE_ACCOUNT_SETUP_SYNC = 11;
 }
