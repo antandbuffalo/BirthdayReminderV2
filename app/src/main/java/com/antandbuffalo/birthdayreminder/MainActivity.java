@@ -203,7 +203,7 @@ public class MainActivity extends AppCompatActivity {
             Util.writeToFile(this, "v2");
             Intent intent = new Intent(MainActivity.this, AccountSetup.class);
             startActivity(intent);
-            Storage.setFirstTimeLaunch();
+            // Storage.setFirstTimeLaunch();
         }
     }
 

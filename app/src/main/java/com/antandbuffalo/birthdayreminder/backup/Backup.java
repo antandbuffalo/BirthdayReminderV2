@@ -110,8 +110,13 @@ public class Backup extends AppCompatActivity implements FirebaseHandler {
         restoreNow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                restoreDateOfBirthsFromFirebase(FirebaseFirestore.getInstance(), FirebaseAuth.getInstance().getCurrentUser());
-                restoreUserPreferenceFromFirebase(FirebaseFirestore.getInstance(), FirebaseAuth.getInstance().getCurrentUser());
+                if(FirebaseAuth.getInstance().getCurrentUser() != null) {
+                    restoreDateOfBirthsFromFirebase(FirebaseFirestore.getInstance(), FirebaseAuth.getInstance().getCurrentUser());
+                    restoreUserPreferenceFromFirebase(FirebaseFirestore.getInstance(), FirebaseAuth.getInstance().getCurrentUser());
+                }
+                else {
+                    UIUtil.showAlertWithOk(Backup.this, "Error", "Please select account to backup");
+                }
             }
         });
 
