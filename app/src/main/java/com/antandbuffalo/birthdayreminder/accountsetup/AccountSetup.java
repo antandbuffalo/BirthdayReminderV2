@@ -30,6 +30,7 @@ import com.antandbuffalo.birthdayreminder.utilities.Constants;
 import com.antandbuffalo.birthdayreminder.utilities.DataHolder;
 import com.antandbuffalo.birthdayreminder.utilities.FirebaseHandler;
 import com.antandbuffalo.birthdayreminder.utilities.Storage;
+import com.antandbuffalo.birthdayreminder.utilities.UIUtil;
 import com.antandbuffalo.birthdayreminder.utilities.Util;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
@@ -274,6 +275,7 @@ public class AccountSetup extends AppCompatActivity implements FirebaseHandler {
     public void onCompleteDateOfBirthSync(Task<DocumentSnapshot> task) {
         System.out.println("onCompleteDateOfBirthSync");
         hideProgressBar();
+        UIUtil.showAlertWithOk(AccountSetup.this, "Success", "Account data restored successfully");
     }
 
     public void loadAd() {
@@ -297,6 +299,7 @@ public class AccountSetup extends AppCompatActivity implements FirebaseHandler {
             message = "Are you sure want to continue without setting up your Account and Auto Sync frequency?";
         }
         if(error == 0) {
+            Storage.setFirstTimeLaunch();
             finish();
             return;
         }
@@ -307,6 +310,7 @@ public class AccountSetup extends AppCompatActivity implements FirebaseHandler {
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        Storage.setFirstTimeLaunch();
                         finish();
                     }
                 })
