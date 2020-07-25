@@ -72,6 +72,14 @@ public class AccountSetup extends AppCompatActivity implements FirebaseHandler {
             }
         });
 
+        Button btnContinue = findViewById(R.id.btnContinue);
+        btnContinue.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showConfirmationBeforeExit();
+            }
+        });
+
         Button selectFrequency = findViewById(R.id.frequency);
         selectFrequency.setOnClickListener(new View.OnClickListener() {
             @Override
