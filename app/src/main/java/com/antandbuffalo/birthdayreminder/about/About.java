@@ -36,7 +36,7 @@ public class About extends AppCompatActivity {
                 emailIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 emailIntent.setType("vnd.android.cursor.item/email");
                 emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL, new String[]{Constants.FEEDBACK_EMAIL});
-                emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, Constants.FEEDBACK_EMAIL_SUBJECT);
+                emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, Constants.FEEDBACK_EMAIL_SUBJECT + " v" + BuildConfig.VERSION_NAME + " (" + BuildConfig.VERSION_CODE + ")");
                 //emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, "");
                 startActivity(Intent.createChooser(emailIntent, Constants.FEEDBACK_EMAIL_POPUP_MESSAGE));
                 //startActivity(emailIntent);
