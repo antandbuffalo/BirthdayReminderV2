@@ -65,6 +65,23 @@ public class AccountSetup extends AppCompatActivity implements FirebaseHandler {
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close_white);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        Boolean showAlert = (Boolean)getIntent().getSerializableExtra("showAlert");
+        if(showAlert) {
+            FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+            if(firebaseUser == null) {
+                UIUtil.showAlertWithOk(this, "Reminder", "Please select your google account");
+                return;
+            }
+            if("none".equalsIgnoreCase(Storage.getAutoSyncFrequency())) {
+                UIUtil.showAlertWithOk(this, "Reminder", "Please select auto backup frequency");
+                return;
+            }
+            if("none".equalsIgnoreCase(Storage.getAutoSyncFrequency()) && firebaseUser == null) {
+                UIUtil.showAlertWithOk(this, "Reminder", "Please select your google account and auto backup frequency");
+                return;
+            }
+        }
+
         Button selectAccount = findViewById(R.id.selectAccount);
         selectAccount.setOnClickListener(new View.OnClickListener() {
             @Override

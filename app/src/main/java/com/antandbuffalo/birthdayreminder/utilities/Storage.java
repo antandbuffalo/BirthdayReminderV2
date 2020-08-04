@@ -19,6 +19,14 @@ import static com.firebase.ui.auth.AuthUI.getApplicationContext;
  */
 public class Storage {
 
+    public static Date getLastAppOpenDate() {
+        return Util.getDateFromString(Storage.getString("lastAppOpenDate", "12/12/2012"), "dd/MM/yyyy");
+    }
+
+    public static void setLastAppOpenDate(Date date) {
+        Storage.putString("lastAppOpenDate", Util.getStringFromDate(date, "dd/MM/yyyy"));
+    }
+
     public static Boolean getAccountSetupSyncReminder() {
         return Util.getSharedPreference().getBoolean(Constants.ACCOUNT_SETUP_SYNC, false);
     }

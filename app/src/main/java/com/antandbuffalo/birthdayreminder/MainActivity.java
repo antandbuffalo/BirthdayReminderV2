@@ -40,6 +40,7 @@ import com.antandbuffalo.birthdayreminder.utilities.Constants;
 import com.antandbuffalo.birthdayreminder.utilities.DataHolder;
 import com.antandbuffalo.birthdayreminder.utilities.Storage;
 import com.antandbuffalo.birthdayreminder.utilities.ThemeOptions;
+import com.antandbuffalo.birthdayreminder.utilities.UIUtil;
 import com.antandbuffalo.birthdayreminder.utilities.Util;
 import com.firebase.ui.auth.IdpResponse;
 import com.google.android.gms.ads.AdRequest;
@@ -51,6 +52,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity {
     UpcomingListAdapter upcomingListAdapter;
@@ -203,8 +205,28 @@ public class MainActivity extends AppCompatActivity {
             Util.writeToFile(this, "v2");
             Intent intent = new Intent(MainActivity.this, AccountSetup.class);
             startActivity(intent);
-            // Storage.setFirstTimeLaunch();
         }
+        else {
+            long oldDate = Storage.getLastAppOpenDate().getTime();
+            long diff = new Date().getTime() - oldDate;
+            long days = TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
+            if(days > 30) {
+                checkAccountSetup();
+            }
+            Storage.setLastAppOpenDate(new Date());
+        }
+    }
+
+    public void checkAccountSetup() {
+        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        if(!("none".equalsIgnoreCase(Storage.getAutoSyncFrequency())) && firebaseUser != null) {
+            return;
+        }
+
+        Intent intent = new Intent(MainActivity.this, AccountSetup.class);
+        intent.putExtra("showAlert", true);
+        startActivity(intent);
     }
 
     public void startUpdate(int position) {
