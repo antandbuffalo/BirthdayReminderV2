@@ -76,10 +76,6 @@ public class AccountSetup extends AppCompatActivity implements FirebaseHandler {
                 UIUtil.showAlertWithOk(this, "Reminder", "Please select auto backup frequency");
                 return;
             }
-            if("none".equalsIgnoreCase(Storage.getAutoSyncFrequency()) && firebaseUser == null) {
-                UIUtil.showAlertWithOk(this, "Reminder", "Please select your google account and auto backup frequency");
-                return;
-            }
         }
 
         Button selectAccount = findViewById(R.id.selectAccount);
