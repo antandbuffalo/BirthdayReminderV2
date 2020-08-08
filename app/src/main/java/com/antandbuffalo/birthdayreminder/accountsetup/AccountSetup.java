@@ -66,15 +66,12 @@ public class AccountSetup extends AppCompatActivity implements FirebaseHandler {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         Boolean showAlert = (Boolean)getIntent().getSerializableExtra("showAlert");
-        if(showAlert) {
+        if(showAlert != null && showAlert) {
             FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
             if(firebaseUser == null) {
                 UIUtil.showAlertWithOk(this, "Reminder", "Please select your google account");
-                return;
-            }
-            if("none".equalsIgnoreCase(Storage.getAutoSyncFrequency())) {
+            } else if("none".equalsIgnoreCase(Storage.getAutoSyncFrequency())) {
                 UIUtil.showAlertWithOk(this, "Reminder", "Please select auto backup frequency");
-                return;
             }
         }
 
@@ -143,7 +140,6 @@ public class AccountSetup extends AppCompatActivity implements FirebaseHandler {
             Log.d("BRJB", item.getItemId() + " : back");
             showConfirmationBeforeExit();
         }
-        //finish();
         return true;
     }
 
@@ -313,6 +309,7 @@ public class AccountSetup extends AppCompatActivity implements FirebaseHandler {
         }
         if(error == 0) {
             Storage.setFirstTimeLaunch();
+            Storage.setLastAccSetupShownDate(new Date());
             finish();
             return;
         }
@@ -324,6 +321,7 @@ public class AccountSetup extends AppCompatActivity implements FirebaseHandler {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         Storage.setFirstTimeLaunch();
+                        Storage.setLastAccSetupShownDate(new Date());
                         finish();
                     }
                 })

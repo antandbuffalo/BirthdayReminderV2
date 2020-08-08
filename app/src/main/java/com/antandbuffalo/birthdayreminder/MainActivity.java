@@ -207,13 +207,12 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         }
         else {
-            long oldDate = Storage.getLastAppOpenDate().getTime();
+            long oldDate = Storage.getLastAccSetupShownDate().getTime();
             long diff = new Date().getTime() - oldDate;
             long days = TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
             if(days > 30) {
                 checkAccountSetup();
             }
-            Storage.setLastAppOpenDate(new Date());
         }
     }
 
@@ -225,7 +224,12 @@ public class MainActivity extends AppCompatActivity {
         }
 
         Intent intent = new Intent(MainActivity.this, AccountSetup.class);
-        intent.putExtra("showAlert", true);
+        if("none".equalsIgnoreCase(Storage.getAutoSyncFrequency()) && firebaseUser == null) {
+            intent.putExtra("showAlert", false);
+        }
+        else {
+            intent.putExtra("showAlert", true);
+        }
         startActivity(intent);
     }
 

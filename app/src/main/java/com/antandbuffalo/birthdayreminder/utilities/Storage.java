@@ -19,11 +19,11 @@ import static com.firebase.ui.auth.AuthUI.getApplicationContext;
  */
 public class Storage {
 
-    public static Date getLastAppOpenDate() {
+    public static Date getLastAccSetupShownDate() {
         return Util.getDateFromString(Storage.getString("lastAppOpenDate", "12/12/2012"), "dd/MM/yyyy");
     }
 
-    public static void setLastAppOpenDate(Date date) {
+    public static void setLastAccSetupShownDate(Date date) {
         Storage.putString("lastAppOpenDate", Util.getStringFromDate(date, "dd/MM/yyyy"));
     }
 
