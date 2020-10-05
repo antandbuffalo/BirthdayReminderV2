@@ -206,14 +206,15 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(MainActivity.this, AccountSetup.class);
             startActivity(intent);
         }
-        else {
-            long oldDate = Storage.getLastAccSetupShownDate().getTime();
-            long diff = new Date().getTime() - oldDate;
-            long days = TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
-            if(days > 30) {
-                checkAccountSetup();
-            }
-        }
+        // this needs to be properly tested before enabling. To fix a crash issue in prod, currently commenting this out.
+//        else {
+//            long oldDate = Storage.getLastAccSetupShownDate().getTime();
+//            long diff = new Date().getTime() - oldDate;
+//            long days = TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
+//            if(days > 30) {
+//                checkAccountSetup();
+//            }
+//        }
     }
 
     public void checkAccountSetup() {
