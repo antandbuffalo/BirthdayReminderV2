@@ -26,6 +26,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 
 import com.antandbuffalo.birthdayreminder.R;
+import com.antandbuffalo.birthdayreminder.database.DBHelper;
 import com.antandbuffalo.birthdayreminder.database.DateOfBirthDBHelper;
 import com.antandbuffalo.birthdayreminder.models.DateOfBirth;
 import com.antandbuffalo.birthdayreminder.models.UserProfile;
@@ -69,13 +70,13 @@ public class Backup extends AppCompatActivity implements FirebaseHandler {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.backup);
 
+        initValues();
+
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_back_white);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        ProgressBar progressBar = findViewById(R.id.progresBar);
-
+        
         if(FirebaseAuth.getInstance().getCurrentUser() != null) {
             Log.d("FirebaseUser", FirebaseAuth.getInstance().getCurrentUser().getEmail());
             TextView textView = findViewById(R.id.accountName);
@@ -178,6 +179,11 @@ public class Backup extends AppCompatActivity implements FirebaseHandler {
         updateBackupTimeUI();
         updateAutoFrequencyUI();
         loadAd();
+    }
+
+    public void initValues() {
+        DBHelper.createInstance(this);
+        DataHolder.getInstance().setAppContext(getApplicationContext());
     }
 
     public void updateLocalBackup() {
