@@ -195,7 +195,11 @@ public class Constants {
     public static final Integer DATE_ACCOUNT_SETUP_SYNC = 11;
     public static final String LAST_APP_OPEN_DATE_FORMAT = "dd/MM/yyyy";
 
-    public static final Integer SNOW_DAY = 12;
-    public static final Integer SNOW_MONTH = 4; // MAY
-    public static final String SNOW_EMAIL = "ja";
+//    public static final Integer SNOW_DAY = 12;
+//    public static final Integer SNOW_MONTH = 4; // MAY
+//    public static final String SNOW_EMAIL = "ja";
+
+    public static final Integer SNOW_DAY = 23;
+    public static final Integer SNOW_MONTH = 1; // MAY
+    public static final String SNOW_EMAIL = "an";
 }
