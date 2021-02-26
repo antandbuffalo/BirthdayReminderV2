@@ -372,10 +372,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void showSnowFlakes() {
-        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        if(firebaseUser.getEmail().indexOf(Constants.SNOW_EMAIL) > -1 && Util.getCurrentDate() == Constants.SNOW_DAY && Util.getCurrentMonth() == Constants.SNOW_MONTH) {
+        if(Util.isHappyBirthday()) {
             View snowFlakes = this.findViewById(R.id.snowFlakes);
             snowFlakes.setVisibility(View.VISIBLE);
+            Util.showHappyBirthdayNotification(this);
         }
     }
 
