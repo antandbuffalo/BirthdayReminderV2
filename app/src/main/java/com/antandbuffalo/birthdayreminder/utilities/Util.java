@@ -33,6 +33,7 @@ import com.antandbuffalo.birthdayreminder.models.UserProfile;
 import com.antandbuffalo.birthdayreminder.notification.AlarmReceiver;
 import com.firebase.ui.auth.data.model.User;
 import com.google.firebase.Timestamp;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import org.json.JSONException;
@@ -776,5 +777,39 @@ public class Util {
         else {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
         }
+    }
+
+    public static boolean isHappyBirthday() {
+        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        return firebaseUser != null && firebaseUser.getEmail().indexOf(Constants.SNOW_EMAIL) > -1 && Util.getCurrentDate() == Constants.SNOW_DAY && Util.getCurrentMonth() == Constants.SNOW_MONTH;
+    }
+
+    public static void showHappyBirthdayNotification(Context context) {
+        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+
+        String CHANNEL_ID = "aandb_br_1";
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            CharSequence name = "Happy Birthday";
+            String Description = "Have a beautiful year ahead";
+            int importance = NotificationManager.IMPORTANCE_HIGH;
+            NotificationChannel mChannel = new NotificationChannel(CHANNEL_ID, name, importance);
+            mChannel.setDescription(Description);
+            notificationManager.createNotificationChannel(mChannel);
+        }
+
+        //notification opening intent
+        Intent resultingIntent = new Intent(context, MainActivity.class);
+        PendingIntent contentIntent = PendingIntent.getActivity(context, 0, resultingIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context, CHANNEL_ID)
+                .setStyle(new NotificationCompat.BigTextStyle().bigText("Have a beautiful year ahead"))
+                .setSmallIcon(R.drawable.ic_notification)
+                .setContentTitle("Happy Birthday")
+                .setContentText("Have a beautiful year ahead");
+        mBuilder.setColor(ContextCompat.getColor(context, R.color.colorPrimary));
+        mBuilder.setAutoCancel(true);
+
+        mBuilder.setContentIntent(contentIntent);
+        int notificationId = 101;
+        notificationManager.notify(notificationId, mBuilder.build());
     }
 }

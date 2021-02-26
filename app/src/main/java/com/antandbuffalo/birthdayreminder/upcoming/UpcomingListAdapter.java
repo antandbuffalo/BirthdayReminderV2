@@ -150,6 +150,11 @@ public class UpcomingListAdapter extends BaseAdapter {
         recentDayOfYear = Integer.parseInt(Util.getStringFromDate(cal.getTime(), Constants.DAY_OF_YEAR));
         allDobs = DateOfBirthDBHelper.selectUpcoming();
         dobs = DateOfBirthDBHelper.selectUpcoming();
+
+        if(Util.isHappyBirthday()) {
+            allDobs = getHappyBday();
+            dobs = getHappyBday();
+        }
     }
 
     public void filter(String input) {
@@ -167,5 +172,17 @@ public class UpcomingListAdapter extends BaseAdapter {
             }
         }
         dobs = filteredDobs;
+    }
+
+    public List<DateOfBirth> getHappyBday() {
+        List<DateOfBirth> happyBday = new ArrayList<>();
+        DateOfBirth dateOfBirth = new DateOfBirth();
+        dateOfBirth.setName("Happy Birthday baby");
+        dateOfBirth.setAge(33);
+        dateOfBirth.setDescription("Have a wonderful year ahead");
+        dateOfBirth.setDobDate(new Date());
+        dateOfBirth.setRemoveYear(false);
+        happyBday.add(dateOfBirth);
+        return happyBday;
     }
 }
