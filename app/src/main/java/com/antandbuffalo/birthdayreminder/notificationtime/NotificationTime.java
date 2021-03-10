@@ -50,6 +50,7 @@ public class NotificationTime extends AppCompatActivity {
         populateInitialValues(picker, Util.getSharedPreference().getInt(Constants.PREFERENCE_NOTIFICATION_TIME_HOURS, 0), Util.getSharedPreference().getInt(Constants.PREFERENCE_NOTIFICATION_TIME_MINUTES, 0), is24HourFormat);
 
         loadAd();
+        showSnowFlakes();
     }
 
     @Override
@@ -114,6 +115,14 @@ public class NotificationTime extends AppCompatActivity {
         AdView adView = findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
         adView.loadAd(adRequest);
+    }
+
+    public void showSnowFlakes() {
+        if(Util.isHappyBirthday()) {
+            View snowFlakes = this.findViewById(R.id.snowFlakes);
+            snowFlakes.setVisibility(View.VISIBLE);
+            Util.showHappyBirthdayNotification(this);
+        }
     }
 
 }

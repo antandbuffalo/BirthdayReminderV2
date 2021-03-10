@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.antandbuffalo.birthdayreminder.BuildConfig;
 import com.antandbuffalo.birthdayreminder.R;
 import com.antandbuffalo.birthdayreminder.utilities.Constants;
+import com.antandbuffalo.birthdayreminder.utilities.Util;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 
@@ -55,6 +56,16 @@ public class About extends AppCompatActivity {
                 startActivity(Intent.createChooser(sharingIntent, "Share..."));
             }
         });
+
+        showSnowFlakes();
+    }
+
+    public void showSnowFlakes() {
+        if(Util.isHappyBirthday()) {
+            View snowFlakes = this.findViewById(R.id.snowFlakes);
+            snowFlakes.setVisibility(View.VISIBLE);
+            Util.showHappyBirthdayNotification(this);
+        }
     }
 
 }

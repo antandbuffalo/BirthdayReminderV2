@@ -53,6 +53,7 @@ public class NotificationFrequency extends AppCompatActivity {
 
         populateSpinnerFrequency(numberPicker);
         loadAd();
+        showSnowFlakes();
     }
 
     public void saveNotificationFrequency() {
@@ -101,5 +102,13 @@ public class NotificationFrequency extends AppCompatActivity {
         AdView mAdView = this.findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
+    }
+
+    public void showSnowFlakes() {
+        if(Util.isHappyBirthday()) {
+            View snowFlakes = this.findViewById(R.id.snowFlakes);
+            snowFlakes.setVisibility(View.VISIBLE);
+            Util.showHappyBirthdayNotification(this);
+        }
     }
 }

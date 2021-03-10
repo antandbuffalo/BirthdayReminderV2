@@ -173,6 +173,7 @@ public class Update extends AppCompatActivity {
         });
 
         intent = new Intent();
+        showSnowFlakes();
     }
 
     public void addMonthsToSpinner(Spinner spinner) {
@@ -388,5 +389,13 @@ public class Update extends AppCompatActivity {
 
     public void clearInputs() {
         name.setText("");
+    }
+
+    public void showSnowFlakes() {
+        if(Util.isHappyBirthday()) {
+            View snowFlakes = this.findViewById(R.id.snowFlakes);
+            snowFlakes.setVisibility(View.VISIBLE);
+            Util.showHappyBirthdayNotification(this);
+        }
     }
 }

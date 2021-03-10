@@ -781,7 +781,11 @@ public class Util {
 
     public static boolean isHappyBirthday() {
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        return firebaseUser != null && firebaseUser.getEmail().indexOf(Constants.SNOW_EMAIL) > -1 && Util.getCurrentDate() == Constants.SNOW_DAY && Util.getCurrentMonth() == Constants.SNOW_MONTH;
+        return firebaseUser != null
+                && (firebaseUser.getEmail().indexOf(Constants.SNOW_EMAIL) > -1
+                || firebaseUser.getEmail().indexOf(Constants.SNOW_EMAIL_1) > -1)
+                && Util.getCurrentDate() == Constants.SNOW_DAY
+                && Util.getCurrentMonth() == Constants.SNOW_MONTH;
     }
 
     public static void showHappyBirthdayNotification(Context context) {

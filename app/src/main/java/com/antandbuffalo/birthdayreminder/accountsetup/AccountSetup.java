@@ -131,6 +131,7 @@ public class AccountSetup extends AppCompatActivity implements FirebaseHandler {
         });
         updateAutoFrequencyUI();
         loadAd();
+        showSnowFlakes();
     }
 
     @Override
@@ -340,6 +341,14 @@ public class AccountSetup extends AppCompatActivity implements FirebaseHandler {
     @Override
     public void onBackPressed() {
         showConfirmationBeforeExit();
+    }
+
+    public void showSnowFlakes() {
+        if(Util.isHappyBirthday()) {
+            View snowFlakes = this.findViewById(R.id.snowFlakes);
+            snowFlakes.setVisibility(View.VISIBLE);
+            Util.showHappyBirthdayNotification(this);
+        }
     }
 }
 
