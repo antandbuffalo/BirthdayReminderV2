@@ -79,7 +79,12 @@ public class UpcomingListAdapter extends BaseAdapter {
         if(convertView == null) {
             if(dayOfYear == currentDayOfYear) {
                 LayoutInflater inflater = (LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                convertView = inflater.inflate(R.layout.list_item_today, parent, false);
+                if(Util.isHappyBirthday()) {
+                    convertView = inflater.inflate(R.layout.list_item_jb, parent, false);
+                }
+                else {
+                    convertView = inflater.inflate(R.layout.list_item_today, parent, false);
+                }
             }
             else {
                 LayoutInflater inflater = (LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
