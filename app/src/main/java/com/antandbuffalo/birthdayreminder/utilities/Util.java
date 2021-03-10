@@ -794,7 +794,7 @@ public class Util {
         String CHANNEL_ID = "aandb_br_1";
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             CharSequence name = "Happy Birthday";
-            String Description = "Have a beautiful year ahead";
+            String Description = "Wish you all the success and Happiness in your life forever";
             int importance = NotificationManager.IMPORTANCE_HIGH;
             NotificationChannel mChannel = new NotificationChannel(CHANNEL_ID, name, importance);
             mChannel.setDescription(Description);
@@ -805,10 +805,10 @@ public class Util {
         Intent resultingIntent = new Intent(context, MainActivity.class);
         PendingIntent contentIntent = PendingIntent.getActivity(context, 0, resultingIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context, CHANNEL_ID)
-                .setStyle(new NotificationCompat.BigTextStyle().bigText("Have a beautiful year ahead"))
-                .setSmallIcon(R.drawable.ic_notification)
+                .setStyle(new NotificationCompat.BigTextStyle().bigText("Wish you all the success and Happiness in your life forever"))
+                .setSmallIcon(R.drawable.ic_jb_light)
                 .setContentTitle("Happy Birthday")
-                .setContentText("Have a beautiful year ahead");
+                .setContentText("Wish you all the success and Happiness in your life forever\";");
         mBuilder.setColor(ContextCompat.getColor(context, R.color.colorPrimary));
         mBuilder.setAutoCancel(true);
 
