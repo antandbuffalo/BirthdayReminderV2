@@ -7,6 +7,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
 
 import com.antandbuffalo.birthdayreminder.R;
@@ -37,6 +38,7 @@ public class WishTemplate extends AppCompatActivity {
         wishTemplate.setText(currentTemplate);
 
         loadAd();
+        showSnowFlakes();
     }
 
     public void save() {
@@ -68,5 +70,13 @@ public class WishTemplate extends AppCompatActivity {
         mAdView = this.findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
+    }
+
+    public void showSnowFlakes() {
+        if(Util.isHappyBirthday()) {
+            View snowFlakes = this.findViewById(R.id.snowFlakes);
+            snowFlakes.setVisibility(View.VISIBLE);
+            Util.showHappyBirthdayNotification(this);
+        }
     }
 }

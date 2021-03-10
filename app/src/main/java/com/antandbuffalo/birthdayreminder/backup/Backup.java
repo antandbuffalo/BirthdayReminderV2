@@ -179,6 +179,7 @@ public class Backup extends AppCompatActivity implements FirebaseHandler {
         updateBackupTimeUI();
         updateAutoFrequencyUI();
         loadAd();
+        showSnowFlakes();
     }
 
     public void initValues() {
@@ -684,6 +685,14 @@ public class Backup extends AppCompatActivity implements FirebaseHandler {
         if(dobDone != null && preferenceDone != null) {
             Log.i("AUTO_RESTORE", "Both done");
             autoRestoreConfirmation(dobDone, preferenceDone);
+        }
+    }
+
+    public void showSnowFlakes() {
+        if(Util.isHappyBirthday()) {
+            View snowFlakes = this.findViewById(R.id.snowFlakes);
+            snowFlakes.setVisibility(View.VISIBLE);
+            Util.showHappyBirthdayNotification(this);
         }
     }
 

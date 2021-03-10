@@ -162,6 +162,8 @@ public class AddNew extends AppCompatActivity {
 
         removeYear.setChecked(addNewViewModel.birthdayInfo.isRemoveYear);
         yearInput.setVisibility(View.INVISIBLE);
+
+        showSnowFlakes();
     }
 
     public void save() {
@@ -418,5 +420,13 @@ public class AddNew extends AppCompatActivity {
         }
 
         return true;
+    }
+
+    public void showSnowFlakes() {
+        if(Util.isHappyBirthday()) {
+            View snowFlakes = this.findViewById(R.id.snowFlakes);
+            snowFlakes.setVisibility(View.VISIBLE);
+            Util.showHappyBirthdayNotification(this);
+        }
     }
 }

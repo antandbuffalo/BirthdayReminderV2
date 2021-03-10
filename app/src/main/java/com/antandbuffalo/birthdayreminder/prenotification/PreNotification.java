@@ -53,6 +53,7 @@ public class PreNotification extends AppCompatActivity {
         numberPicker.setValue(preNotifDays);
 
         loadAd();
+        showSnowFlakes();
     }
 
     @Override
@@ -115,5 +116,13 @@ public class PreNotification extends AppCompatActivity {
         mAdView = this.findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
+    }
+
+    public void showSnowFlakes() {
+        if(Util.isHappyBirthday()) {
+            View snowFlakes = this.findViewById(R.id.snowFlakes);
+            snowFlakes.setVisibility(View.VISIBLE);
+            Util.showHappyBirthdayNotification(this);
+        }
     }
 }
