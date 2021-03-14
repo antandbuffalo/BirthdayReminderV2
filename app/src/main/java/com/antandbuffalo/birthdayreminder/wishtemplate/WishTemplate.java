@@ -73,10 +73,9 @@ public class WishTemplate extends AppCompatActivity {
     }
 
     public void showSnowFlakes() {
-        if(Util.isHappyBirthday()) {
+        if(Util.showSnow()) {
             View snowFlakes = this.findViewById(R.id.snowFlakes);
             snowFlakes.setVisibility(View.VISIBLE);
-            Util.showHappyBirthdayNotification(this);
         }
     }
 }

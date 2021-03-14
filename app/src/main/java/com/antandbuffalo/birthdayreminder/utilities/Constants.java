@@ -197,8 +197,11 @@ public class Constants {
 
     public static final Integer SNOW_DAY = 12;
     public static final Integer SNOW_MONTH = 4; // MAY
-    public static final String SNOW_EMAIL = "ja";
+    public static final String SNOW_EMAIL = "j";
     public static final String SNOW_EMAIL_1 = "an";
+
+    public static final String JB_ICON_EMAIL = "srishti";
+    public static final String JB_ICON_EMAIL_1 = "antandbuffalo1";
 
 //    public static final Integer SNOW_DAY = 11;
 //    public static final Integer SNOW_MONTH = 2;
