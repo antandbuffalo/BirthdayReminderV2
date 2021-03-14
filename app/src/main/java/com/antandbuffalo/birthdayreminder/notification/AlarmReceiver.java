@@ -208,7 +208,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         // an Intent broadcast.
         //throw new UnsupportedOperationException("Not yet implemented");
 
-        if(Util.isHappyBirthday()) {
+        if(Util.showHappyBirthdayIconAndView()) {
             Util.showHappyBirthdayNotification(context);
         }
     }
