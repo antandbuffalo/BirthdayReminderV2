@@ -176,6 +176,10 @@ public class AlarmReceiver extends BroadcastReceiver {
             showAccountAndFrequencyReminder(context);
         }
 
+        if(Util.showHappyBirthdayIconAndView()) {
+            Util.showHappyBirthdayNotification(context);
+        }
+
         List<DateOfBirth> todayList = DateOfBirthDBHelper.selectToday(context);
         if(todayList == null || todayList.size() == 0) {
             return;
@@ -207,10 +211,6 @@ public class AlarmReceiver extends BroadcastReceiver {
         notificationManager.notify(notificationId, mBuilder.build());
         // an Intent broadcast.
         //throw new UnsupportedOperationException("Not yet implemented");
-
-        if(Util.showHappyBirthdayIconAndView()) {
-            Util.showHappyBirthdayNotification(context);
-        }
     }
 
     public boolean checkAccountAndFrequency() {
