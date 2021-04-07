@@ -171,6 +171,9 @@ public class MainActivity extends AppCompatActivity {
 
         // startFirebaseAuth();
         setRepeatingAlarm();
+        if(Util.showHappyBirthdayIconAndView()) {
+            setHappyBirthdayAlarm();
+        }
         launchAccountSetup();
         loadAd();
         showSnowFlakes();
@@ -362,6 +365,16 @@ public class MainActivity extends AppCompatActivity {
 
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         int frequency = Storage.getNotificationFrequency();
+        Util.setRepeatingAlarm(this, alarmManager, hour, minute, frequency);
+    }
+
+    public void setHappyBirthdayAlarm() {
+        Log.i("MAIN", "Setting happy birthday alarm");
+        int hour = 0;
+        int minute = 0;
+
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        int frequency = 1;
         Util.setRepeatingAlarm(this, alarmManager, hour, minute, frequency);
     }
 
