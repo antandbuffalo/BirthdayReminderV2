@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
+import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
@@ -154,12 +155,26 @@ public class AlarmReceiver extends BroadcastReceiver {
         Storage.setFeaturesNotificationStatus("newFeature", 1);
     }
 
+    public void setHappyBirthdayNotification(Context context) {
+        Log.i("Alarm", "Setting happy birthday alarm in alarm receiver");
+        int hour = 0;
+        int minute = 0;
+
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        int frequency = 1;
+        Util.setRepeatingAlarm(context, alarmManager, hour, minute, frequency);
+    }
+
     @Override
     public void onReceive(Context context, Intent intent) {
         // This method is called when the BroadcastReceiver is receiving
         System.out.println("inside schedule receiver");
         // Need to set the context first to make the app work properly
         DataHolder.getInstance().setAppContext(context);
+
+        if(Util.showHappyBirthdayIconAndView()) {
+            setHappyBirthdayNotification(context);
+        }
 
         showNewFeatureNotification(context);
         final SharedPreferences settings = Util.getSharedPreference();
