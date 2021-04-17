@@ -6,18 +6,39 @@ import android.content.SharedPreferences;
 
 import com.antandbuffalo.birthdayreminder.BuildConfig;
 import com.antandbuffalo.birthdayreminder.models.UserPreference;
+import com.antandbuffalo.birthdayreminder.models.UserProfile;
 import com.google.firebase.Timestamp;
 
 import java.util.Date;
 import java.util.Map;
 
-import static androidx.core.content.ContextCompat.getSystemService;
-import static com.firebase.ui.auth.AuthUI.getApplicationContext;
-
 /**
  * Created by i677567 on 5/10/15.
  */
 public class Storage {
+
+    public static void saveUserProfileToLocal(UserProfile userProfile) {
+        Storage.putString("uid", userProfile.getUid());
+        Storage.putString("displayName", userProfile.getDisplayName());
+        Storage.putString("email", userProfile.getEmail());
+        Storage.putString("providerId", userProfile.getProviderId());
+        Storage.putString("updatedAt", Util.getStringFromDate(userProfile.getUpdatedAt(), Constants.dateTimeFormat));
+        Storage.putString("deviceName", userProfile.getDeviceName());
+        Storage.putString("lastOpenedAt", Util.getStringFromDate(userProfile.getLastOpenedAt(), Constants.dateTimeFormat));
+    }
+
+    public static UserProfile getUserProfileFromLocal() {
+        UserProfile userProfile = new UserProfile();
+        userProfile.setUid(Storage.getString("uid"));
+        userProfile.setDisplayName(Storage.getString("displayName"));
+        userProfile.setEmail(Storage.getString("email"));
+        userProfile.setProviderId(Storage.getString("providerId"));
+        userProfile.setUpdatedAt(Util.getDateFromString(Storage.getString("updatedAt"), Constants.dateTimeFormat));
+        userProfile.setDeviceName(Storage.getString("deviceName"));
+        userProfile.setLastOpenedAt(Util.getDateFromString(Storage.getString("lastOpenedAt"), Constants.dateTimeFormat));
+        return userProfile;
+    }
+
 
     public static Date getLastAccSetupShownDate() {
         return Util.getDateFromString(Storage.getString("lastAppOpenDate", "12/12/2012"), "dd/MM/yyyy");

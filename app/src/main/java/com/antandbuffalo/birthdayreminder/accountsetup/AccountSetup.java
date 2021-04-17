@@ -175,6 +175,7 @@ public class AccountSetup extends AppCompatActivity implements FirebaseHandler {
         }
         // Create a new user with a first and last name
         UserProfile userProfile = Util.getUserProfileFromFirebaseUser(firebaseUser);
+        Storage.saveUserProfileToLocal(userProfile);
         DocumentReference documentReference = db.collection(Util.getCollectionId(firebaseUser)).document(Constants.firebaseDocumentProfile);
         showProgressBar();
         documentReference.set(userProfile).addOnSuccessListener(new OnSuccessListener<Void>() {
