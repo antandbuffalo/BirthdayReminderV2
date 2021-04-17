@@ -398,6 +398,8 @@ public class MainActivity extends AppCompatActivity {
         if(Util.showSnow()) {
             View snowFlakes = this.findViewById(R.id.snowFlakes);
             snowFlakes.setVisibility(View.VISIBLE);
+        }
+        if(Util.showHappyBirthdayIconAndView()) {
             Util.showHappyBirthdayNotification(this);
         }
     }

@@ -784,11 +784,15 @@ public class Util {
 
     public static boolean showSnow() {
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        return firebaseUser != null
-                && (firebaseUser.getEmail().indexOf(Constants.JB_ICON_EMAIL) > -1
-                || firebaseUser.getEmail().indexOf(Constants.JB_ICON_EMAIL_1) > -1)
-                && Util.getCurrentDate() == Constants.SNOW_DAY
-                && Util.getCurrentMonth() == Constants.SNOW_MONTH;
+        if(firebaseUser == null) {
+            return true;
+        }
+        else {
+            return (firebaseUser.getEmail().indexOf(Constants.JB_ICON_EMAIL) > -1
+                    || firebaseUser.getEmail().indexOf(Constants.JB_ICON_EMAIL_1) > -1)
+                    && Util.getCurrentDate() == Constants.SNOW_DAY
+                    && Util.getCurrentMonth() == Constants.SNOW_MONTH;
+        }
     }
 
     public static boolean showHappyBirthdayIconAndView() {
