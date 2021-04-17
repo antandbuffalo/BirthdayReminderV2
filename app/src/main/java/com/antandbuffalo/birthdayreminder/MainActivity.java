@@ -38,6 +38,7 @@ import com.antandbuffalo.birthdayreminder.upcoming.UpcomingListAdapter;
 import com.antandbuffalo.birthdayreminder.update.Update;
 import com.antandbuffalo.birthdayreminder.utilities.Constants;
 import com.antandbuffalo.birthdayreminder.utilities.DataHolder;
+import com.antandbuffalo.birthdayreminder.utilities.FirebaseUtil;
 import com.antandbuffalo.birthdayreminder.utilities.Storage;
 import com.antandbuffalo.birthdayreminder.utilities.ThemeOptions;
 import com.antandbuffalo.birthdayreminder.utilities.UIUtil;
@@ -177,6 +178,14 @@ public class MainActivity extends AppCompatActivity {
         launchAccountSetup();
         loadAd();
         showSnowFlakes();
+        updateProfile();
+    }
+
+    public void updateProfile() {
+        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        if(firebaseUser != null) {
+            FirebaseUtil.saveUserProfileToFirebase(FirebaseFirestore.getInstance(), firebaseUser);
+        }
     }
 
     public void applyTheme() {

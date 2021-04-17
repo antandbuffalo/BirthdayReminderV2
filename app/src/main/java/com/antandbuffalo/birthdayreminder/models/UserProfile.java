@@ -8,6 +8,8 @@ public class UserProfile {
     private String email;
     private String providerId;
     private Date updatedAt;
+    private String deviceName;
+    private Date lastOpenedAt;
 
     public String getUid() {
         return uid;
@@ -47,5 +49,21 @@ public class UserProfile {
 
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public String getDeviceName() {
+        return deviceName;
+    }
+
+    public void setDeviceName(String deviceName) {
+        this.deviceName = deviceName;
+    }
+
+    public Date getLastOpenedAt() {
+        return lastOpenedAt;
+    }
+
+    public void setLastOpenedAt(Date lastOpenedAt) {
+        this.lastOpenedAt = lastOpenedAt;
     }
 }

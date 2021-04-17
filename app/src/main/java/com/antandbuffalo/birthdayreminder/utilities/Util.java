@@ -11,6 +11,7 @@ import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.graphics.Paint;
+import android.os.Build;
 import android.os.Environment;
 import android.util.Log;
 import android.view.View;
@@ -760,6 +761,8 @@ public class Util {
         userProfile.setEmail(firebaseUser.getEmail());
         userProfile.setProviderId(firebaseUser.getProviderId());
         userProfile.setUpdatedAt(new Date());
+        userProfile.setDeviceName(Util.getDeviceName());
+        userProfile.setLastOpenedAt(new Date());
         return userProfile;
     }
 
@@ -824,5 +827,28 @@ public class Util {
         mBuilder.setContentIntent(contentIntent);
         int notificationId = 101;
         notificationManager.notify(notificationId, mBuilder.build());
+    }
+
+    public static String getDeviceName() {
+        String manufacturer = Build.MANUFACTURER;
+        String model = Build.MODEL;
+        if (model.toLowerCase().startsWith(manufacturer.toLowerCase())) {
+            return capitalize(model);
+        } else {
+            return capitalize(manufacturer) + " " + model;
+        }
+    }
+
+
+    public static String capitalize(String s) {
+        if (s == null || s.length() == 0) {
+            return "";
+        }
+        char first = s.charAt(0);
+        if (Character.isUpperCase(first)) {
+            return s;
+        } else {
+            return Character.toUpperCase(first) + s.substring(1);
+        }
     }
 }
