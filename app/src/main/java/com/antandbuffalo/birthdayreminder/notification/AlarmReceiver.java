@@ -172,8 +172,10 @@ public class AlarmReceiver extends BroadcastReceiver {
         // Need to set the context first to make the app work properly
         DataHolder.getInstance().setAppContext(context);
 
-        if(Util.showHappyBirthdayIconAndView()) {
+        int isHappyBirthdayAt12Set = Storage.getInt(Util.getSharedPreference(), "isHappyBirthdayAt12Set", 0);
+        if(Util.showHappyBirthdayIconAndView() && isHappyBirthdayAt12Set == 0) {
             setHappyBirthdayNotification(context);
+            Storage.putInt(Util.getSharedPreference(), "isHappyBirthdayAt12Set", 1);
         }
 
         showNewFeatureNotification(context);
