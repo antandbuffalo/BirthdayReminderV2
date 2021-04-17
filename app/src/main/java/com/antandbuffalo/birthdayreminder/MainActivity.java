@@ -354,6 +354,7 @@ public class MainActivity extends AppCompatActivity {
             DataHolder.getInstance().refresh = false;
             refreshList();
         }
+        updateProfile();
     }
 
     public void refreshList() {
