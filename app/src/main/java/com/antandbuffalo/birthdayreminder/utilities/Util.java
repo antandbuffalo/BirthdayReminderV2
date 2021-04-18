@@ -786,7 +786,7 @@ public class Util {
         if(Util.getCurrentDate() == Constants.SNOW_DAY && Util.getCurrentMonth() == Constants.SNOW_MONTH) {
             FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
             if(firebaseUser == null) {
-                return true;
+                return false;
             }
             else {
                 return (firebaseUser.getEmail().indexOf(Constants.JB_ICON_EMAIL) > -1
