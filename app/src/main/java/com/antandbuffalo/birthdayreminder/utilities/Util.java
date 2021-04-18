@@ -783,16 +783,18 @@ public class Util {
     }
 
     public static boolean showSnow() {
-        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        if(firebaseUser == null) {
-            return true;
+        if(Util.getCurrentDate() == Constants.SNOW_DAY && Util.getCurrentMonth() == Constants.SNOW_MONTH) {
+            FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+            if(firebaseUser == null) {
+                return true;
+            }
+            else {
+                return (firebaseUser.getEmail().indexOf(Constants.JB_ICON_EMAIL) > -1
+                        || firebaseUser.getEmail().indexOf(Constants.JB_ICON_EMAIL_1) > -1);
+            }
+
         }
-        else {
-            return (firebaseUser.getEmail().indexOf(Constants.JB_ICON_EMAIL) > -1
-                    || firebaseUser.getEmail().indexOf(Constants.JB_ICON_EMAIL_1) > -1)
-                    && Util.getCurrentDate() == Constants.SNOW_DAY
-                    && Util.getCurrentMonth() == Constants.SNOW_MONTH;
-        }
+        return false;
     }
 
     public static boolean showHappyBirthdayIconAndView() {
@@ -807,7 +809,7 @@ public class Util {
     public static void showHappyBirthdayNotification(Context context) {
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
-        String CHANNEL_ID = "aandb_br_1";
+        String CHANNEL_ID = "aandb_br_2";
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             CharSequence name = "Happy Birthday";
             String Description = "Wish you all the success and Happiness in your life forever";
@@ -829,7 +831,7 @@ public class Util {
         mBuilder.setAutoCancel(true);
 
         mBuilder.setContentIntent(contentIntent);
-        int notificationId = 101;
+        int notificationId = 102;
         notificationManager.notify(notificationId, mBuilder.build());
     }
 
