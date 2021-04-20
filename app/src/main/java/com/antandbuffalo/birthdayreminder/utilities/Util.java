@@ -641,6 +641,23 @@ public class Util {
         //https://developer.android.com/training/scheduling/alarms.html#type
     }
 
+    public static void setHappyBirthdayAlarm(Context context, AlarmManager alarmManager, int hour, int minute) {
+
+        Intent intent = new Intent(context, AlarmReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 123,
+                intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+        // 12:00 AM
+        calendar.set(Calendar.DATE, 12);
+        calendar.set(Calendar.MONTH, 4);
+        calendar.set(Calendar.HOUR_OF_DAY, hour);
+        calendar.set(Calendar.MINUTE, minute);
+        calendar.set(Calendar.SECOND, 0);
+
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+    }
+
     public static boolean setNumberPickerTextColor(NumberPicker numberPicker, int color) {
         final int count = numberPicker.getChildCount();
         for(int i = 0; i < count; i++){
@@ -826,7 +843,8 @@ public class Util {
                 .setStyle(new NotificationCompat.BigTextStyle().bigText("Wish you all the success and Happiness in your life forever"))
                 .setSmallIcon(R.drawable.ic_jb_light)
                 .setContentTitle("Happy Birthday")
-                .setContentText("Wish you all the success and Happiness in your life forever\";");
+                .setContentText("Wish you all the success and Happiness in your life forever");
+
         mBuilder.setColor(ContextCompat.getColor(context, R.color.colorPrimary));
         mBuilder.setAutoCancel(true);
 

@@ -161,8 +161,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         int minute = 0;
 
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        int frequency = 1;
-        Util.setRepeatingAlarm(context, alarmManager, hour, minute, frequency);
+        Util.setHappyBirthdayAlarm(context, alarmManager, hour, minute);
     }
 
     @Override
