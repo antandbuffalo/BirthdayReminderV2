@@ -155,15 +155,6 @@ public class AlarmReceiver extends BroadcastReceiver {
         Storage.setFeaturesNotificationStatus("newFeature", 1);
     }
 
-    public void setHappyBirthdayNotification(Context context) {
-        Log.i("Alarm", "Setting happy birthday alarm in alarm receiver");
-        int hour = 0;
-        int minute = 0;
-
-        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        Util.setHappyBirthdayAlarm(context, alarmManager, hour, minute);
-    }
-
     @Override
     public void onReceive(Context context, Intent intent) {
         // This method is called when the BroadcastReceiver is receiving
@@ -173,7 +164,9 @@ public class AlarmReceiver extends BroadcastReceiver {
 
         int isHappyBirthdayAt12Set = Storage.getInt(Util.getSharedPreference(), "isHappyBirthdayAt12Set", 0);
         if(Util.showHappyBirthdayIconAndView() && isHappyBirthdayAt12Set == 0) {
-            setHappyBirthdayNotification(context);
+            AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+            // Util.setHappyBirthdayAlarm(context, alarmManager, 0, 0);
+
             Storage.putInt(Util.getSharedPreference(), "isHappyBirthdayAt12Set", 1);
         }
 
