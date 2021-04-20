@@ -16,7 +16,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -41,7 +40,6 @@ import com.antandbuffalo.birthdayreminder.utilities.DataHolder;
 import com.antandbuffalo.birthdayreminder.utilities.FirebaseUtil;
 import com.antandbuffalo.birthdayreminder.utilities.Storage;
 import com.antandbuffalo.birthdayreminder.utilities.ThemeOptions;
-import com.antandbuffalo.birthdayreminder.utilities.UIUtil;
 import com.antandbuffalo.birthdayreminder.utilities.Util;
 import com.firebase.ui.auth.IdpResponse;
 import com.google.android.gms.ads.AdRequest;
