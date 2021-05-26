@@ -72,7 +72,7 @@ public class Backup extends AppCompatActivity implements FirebaseHandler {
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_back_white);
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close_white);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         
         if(FirebaseAuth.getInstance().getCurrentUser() != null) {
@@ -562,6 +562,10 @@ public class Backup extends AppCompatActivity implements FirebaseHandler {
 
     public void loadAd() {
         mAdView = this.findViewById(R.id.adView);
+        if(!Constants.enableAds) {
+            mAdView.setVisibility(View.INVISIBLE);
+            return;
+        }
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
     }

@@ -24,11 +24,7 @@ public class About extends AppCompatActivity {
 
         TextView version = (TextView)findViewById(R.id.version);
         version.setText("Version " + BuildConfig.VERSION_NAME + " (" + BuildConfig.VERSION_CODE + ")");
-
-        AdView mAdView = this.findViewById(R.id.adView);
-        AdRequest adRequest = new AdRequest.Builder().build();
-        mAdView.loadAd(adRequest);
-
+        loadAd();
         Button contactUs = (Button)findViewById(R.id.contactUs);
         contactUs.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -58,6 +54,16 @@ public class About extends AppCompatActivity {
         });
 
         showSnowFlakes();
+    }
+
+    public void loadAd() {
+        AdView mAdView = this.findViewById(R.id.adView);
+        if(!Constants.enableAds) {
+            mAdView.setVisibility(View.INVISIBLE);
+            return;
+        }
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
     }
 
     public void showSnowFlakes() {

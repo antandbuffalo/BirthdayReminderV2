@@ -112,9 +112,13 @@ public class NotificationTime extends AppCompatActivity {
     }
 
     public void loadAd() {
-        AdView adView = findViewById(R.id.adView);
+        AdView mAdView = findViewById(R.id.adView);
+        if(!Constants.enableAds) {
+            mAdView.setVisibility(View.INVISIBLE);
+            return;
+        }
         AdRequest adRequest = new AdRequest.Builder().build();
-        adView.loadAd(adRequest);
+        mAdView.loadAd(adRequest);
     }
 
     public void showSnowFlakes() {
