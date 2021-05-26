@@ -399,6 +399,10 @@ public class AddNew extends AppCompatActivity {
 
     public void loadAd() {
         mAdView = this.findViewById(R.id.adView);
+        if(!Constants.enableAds) {
+            mAdView.setVisibility(View.INVISIBLE);
+            return;
+        }
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
     }

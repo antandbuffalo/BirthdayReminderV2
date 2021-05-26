@@ -291,8 +291,6 @@ public class Update extends AppCompatActivity {
 
         circle = (LinearLayout)findViewById(R.id.circlebg);
         todayImage = (LinearLayout)findViewById(R.id.todayImage);
-
-        mAdView = findViewById(R.id.adView);
     }
 
     public void update() {
@@ -383,6 +381,11 @@ public class Update extends AppCompatActivity {
     }
 
     public void loadAd() {
+        mAdView = findViewById(R.id.adView);
+        if(!Constants.enableAds) {
+            mAdView.setVisibility(View.INVISIBLE);
+            return;
+        }
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
     }
