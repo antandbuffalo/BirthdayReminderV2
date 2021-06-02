@@ -95,20 +95,21 @@ public class UpcomingListAdapter extends BaseAdapter {
         TextView name = (TextView)convertView.findViewById(R.id.nameField);
         TextView desc = (TextView)convertView.findViewById(R.id.ageField);
         TextView yearField = (TextView)convertView.findViewById(R.id.yearField);
+        TextView dayField = (TextView)convertView.findViewById(R.id.dayField);
+
         name.setText(dob.getName());
         desc.setText(dob.getDescription());
         Date date = dob.getDobDate();
         cal.setTime(date);
         yearField.setText(cal.get(Calendar.YEAR) + "");
+        dayField.setText(Util.getDay(cal.get(Calendar.MONTH), cal.get(Calendar.DATE)));
 
         if(dayOfYear != currentDayOfYear) {
             TextView dateField = (TextView)convertView.findViewById(R.id.dateField);
             TextView monthField = (TextView)convertView.findViewById(R.id.monthField);
-            TextView dayField = (TextView)convertView.findViewById(R.id.dayField);
 
             dateField.setText(cal.get(Calendar.DATE) + "");
             monthField.setText(dateFormatter.format(cal.getTime()));
-            dayField.setText(getDay(cal.get(Calendar.MONTH), cal.get(Calendar.DATE)));
 
             LinearLayout circle = (LinearLayout)convertView.findViewById(R.id.circlebg);
             dayOfYear = Integer.parseInt(Util.getStringFromDate(dob.getDobDate(), Constants.DAY_OF_YEAR));
@@ -144,14 +145,6 @@ public class UpcomingListAdapter extends BaseAdapter {
             yearField.setVisibility(View.VISIBLE);
         }
         return convertView;
-    }
-
-    public String getDay(int month, int date) {
-        Calendar calendar = Util.getCalendar();
-        calendar.set(Util.getCalendar(new Date()).get(Calendar.YEAR), month, date);
-        Date calDate = calendar.getTime();
-        DateFormat formatter = new SimpleDateFormat("EEE");
-        return formatter.format(calDate);
     }
 
     public void refreshData() {

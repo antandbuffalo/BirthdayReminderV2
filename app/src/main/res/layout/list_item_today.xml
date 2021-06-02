@@ -45,16 +45,36 @@
         android:textColor="@color/aandb_sub_text_color"
         android:textSize="11sp" />
 
-    <TextView
-        android:id="@+id/yearField"
+    <LinearLayout
+        android:id="@+id/yearAndDay"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
-        android:layout_centerVertical="true"
         android:layout_marginRight="10dp"
-        android:alpha="0.38"
-        android:text="1988"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textColor="@color/aandb_sub_text_color" />
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/dayField"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:alpha="0.38"
+            android:text="Mon"
+            android:layout_marginTop="10dp"
+            android:layout_gravity="center"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@color/aandb_sub_text_color"
+            android:textSize="12sp" />
+        <TextView
+            android:id="@+id/yearField"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:alpha="0.38"
+            android:text="1988"
+            android:layout_gravity="center"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@color/aandb_sub_text_color" />
+
+    </LinearLayout>
 
 </RelativeLayout>
