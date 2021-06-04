@@ -94,11 +94,14 @@ public class UpcomingListAdapter extends BaseAdapter {
         TextView name = (TextView)convertView.findViewById(R.id.nameField);
         TextView desc = (TextView)convertView.findViewById(R.id.ageField);
         TextView yearField = (TextView)convertView.findViewById(R.id.yearField);
+        TextView dayField = (TextView)convertView.findViewById(R.id.dayField);
+
         name.setText(dob.getName());
         desc.setText(dob.getDescription());
         Date date = dob.getDobDate();
         cal.setTime(date);
         yearField.setText(cal.get(Calendar.YEAR) + "");
+        dayField.setText(Util.getDay(cal.get(Calendar.MONTH), cal.get(Calendar.DATE)));
 
         if(dayOfYear != currentDayOfYear) {
             TextView dateField = (TextView)convertView.findViewById(R.id.dateField);
