@@ -67,6 +67,14 @@ import java.util.Map;
  */
 public class Util {
 
+    public static String getDay(int month, int date) {
+        Calendar calendar = Util.getCalendar();
+        calendar.set(Util.getCalendar(new Date()).get(Calendar.YEAR), month, date);
+        Date calDate = calendar.getTime();
+        DateFormat formatter = new SimpleDateFormat("EEE");
+        return formatter.format(calDate);
+    }
+
     public static File getCachedFile(String defaultFileName) {
         Context context = DataHolder.getInstance().getAppContext();
         File cacheFile = new File(DataHolder.getInstance().getAppContext().getCacheDir(), "dob.txt");
