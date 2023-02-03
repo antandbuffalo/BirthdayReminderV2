@@ -27,20 +27,20 @@
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
 
     <!--for testing-->
-    <string name="ad_addnew">ca-app-pub-3940256099942544/6300978111</string>
-    <string name="ad_main">ca-app-pub-3940256099942544/6300978111</string>
-    <string name="ad_modifytoday">ca-app-pub-3940256099942544/6300978111</string>
-    <string name="ad_notificationsetting">ca-app-pub-3940256099942544/6300978111</string>
-    <string name="ad_sendwish">ca-app-pub-3940256099942544/6300978111</string>
-    <string name="ad_update">ca-app-pub-3940256099942544/6300978111</string>
-    <string name="ad_wishtemplate">ca-app-pub-3940256099942544/6300978111</string>
-    <string name="ad_share_wish">ca-app-pub-3940256099942544/6300978111</string>
-    <string name="ad_about">ca-app-pub-3940256099942544/6300978111</string>
-    <string name="ad_notificationtime">ca-app-pub-3940256099942544/6300978111</string>
-    <string name="ad_notificationfrequency">ca-app-pub-3940256099942544/6300978111</string>
-    <string name="ad_settings">ca-app-pub-3940256099942544/6300978111</string>
-    <string name="ad_backup">ca-app-pub-3940256099942544/6300978111</string>
-    <string name="ad_account_setup">ca-app-pub-3940256099942544/6300978111</string>
+<!--    <string name="ad_addnew">ca-app-pub-3940256099942544/6300978111</string>-->
+<!--    <string name="ad_main">ca-app-pub-3940256099942544/6300978111</string>-->
+<!--    <string name="ad_modifytoday">ca-app-pub-3940256099942544/6300978111</string>-->
+<!--    <string name="ad_notificationsetting">ca-app-pub-3940256099942544/6300978111</string>-->
+<!--    <string name="ad_sendwish">ca-app-pub-3940256099942544/6300978111</string>-->
+<!--    <string name="ad_update">ca-app-pub-3940256099942544/6300978111</string>-->
+<!--    <string name="ad_wishtemplate">ca-app-pub-3940256099942544/6300978111</string>-->
+<!--    <string name="ad_share_wish">ca-app-pub-3940256099942544/6300978111</string>-->
+<!--    <string name="ad_about">ca-app-pub-3940256099942544/6300978111</string>-->
+<!--    <string name="ad_notificationtime">ca-app-pub-3940256099942544/6300978111</string>-->
+<!--    <string name="ad_notificationfrequency">ca-app-pub-3940256099942544/6300978111</string>-->
+<!--    <string name="ad_settings">ca-app-pub-3940256099942544/6300978111</string>-->
+<!--    <string name="ad_backup">ca-app-pub-3940256099942544/6300978111</string>-->
+<!--    <string name="ad_account_setup">ca-app-pub-3940256099942544/6300978111</string>-->
 
     <!--Actual initial account-->
 <!--    <string name="ad_addnew">ca-app-pub-7116389331562728/6247898368</string>-->
@@ -59,19 +59,19 @@
 <!--    <string name="ad_account_setup">ca-app-pub-7116389331562728/8249443071</string>-->
 
 <!--    another account-->
-<!--        <string name="ad_addnew">ca-app-pub-2477570555850305/3395272768</string>-->
-<!--        <string name="ad_main">ca-app-pub-2477570555850305/3395272768</string>-->
-<!--        <string name="ad_modifytoday">ca-app-pub-2477570555850305/3395272768</string>-->
-<!--        <string name="ad_notificationsetting">ca-app-pub-2477570555850305/3395272768</string>-->
-<!--        <string name="ad_sendwish">ca-app-pub-2477570555850305/3395272768</string>-->
-<!--        <string name="ad_update">ca-app-pub-2477570555850305/3395272768</string>-->
-<!--        <string name="ad_wishtemplate">ca-app-pub-2477570555850305/3395272768</string>-->
-<!--        <string name="ad_share_wish">ca-app-pub-2477570555850305/3395272768</string>-->
-<!--        <string name="ad_about">ca-app-pub-2477570555850305/3395272768</string>-->
-<!--        <string name="ad_notificationtime">ca-app-pub-2477570555850305/3395272768</string>-->
-<!--        <string name="ad_notificationfrequency">ca-app-pub-2477570555850305/3395272768</string>-->
-<!--        <string name="ad_settings">ca-app-pub-2477570555850305/3395272768</string>-->
-<!--        <string name="ad_backup">ca-app-pub-2477570555850305/3395272768</string>-->
-<!--        <string name="ad_account_setup">ca-app-pub-2477570555850305/3395272768</string>-->
+        <string name="ad_addnew">ca-app-pub-2477570555850305/3395272768</string>
+        <string name="ad_main">ca-app-pub-2477570555850305/3395272768</string>
+        <string name="ad_modifytoday">ca-app-pub-2477570555850305/3395272768</string>
+        <string name="ad_notificationsetting">ca-app-pub-2477570555850305/3395272768</string>
+        <string name="ad_sendwish">ca-app-pub-2477570555850305/3395272768</string>
+        <string name="ad_update">ca-app-pub-2477570555850305/3395272768</string>
+        <string name="ad_wishtemplate">ca-app-pub-2477570555850305/3395272768</string>
+        <string name="ad_share_wish">ca-app-pub-2477570555850305/3395272768</string>
+        <string name="ad_about">ca-app-pub-2477570555850305/3395272768</string>
+        <string name="ad_notificationtime">ca-app-pub-2477570555850305/3395272768</string>
+        <string name="ad_notificationfrequency">ca-app-pub-2477570555850305/3395272768</string>
+        <string name="ad_settings">ca-app-pub-2477570555850305/3395272768</string>
+        <string name="ad_backup">ca-app-pub-2477570555850305/3395272768</string>
+        <string name="ad_account_setup">ca-app-pub-2477570555850305/3395272768</string>
 
 </resources>

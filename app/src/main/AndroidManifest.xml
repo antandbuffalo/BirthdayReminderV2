@@ -72,7 +72,7 @@
             android:value="@integer/google_play_services_version" />
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-7116389331562728~4210792343" />
+            android:value="ca-app-pub-2477570555850305~1117992584" />
 
         <receiver
             android:name=".notification.AlarmReceiver"
