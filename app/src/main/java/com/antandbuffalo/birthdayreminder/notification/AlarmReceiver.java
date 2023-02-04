@@ -9,7 +9,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
-import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
@@ -26,7 +25,6 @@ import com.antandbuffalo.birthdayreminder.utilities.Storage;
 import com.antandbuffalo.birthdayreminder.utilities.Util;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -70,7 +68,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         // https://stackoverflow.com/questions/13800680/back-to-main-activity-from-notification-created-activity
 
         // PendingIntent contentIntent = PendingIntent.getActivity(context, 0, resultingIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        PendingIntent contentIntent = PendingIntent.getActivities(context, 0, new Intent[] { backIntent, resultingIntent }, PendingIntent.FLAG_ONE_SHOT);
+        PendingIntent contentIntent = PendingIntent.getActivities(context, 0, new Intent[] { backIntent, resultingIntent }, PendingIntent.FLAG_IMMUTABLE);
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(message))
                 .setSmallIcon(notificationIcon)
@@ -111,7 +109,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 
         //notification opening intent
         Intent resultingIntent = new Intent(context, MainActivity.class);
-        PendingIntent contentIntent = PendingIntent.getActivity(context, 0, resultingIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent contentIntent = PendingIntent.getActivity(context, 0, resultingIntent, PendingIntent.FLAG_IMMUTABLE);
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(message))
                 .setSmallIcon(notificationIcon)
@@ -139,7 +137,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 
         //notification opening intent
         Intent resultingIntent = new Intent(context, MainActivity.class);
-        PendingIntent contentIntent = PendingIntent.getActivity(context, 0, resultingIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent contentIntent = PendingIntent.getActivity(context, 0, resultingIntent, PendingIntent.FLAG_IMMUTABLE);
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(message))
                 .setSmallIcon(notificationIcon)
@@ -206,7 +204,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         String CHANNEL_ID = setChannel(notificationManager);
         //notification opening intent
         Intent resultingIntent = new Intent(context, MainActivity.class);
-        PendingIntent contentIntent = PendingIntent.getActivity(context, 0, resultingIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent contentIntent = PendingIntent.getActivity(context, 0, resultingIntent, PendingIntent.FLAG_IMMUTABLE);
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(message))
                 .setSmallIcon(notificationIcon)

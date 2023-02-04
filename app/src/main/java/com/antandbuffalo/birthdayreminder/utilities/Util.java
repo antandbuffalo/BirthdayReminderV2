@@ -628,7 +628,7 @@ public class Util {
 
         Intent intent = new Intent(context, AlarmReceiver.class);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 123,
-                intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                intent, PendingIntent.FLAG_IMMUTABLE);
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
         // 12:00 AM
@@ -653,7 +653,7 @@ public class Util {
 
         Intent intent = new Intent(context, AlarmReceiver.class);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 123,
-                intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                intent, PendingIntent.FLAG_IMMUTABLE);
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
         // 12:00 AM
@@ -846,7 +846,7 @@ public class Util {
 
         //notification opening intent
         Intent resultingIntent = new Intent(context, MainActivity.class);
-        PendingIntent contentIntent = PendingIntent.getActivity(context, 0, resultingIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent contentIntent = PendingIntent.getActivity(context, 0, resultingIntent, PendingIntent.FLAG_IMMUTABLE);
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setStyle(new NotificationCompat.BigTextStyle().bigText("Wish you all the success and Happiness in your life forever"))
                 .setSmallIcon(R.drawable.ic_jb_light)
