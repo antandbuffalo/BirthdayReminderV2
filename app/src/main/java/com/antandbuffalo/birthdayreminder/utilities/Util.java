@@ -1,7 +1,6 @@
 package com.antandbuffalo.birthdayreminder.utilities;
 
 import android.app.AlarmManager;
-import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -10,20 +9,15 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
-import android.graphics.Paint;
 import android.os.Build;
 import android.os.Environment;
 import android.util.Log;
-import android.view.View;
-import android.widget.EditText;
-import android.widget.NumberPicker;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 
-import com.antandbuffalo.birthdayreminder.BuildConfig;
 import com.antandbuffalo.birthdayreminder.MainActivity;
 import com.antandbuffalo.birthdayreminder.R;
 import com.antandbuffalo.birthdayreminder.database.DateOfBirthDBHelper;
@@ -32,7 +26,6 @@ import com.antandbuffalo.birthdayreminder.models.DateOfBirth;
 import com.antandbuffalo.birthdayreminder.models.SettingsModel;
 import com.antandbuffalo.birthdayreminder.models.UserProfile;
 import com.antandbuffalo.birthdayreminder.notification.AlarmReceiver;
-import com.firebase.ui.auth.data.model.User;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -49,7 +42,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.lang.reflect.Field;
 import java.text.DateFormat;
 import java.text.DateFormatSymbols;
 import java.text.ParseException;
@@ -75,30 +67,30 @@ public class Util {
         return formatter.format(calDate);
     }
 
-    public static File getCachedFile(String defaultFileName) {
-        Context context = DataHolder.getInstance().getAppContext();
-        File cacheFile = new File(DataHolder.getInstance().getAppContext().getCacheDir(), "dob.txt");
-        try {
-            InputStream inputStream = context.getAssets().open("cse.txt");
-            try {
-                FileOutputStream outputStream = new FileOutputStream(cacheFile);
-                try {
-                    byte[] buf = new byte[1024];
-                    int len;
-                    while ((len = inputStream.read(buf)) > 0) {
-                        outputStream.write(buf, 0, len);
-                    }
-                } finally {
-                    outputStream.close();
-                }
-            } finally {
-                inputStream.close();
-            }
-        } catch (Exception e) {
-            Log.e("BR", e.getLocalizedMessage());
-        }
-        return cacheFile;
-    }
+//    public static File getCachedFile(String defaultFileName) {
+//        Context context = DataHolder.getInstance().getAppContext();
+//        File cacheFile = new File(DataHolder.getInstance().getAppContext().getCacheDir(), "dob.txt");
+//        try {
+//            InputStream inputStream = context.getAssets().open("cse.txt");
+//            try {
+//                FileOutputStream outputStream = new FileOutputStream(cacheFile);
+//                try {
+//                    byte[] buf = new byte[1024];
+//                    int len;
+//                    while ((len = inputStream.read(buf)) > 0) {
+//                        outputStream.write(buf, 0, len);
+//                    }
+//                } finally {
+//                    outputStream.close();
+//                }
+//            } finally {
+//                inputStream.close();
+//            }
+//        } catch (Exception e) {
+//            Log.e("BR", e.getLocalizedMessage());
+//        }
+//        return cacheFile;
+//    }
 
     public static File getLocalFile(String fileName) {
         if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
@@ -148,8 +140,7 @@ public class Util {
         calDate2.setTime(date2);
 
         long diff = calDate2.getTimeInMillis() - calDate1.getTimeInMillis();
-        long days = diff / (24 * 60 * 60 * 1000);
-        return days;
+        return (diff / (24 * 60 * 60 * 1000));
     }
 
     public static long getDaysBetweenDates(Date date1) {
@@ -218,7 +209,6 @@ public class Util {
     }
 
     public static String readFromFile(String fileName) {
-        String returnValue = "";
         if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
             // sdcard not found. read from bundle
             //SD Card not found.
@@ -269,14 +259,12 @@ public class Util {
             }
             //Close the input stream
             br.close();
-            returnValue = Constants.NOTIFICATION_SUCCESS_DATA_LOAD;
+            return Constants.NOTIFICATION_SUCCESS_DATA_LOAD;
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-            returnValue = Constants.ERROR_UNKNOWN;
+            return Constants.ERROR_UNKNOWN;
         }
-        System.out.println("Read successful");
-        return returnValue;
     }
 
     public static File getLatestLocalBackupFile() {
@@ -666,33 +654,33 @@ public class Util {
         alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
     }
 
-    public static boolean setNumberPickerTextColor(NumberPicker numberPicker, int color) {
-        final int count = numberPicker.getChildCount();
-        for(int i = 0; i < count; i++){
-            View child = numberPicker.getChildAt(i);
-            if(child instanceof EditText){
-                try{
-                    Field selectorWheelPaintField = numberPicker.getClass()
-                            .getDeclaredField("mSelectorWheelPaint");
-                    selectorWheelPaintField.setAccessible(true);
-                    ((Paint)selectorWheelPaintField.get(numberPicker)).setColor(color);
-                    ((EditText)child).setTextColor(color);
-                    numberPicker.invalidate();
-                    return true;
-                }
-                catch(NoSuchFieldException e){
-                    Log.w("setNumberPickerTextCol", e);
-                }
-                catch(IllegalAccessException e){
-                    Log.w("setNumberPickerTextCol", e);
-                }
-                catch(IllegalArgumentException e){
-                    Log.w("setNumberPickerTextC", e);
-                }
-            }
-        }
-        return false;
-    }
+//    public static boolean setNumberPickerTextColor(NumberPicker numberPicker, int color) {
+//        final int count = numberPicker.getChildCount();
+//        for(int i = 0; i < count; i++){
+//            View child = numberPicker.getChildAt(i);
+//            if(child instanceof EditText){
+//                try{
+//                    Field selectorWheelPaintField = numberPicker.getClass()
+//                            .getDeclaredField("mSelectorWheelPaint");
+//                    selectorWheelPaintField.setAccessible(true);
+//                    ((Paint)selectorWheelPaintField.get(numberPicker)).setColor(color);
+//                    ((EditText)child).setTextColor(color);
+//                    numberPicker.invalidate();
+//                    return true;
+//                }
+//                catch(NoSuchFieldException e){
+//                    Log.w("setNumberPickerTextCol", e);
+//                }
+//                catch(IllegalAccessException e){
+//                    Log.w("setNumberPickerTextCol", e);
+//                }
+//                catch(IllegalArgumentException e){
+//                    Log.w("setNumberPickerTextC", e);
+//                }
+//            }
+//        }
+//        return false;
+//    }
 
     public static String getNotificationMessageWithTime(Context context, Date dob) {
         boolean is24HourFormat = android.text.format.DateFormat.is24HourFormat(context);

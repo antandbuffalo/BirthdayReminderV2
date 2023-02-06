@@ -24,9 +24,9 @@ import java.util.Map;
 
 public class AutoSyncService {
     public UserPreference userPreference;
-    private AlarmManager alarmManager;
-    private Context context;
-    private ConnectivityManager connectivityManager;
+    final private AlarmManager alarmManager;
+    final private Context context;
+    final private ConnectivityManager connectivityManager;
     public FirebaseHandler firebaseHandler;
 
     public AutoSyncService(AlarmManager alarmManager, Context context, ConnectivityManager connectivityManager) {
@@ -37,7 +37,7 @@ public class AutoSyncService {
 
     public void syncNow() {
         // even if connectivityManager is not null, connectivityManager.getActiveNetworkInfo() can be null. So added an extra check
-        if(connectivityManager != null && connectivityManager.getAllNetworkInfo() != null && connectivityManager.getActiveNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnected()) {
+        if(connectivityManager != null && connectivityManager.getAllNetworks() != null && connectivityManager.getActiveNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnected()) {
             if(!isSynced()) {
                 getUserPreferenceFromFirebase();
             }
@@ -53,14 +53,7 @@ public class AutoSyncService {
     public Boolean isSynced() {
         String today = Util.getStringFromDate(new Date(), "dd/MM/yyyy");
         String syncDate = Storage.getAutoSyncDate();
-        if(today.equalsIgnoreCase(syncDate)) {
-            return true;
-        }
-        return false;
-    }
-
-    public void restoreFromFirebase() {
-        restoreDateOfBirthsFromFirebase();
+        return today.equalsIgnoreCase(syncDate);
     }
 
     public void backupToFirebase() {
@@ -74,25 +67,22 @@ public class AutoSyncService {
             return;
         }
         DocumentReference documentReference = firebaseFirestore.collection(Util.getCollectionId(firebaseUser)).document(Constants.firebaseDocumentFriends);
-        documentReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document.exists()) {
-                        Util.inserDateOfBirthFromServer(document.getData());
-                        Storage.updateUserPreference(userPreference, alarmManager, context);
-                        Storage.setAutoSyncDate(new Date());
-                        DataHolder.getInstance().refresh = true;
-                        if(firebaseHandler != null) {
-                            firebaseHandler.onCompleteDateOfBirthSync(task);
-                        }
-                    } else {
-                        Log.d("FirebaseGetData", "No such document");
+        documentReference.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DocumentSnapshot document = task.getResult();
+                if (document != null && document.exists()) {
+                    Util.inserDateOfBirthFromServer(document.getData());
+                    Storage.updateUserPreference(userPreference, alarmManager, context);
+                    Storage.setAutoSyncDate(new Date());
+                    DataHolder.getInstance().refresh = true;
+                    if(firebaseHandler != null) {
+                        firebaseHandler.onCompleteDateOfBirthSync(task);
                     }
                 } else {
-                    Log.d("FirebaseGetData", "get failed with ", task.getException());
+                    Log.d("FirebaseGetData", "No such document");
                 }
+            } else {
+                Log.d("FirebaseGetData", "get failed with ", task.getException());
             }
         });
     }
