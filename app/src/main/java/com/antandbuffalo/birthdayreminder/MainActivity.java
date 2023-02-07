@@ -386,7 +386,6 @@ public class MainActivity extends AppCompatActivity {
 
     public void loadAd() {
         mAdView = this.findViewById(R.id.adView);
-
         if(!Constants.enableAds) {
             mAdView.setVisibility(View.INVISIBLE);
             return;
