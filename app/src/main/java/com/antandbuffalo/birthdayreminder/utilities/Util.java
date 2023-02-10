@@ -20,6 +20,7 @@ import androidx.core.content.ContextCompat;
 
 import com.antandbuffalo.birthdayreminder.MainActivity;
 import com.antandbuffalo.birthdayreminder.R;
+import com.antandbuffalo.birthdayreminder.database.DBHelper;
 import com.antandbuffalo.birthdayreminder.database.DateOfBirthDBHelper;
 import com.antandbuffalo.birthdayreminder.database.OptionsDBHelper;
 import com.antandbuffalo.birthdayreminder.models.DateOfBirth;
@@ -215,7 +216,7 @@ public class Util {
             return Constants.ERROR_NO_SD_CARD;
         }
         try {
-            File sdcard = Environment.getExternalStorageDirectory();
+            File sdcard = DataHolder.getInstance().getAppContext().getExternalFilesDir(null);
             // Get the text file
             File file = new File(sdcard, Constants.FOLDER_NAME + "/" + fileName);
             if (!file.exists()) {
@@ -299,7 +300,7 @@ public class Util {
             }
             return null;
         }
-        File sdcard = Environment.getExternalStorageDirectory();
+        File sdcard = DataHolder.getInstance().getAppContext().getExternalFilesDir(null);
         List<DateOfBirth> dobs = DateOfBirthDBHelper.selectAll();
         if(dobs == null || dobs.size() == 0) {
             if(context != null) {
@@ -451,12 +452,10 @@ public class Util {
             //Toast.makeText(DataHolder.getInstance().getAppContext(), Constants.ERROR_READ_WRITE_1004, Toast.LENGTH_LONG).show();
             return false;
         }
-        File sdcard = Environment.getExternalStorageDirectory();
+        File sdcard = DataHolder.getInstance().getAppContext().getExternalFilesDir(null);
         File folder = new File(sdcard + File.separator + Constants.FOLDER_NAME);
         if(!folder.exists()) {
-            Boolean isFolderCreated = folder.mkdir();
-            System.out.println(isFolderCreated);
-            return isFolderCreated;
+            return folder.mkdirs();
         }
         else {
             return true;
@@ -486,7 +485,7 @@ public class Util {
             //throw error sd card not found
             return false;
         }
-        File sdcard = Environment.getExternalStorageDirectory();
+        File sdcard = DataHolder.getInstance().getAppContext().getExternalFilesDir(null);
         // Get the text file
         File file = new File(sdcard, Constants.FOLDER_NAME + "/" + fileName + Constants.FILE_NAME_SUFFIX);
         return file.exists();

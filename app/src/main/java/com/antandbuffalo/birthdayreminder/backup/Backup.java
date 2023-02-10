@@ -60,6 +60,7 @@ public class Backup extends AppCompatActivity implements FirebaseHandler {
     AdView mAdView;
     Integer progressCounter = 0;
     Task<DocumentSnapshot> dobDone, preferenceDone;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,14 +72,13 @@ public class Backup extends AppCompatActivity implements FirebaseHandler {
         setSupportActionBar(toolbar);
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close_white);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        
-        if(FirebaseAuth.getInstance().getCurrentUser() != null) {
+
+        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
             Log.d("FirebaseUser", FirebaseAuth.getInstance().getCurrentUser().getEmail());
             TextView textView = findViewById(R.id.accountName);
             textView.setText("Account: " + FirebaseAuth.getInstance().getCurrentUser().getEmail());
             getFirebaseLastUpdatedTime(FirebaseFirestore.getInstance(), FirebaseAuth.getInstance().getCurrentUser(), "updateUI");
-        }
-        else {
+        } else {
             Log.d("FirebaseError", "User Not found. Please login first");
             startFirebaseAuth();
         }
@@ -87,16 +87,14 @@ public class Backup extends AppCompatActivity implements FirebaseHandler {
         backupNow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(getStoragePermission(Constants.MY_PERMISSIONS_READ_WRITE)) {
+                if (getStoragePermission(Constants.MY_PERMISSIONS_READ_WRITE)) {
                     updateLocalBackup();
-                }
-                else {
+                } else {
                     Toast.makeText(DataHolder.getInstance().getAppContext(), "Please provide permission to access local storage", Toast.LENGTH_SHORT).show();
                 }
-                if(FirebaseAuth.getInstance().getCurrentUser() != null) {
+                if (FirebaseAuth.getInstance().getCurrentUser() != null) {
                     backupToFirebaseConfirmation();
-                }
-                else {
+                } else {
                     UIUtil.showAlertWithOk(Backup.this, "Error", "Please select account to backup");
                 }
             }
@@ -106,12 +104,17 @@ public class Backup extends AppCompatActivity implements FirebaseHandler {
         restoreNow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(FirebaseAuth.getInstance().getCurrentUser() != null) {
+                if (FirebaseAuth.getInstance().getCurrentUser() != null) {
                     restoreDateOfBirthsFromFirebase(FirebaseFirestore.getInstance(), FirebaseAuth.getInstance().getCurrentUser());
                     restoreUserPreferenceFromFirebase(FirebaseFirestore.getInstance(), FirebaseAuth.getInstance().getCurrentUser());
-                }
-                else {
-                    UIUtil.showAlertWithOk(Backup.this, "Error", "Please select account to backup");
+                } else {
+                    UIUtil.showConfirmationDialog(Backup.this, "Confirmation", "You need to setup your Google account to restore. Meanwhile we can try to restore from local file if available. Do you want to continue?", (DialogInterface dialog, int which) -> {
+                        String status = Util.readFromFile("dob.txt");
+                        Toast toast = Toast.makeText(getApplicationContext(), status, Toast.LENGTH_SHORT);
+                        toast.show();
+                        DataHolder.getInstance().refresh = true;
+                    });
+//                    UIUtil.showAlertWithOk(Backup.this, "Error", "Please select account to backup");
                 }
             }
         });
@@ -142,9 +145,9 @@ public class Backup extends AppCompatActivity implements FirebaseHandler {
                 CharSequence options[] = new CharSequence[optionsList.size()];
 
                 Integer selectedItem = 0;
-                for(int i = 0; i < optionsList.size(); i++) {
+                for (int i = 0; i < optionsList.size(); i++) {
                     options[i] = optionsList.get(i).get("value");
-                    if(optionsList.get(i).get("key").equalsIgnoreCase(Storage.getAutoSyncFrequency())) {
+                    if (optionsList.get(i).get("key").equalsIgnoreCase(Storage.getAutoSyncFrequency())) {
                         selectedItem = i;
                     }
                 }
@@ -162,7 +165,7 @@ public class Backup extends AppCompatActivity implements FirebaseHandler {
                 adb.setTitle("Select Sync Frequency");
 
                 androidx.appcompat.app.AlertDialog dialog = adb.create();
-                dialog.setOnShowListener( new DialogInterface.OnShowListener() {
+                dialog.setOnShowListener(new DialogInterface.OnShowListener() {
                     @Override
                     public void onShow(DialogInterface arg0) {
                         dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(Backup.this, R.color.dark_gray));
@@ -184,7 +187,7 @@ public class Backup extends AppCompatActivity implements FirebaseHandler {
 
     public void updateLocalBackup() {
         File file = Util.writeToFile(this);
-        if(file != null) {
+        if (file != null) {
             Storage.setDbBackupTime(new Date(file.lastModified()));
         }
         updateBackupTimeUI();
@@ -194,7 +197,7 @@ public class Backup extends AppCompatActivity implements FirebaseHandler {
     public boolean onOptionsItemSelected(MenuItem item) {
         Log.d("BRJB", item.getItemId() + "");
         int id = item.getItemId();
-        if(id == android.R.id.home) {
+        if (id == android.R.id.home) {
             Log.d("BRJB", item.getItemId() + " : back");
         }
         finish();
@@ -204,7 +207,7 @@ public class Backup extends AppCompatActivity implements FirebaseHandler {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == Constants.firebaseSignInCode) {
+        if (requestCode == Constants.firebaseSignInCode) {
             handleFirebaseSignIn(resultCode, data);
         }
     }
@@ -213,7 +216,7 @@ public class Backup extends AppCompatActivity implements FirebaseHandler {
         switch (permissionType) {
             case Constants.MY_PERMISSIONS_READ_WRITE: {
                 if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
-                    || ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                        || ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
 
                     requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE},
                             Constants.MY_PERMISSIONS_READ_WRITE);
@@ -229,7 +232,7 @@ public class Backup extends AppCompatActivity implements FirebaseHandler {
     }
 
     public void readWritePermission(Boolean isGranted) {
-        if(isGranted) {
+        if (isGranted) {
             updateLocalBackup();
         }
     }
@@ -298,20 +301,20 @@ public class Backup extends AppCompatActivity implements FirebaseHandler {
 
     public void signoutFromFirebase() {
         AuthUI.getInstance()
-            .signOut(this)
-            .addOnCompleteListener(new OnCompleteListener<Void>() {
-                public void onComplete(@NonNull Task<Void> task) {
-                    TextView accountName = findViewById(R.id.accountName);
-                    accountName.setText("Account: ");
-                    Storage.setServerBackupTime(null);
-                    TextView serverBackup = findViewById(R.id.cloudBackup);
-                    serverBackup.setText("Server: ");
-                }
-            });
+                .signOut(this)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    public void onComplete(@NonNull Task<Void> task) {
+                        TextView accountName = findViewById(R.id.accountName);
+                        accountName.setText("Account: ");
+                        Storage.setServerBackupTime(null);
+                        TextView serverBackup = findViewById(R.id.cloudBackup);
+                        serverBackup.setText("Server: ");
+                    }
+                });
     }
 
     public void backupDateOfBirthsToFirebase(FirebaseFirestore firebaseFirestore, FirebaseUser firebaseUser) {
-        if(firebaseUser == null) {
+        if (firebaseUser == null) {
             return;
         }
         // Create a new user with a first and last name
@@ -319,53 +322,53 @@ public class Backup extends AppCompatActivity implements FirebaseHandler {
         Map<String, DateOfBirth> dateOfBirthMap = Util.getDateOfBirthMap();
         DocumentReference documentReference = firebaseFirestore.collection(Util.getCollectionId(firebaseUser)).document(Constants.firebaseDocumentFriends);
         documentReference.set(dateOfBirthMap).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                hideProgressBar();
-                Log.d("Success", "data updated successfully");
-                //updateLastUpdatedTime(db, firebaseUser);
-                Storage.setServerBackupTime(Util.getDateFromString(Storage.getDbBackupTime(), Constants.backupDateFormatToStore));
-                backupUserPreferenceToFirebase(firebaseFirestore, firebaseUser);
-                Toast.makeText(DataHolder.getInstance().getAppContext(), "Birthday informations uploaded successfully", Toast.LENGTH_SHORT).show();
-            }
-        })
-        .addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                hideProgressBar();
-                Log.e("F", e.getLocalizedMessage());
-                Toast.makeText(DataHolder.getInstance().getAppContext(), "Error while updating to server", Toast.LENGTH_LONG).show();
-            }
-        });
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        hideProgressBar();
+                        Log.d("Success", "data updated successfully");
+                        //updateLastUpdatedTime(db, firebaseUser);
+                        Storage.setServerBackupTime(Util.getDateFromString(Storage.getDbBackupTime(), Constants.backupDateFormatToStore));
+                        backupUserPreferenceToFirebase(firebaseFirestore, firebaseUser);
+                        Toast.makeText(DataHolder.getInstance().getAppContext(), "Birthday informations uploaded successfully", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        hideProgressBar();
+                        Log.e("F", e.getLocalizedMessage());
+                        Toast.makeText(DataHolder.getInstance().getAppContext(), "Error while updating to server", Toast.LENGTH_LONG).show();
+                    }
+                });
     }
 
     public void backupUserPreferenceToFirebase(FirebaseFirestore db, FirebaseUser firebaseUser) {
-        if(firebaseUser == null) {
+        if (firebaseUser == null) {
             return;
         }
         showProgressBar();
         DocumentReference documentReference = db.collection(Util.getCollectionId(firebaseUser)).document(Constants.firebaseDocumentSettings);
         documentReference.set(Storage.getUserPreference()).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                hideProgressBar();
-                Log.d("Success", "Preferences updated successfully");
-                Toast.makeText(DataHolder.getInstance().getAppContext(), "Your preferences uploaded successfully", Toast.LENGTH_SHORT).show();
-                updateBackupTimeUI();
-            }
-        })
-        .addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                hideProgressBar();
-                Log.e("F", e.getLocalizedMessage());
-                Toast.makeText(DataHolder.getInstance().getAppContext(), "Error while updating to server", Toast.LENGTH_LONG).show();
-            }
-        });
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        hideProgressBar();
+                        Log.d("Success", "Preferences updated successfully");
+                        Toast.makeText(DataHolder.getInstance().getAppContext(), "Your preferences uploaded successfully", Toast.LENGTH_SHORT).show();
+                        updateBackupTimeUI();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        hideProgressBar();
+                        Log.e("F", e.getLocalizedMessage());
+                        Toast.makeText(DataHolder.getInstance().getAppContext(), "Error while updating to server", Toast.LENGTH_LONG).show();
+                    }
+                });
     }
 
     public void updateProfileToFirebase(FirebaseFirestore db, FirebaseUser firebaseUser) {
-        if(firebaseUser == null) {
+        if (firebaseUser == null) {
             return;
         }
         // Create a new user with a first and last name
@@ -373,21 +376,21 @@ public class Backup extends AppCompatActivity implements FirebaseHandler {
         Storage.saveUserProfileToLocal(userProfile);
         DocumentReference documentReference = db.collection(Util.getCollectionId(firebaseUser)).document(Constants.firebaseDocumentProfile);
         documentReference.set(userProfile).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                Log.d("Success", "Profile updated");
-            }
-        })
-        .addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.e("Profile", "Error updating profile: " + e.getLocalizedMessage());
-            }
-        });
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d("Success", "Profile updated");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.e("Profile", "Error updating profile: " + e.getLocalizedMessage());
+                    }
+                });
     }
 
     public void restoreDateOfBirthsFromFirebase(FirebaseFirestore firebaseFirestore, FirebaseUser firebaseUser) {
-        if(firebaseUser == null) {
+        if (firebaseUser == null) {
             return;
         }
         showProgressBar();
@@ -395,7 +398,7 @@ public class Backup extends AppCompatActivity implements FirebaseHandler {
     }
 
     public void restoreUserPreferenceFromFirebase(FirebaseFirestore firebaseFirestore, FirebaseUser firebaseUser) {
-        if(firebaseUser == null) {
+        if (firebaseUser == null) {
             return;
         }
         showProgressBar();
@@ -403,63 +406,63 @@ public class Backup extends AppCompatActivity implements FirebaseHandler {
     }
 
     public void updateLastUpdatedTime(FirebaseFirestore firebaseFirestore, FirebaseUser firebaseUser) {
-        if(firebaseUser == null) {
+        if (firebaseUser == null) {
             return;
         }
         Map<String, Date> updateTime = new HashMap<>();
         updateTime.put(Constants.serverBackupTime, Util.getDateFromString(Storage.getDbBackupTime(), Constants.backupDateFormatToStore));
         DocumentReference documentReference = firebaseFirestore.collection(Util.getCollectionId(firebaseUser)).document(Constants.firebaseDocumentSettings);
         documentReference.set(updateTime).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                Log.d("Success", "Last updated time updated");
-                Storage.setServerBackupTime(Util.getDateFromString(Storage.getDbBackupTime(), Constants.backupDateFormatToStore));
-                TextView cloudBackup = findViewById(R.id.cloudBackup);
-                cloudBackup.setText("Server: " + Storage.getServerBackupTime());
-            }
-        })
-        .addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.e("F", e.getLocalizedMessage());
-            }
-        });
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d("Success", "Last updated time updated");
+                        Storage.setServerBackupTime(Util.getDateFromString(Storage.getDbBackupTime(), Constants.backupDateFormatToStore));
+                        TextView cloudBackup = findViewById(R.id.cloudBackup);
+                        cloudBackup.setText("Server: " + Storage.getServerBackupTime());
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.e("F", e.getLocalizedMessage());
+                    }
+                });
     }
 
     public void getFirebaseLastUpdatedTime(FirebaseFirestore firebaseFirestore, FirebaseUser firebaseUser, String caller) {
-        if(firebaseUser == null) {
+        if (firebaseUser == null) {
             return;
         }
         DocumentReference documentReference = firebaseFirestore.collection(Util.getCollectionId(firebaseUser)).document(Constants.firebaseDocumentSettings);
         documentReference.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                Timestamp serverTimestamp = (Timestamp) documentSnapshot.get(Constants.serverBackupTime);
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        Timestamp serverTimestamp = (Timestamp) documentSnapshot.get(Constants.serverBackupTime);
 
-                if(serverTimestamp != null) {
-                    String formattedDate = Util.getStringFromDate(serverTimestamp.toDate(), Constants.backupDateFormatToStore);
-                    Storage.putString(Constants.serverBackupTime, formattedDate);
-                    switch (caller) {
-                        case "updateUI": {
-                            updateBackupTimeUI();
-                            break;
+                        if (serverTimestamp != null) {
+                            String formattedDate = Util.getStringFromDate(serverTimestamp.toDate(), Constants.backupDateFormatToStore);
+                            Storage.putString(Constants.serverBackupTime, formattedDate);
+                            switch (caller) {
+                                case "updateUI": {
+                                    updateBackupTimeUI();
+                                    break;
+                                }
+                                case "saveLocally": {
+                                    break;
+                                }
+                            }
                         }
-                        case "saveLocally": {
-                            break;
+                        if (caller.equalsIgnoreCase("syncNow")) {
+                            compareBackupTimes();
                         }
                     }
-                }
-                if(caller.equalsIgnoreCase("syncNow")) {
-                    compareBackupTimes();
-                }
-            }
-        })
-        .addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.e("ERROR", "Not able to get last updated time");
-            }
-        });
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.e("ERROR", "Not able to get last updated time");
+                    }
+                });
     }
 
 
@@ -470,16 +473,16 @@ public class Backup extends AppCompatActivity implements FirebaseHandler {
     public void backupToFirebaseConfirmation() {
         androidx.appcompat.app.AlertDialog.Builder alertDialogBuilder = new androidx.appcompat.app.AlertDialog.Builder(Backup.this);
         alertDialogBuilder.setTitle("Confirmation")
-            .setMessage("This action will replace existing server content with local content. Are you sure want to continue?")
-            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    backupDateOfBirthsToFirebase(FirebaseFirestore.getInstance(), FirebaseAuth.getInstance().getCurrentUser());
-                }
-            })
-            .setNegativeButton("No", null);
+                .setMessage("This action will replace existing server content with local content. Are you sure want to continue?")
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        backupDateOfBirthsToFirebase(FirebaseFirestore.getInstance(), FirebaseAuth.getInstance().getCurrentUser());
+                    }
+                })
+                .setNegativeButton("No", null);
         androidx.appcompat.app.AlertDialog dialog = alertDialogBuilder.create();
-        dialog.setOnShowListener( new DialogInterface.OnShowListener() {
+        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
             @Override
             public void onShow(DialogInterface arg0) {
                 dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(Backup.this, R.color.dark_gray));
@@ -490,10 +493,9 @@ public class Backup extends AppCompatActivity implements FirebaseHandler {
 
     public void syncNow() {
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        if(connectivityManager.getAllNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnected()) {
+        if (connectivityManager.getAllNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnected()) {
             getFirebaseLastUpdatedTime(FirebaseFirestore.getInstance(), FirebaseAuth.getInstance().getCurrentUser(), "syncNow");
-        }
-        else {
+        } else {
             Toast.makeText(DataHolder.getInstance().getAppContext(), "Please connect to Internet", Toast.LENGTH_LONG).show();
         }
     }
@@ -502,22 +504,21 @@ public class Backup extends AppCompatActivity implements FirebaseHandler {
         Date dbBackupDate = Util.getDateFromString(Storage.getDbBackupTime(), Constants.backupDateFormatToStore);
         Date serverBackupDate = Util.getDateFromString(Storage.getServerBackupTime(), Constants.backupDateFormatToStore);
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        if(serverBackupDate == null) {
+        if (serverBackupDate == null) {
             backupDateOfBirthsToFirebase(FirebaseFirestore.getInstance(), firebaseUser);
             return;
         }
-        if(dbBackupDate == null) {
+        if (dbBackupDate == null) {
             restoreDateOfBirthsFromFirebase(FirebaseFirestore.getInstance(), firebaseUser);
             return;
         }
-        if(dbBackupDate.getTime() == serverBackupDate.getTime()) {
+        if (dbBackupDate.getTime() == serverBackupDate.getTime()) {
             return;
         }
-        if(dbBackupDate.getTime() > serverBackupDate.getTime()) {
+        if (dbBackupDate.getTime() > serverBackupDate.getTime()) {
             // Local data is latest. Upload to server
             backupDateOfBirthsToFirebase(FirebaseFirestore.getInstance(), firebaseUser);
-        }
-        else {
+        } else {
             // Server data is latest. Download
             restoreDateOfBirthsFromFirebase(FirebaseFirestore.getInstance(), firebaseUser);
         }
@@ -533,8 +534,8 @@ public class Backup extends AppCompatActivity implements FirebaseHandler {
 
     public void updateAutoFrequencyUI() {
         TextView localBackup = findViewById(R.id.syncFrequency);
-        for(int i=0; i < AutoSyncOptions.getInstance().getValues().size(); i++) {
-            if(AutoSyncOptions.getInstance().getValues().get(i).get("key").equalsIgnoreCase(Storage.getAutoSyncFrequency())) {
+        for (int i = 0; i < AutoSyncOptions.getInstance().getValues().size(); i++) {
+            if (AutoSyncOptions.getInstance().getValues().get(i).get("key").equalsIgnoreCase(Storage.getAutoSyncFrequency())) {
                 localBackup.setText("Auto Sync Frequency: " + AutoSyncOptions.getInstance().getValues().get(i).get("value"));
                 break;
             }
@@ -543,7 +544,7 @@ public class Backup extends AppCompatActivity implements FirebaseHandler {
 
     public void showProgressBar() {
         ProgressBar progressBar = findViewById(R.id.progresBar);
-        if(progressCounter == 0) {
+        if (progressCounter == 0) {
             progressBar.setVisibility(View.VISIBLE);
         }
         progressCounter++;
@@ -552,14 +553,14 @@ public class Backup extends AppCompatActivity implements FirebaseHandler {
     public void hideProgressBar() {
         ProgressBar progressBar = findViewById(R.id.progresBar);
         progressCounter--;
-        if(progressCounter == 0) {
+        if (progressCounter == 0) {
             progressBar.setVisibility(View.INVISIBLE);
         }
     }
 
     public void loadAd() {
         mAdView = this.findViewById(R.id.adView);
-        if(!Constants.enableAds) {
+        if (!Constants.enableAds) {
             mAdView.setVisibility(View.INVISIBLE);
             return;
         }
@@ -579,7 +580,7 @@ public class Backup extends AppCompatActivity implements FirebaseHandler {
                 })
                 .setNegativeButton("No", null);
         androidx.appcompat.app.AlertDialog dialog = alertDialogBuilder.create();
-        dialog.setOnShowListener( new DialogInterface.OnShowListener() {
+        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
             @Override
             public void onShow(DialogInterface arg0) {
                 dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(Backup.this, R.color.dark_gray));
@@ -602,7 +603,7 @@ public class Backup extends AppCompatActivity implements FirebaseHandler {
                 })
                 .setNegativeButton("No", null);
         androidx.appcompat.app.AlertDialog dialog = alertDialogBuilder.create();
-        dialog.setOnShowListener( new DialogInterface.OnShowListener() {
+        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
             @Override
             public void onShow(DialogInterface arg0) {
                 dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(Backup.this, R.color.dark_gray));
@@ -665,7 +666,7 @@ public class Backup extends AppCompatActivity implements FirebaseHandler {
         Log.i("AUTO_RESTORE", "One is done");
 
         hideProgressBar();
-        if(dobTask != null && preferenceTask != null) {
+        if (dobTask != null && preferenceTask != null) {
             Log.i("AUTO_RESTORE", "Both done");
             autoRestoreConfirmation(dobTask, preferenceTask);
         }
@@ -675,25 +676,25 @@ public class Backup extends AppCompatActivity implements FirebaseHandler {
     public void onCompleteDateOfBirthUserPreferenceSync(String type, Task<DocumentSnapshot> task) {
         Log.i("AUTO_RESTORE", "One is done");
         hideProgressBar();
-        if(type.equalsIgnoreCase("dob")) {
+        if (type.equalsIgnoreCase("dob")) {
             dobDone = task;
-        }
-        else if(type.equalsIgnoreCase("preference")) {
+        } else if (type.equalsIgnoreCase("preference")) {
             preferenceDone = task;
         }
 
-        if(dobDone != null && preferenceDone != null) {
+        if (dobDone != null && preferenceDone != null) {
             Log.i("AUTO_RESTORE", "Both done");
             autoRestoreConfirmation(dobDone, preferenceDone);
         }
     }
 
     public void showSnowFlakes() {
-        if(Util.showSnow()) {
+        if (Util.showSnow()) {
             View snowFlakes = this.findViewById(R.id.snowFlakes);
             snowFlakes.setVisibility(View.VISIBLE);
         }
     }
+
     @Override
     protected void onResume() {
         super.onResume();

@@ -1,11 +1,14 @@
 package com.antandbuffalo.birthdayreminder.models;
 
+import androidx.annotation.Keep;
+
 import java.io.Serializable;
 import java.util.Date;
 
 /**
  * Created by i677567 on 23/9/15.
  */
+@Keep
 public class DateOfBirth implements Serializable {
     private long dobId;
     private String name;
