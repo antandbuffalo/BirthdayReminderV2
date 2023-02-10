@@ -1,7 +1,9 @@
 package com.antandbuffalo.birthdayreminder.models;
 
-import java.util.Date;
+import androidx.annotation.Keep;
 
+import java.util.Date;
+@Keep
 public class UserProfile {
     private String uid;
     private String displayName;

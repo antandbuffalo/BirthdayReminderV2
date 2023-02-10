@@ -1,9 +1,10 @@
 package com.antandbuffalo.birthdayreminder.models;
 
-import android.content.Intent;
+import androidx.annotation.Keep;
 
 import java.util.Date;
 
+@Keep
 public class UserPreference {
     public Date serverBackupTime;
     public Date localBackupTime;

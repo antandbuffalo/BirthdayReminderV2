@@ -1,5 +1,7 @@
 package com.antandbuffalo.birthdayreminder.models;
 
+import androidx.annotation.Keep;
+
 import org.json.JSONObject;
 
 import java.util.Date;
@@ -7,6 +9,7 @@ import java.util.Date;
 /**
  * Created by i677567 on 21/12/15.
  */
+@Keep
 public class SettingsModel {
     private String key;
     private String title;

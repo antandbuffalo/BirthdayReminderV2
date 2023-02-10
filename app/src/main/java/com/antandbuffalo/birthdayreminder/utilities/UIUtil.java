@@ -23,4 +23,28 @@ public class UIUtil {
         androidx.appcompat.app.AlertDialog dialog = alertDialogBuilder.create();
         dialog.show();
     }
+
+    public static void showConfirmationDialog(Context context, String title, String content, DialogInterface.OnClickListener okListener) {
+        androidx.appcompat.app.AlertDialog.Builder alertDialogBuilder = new androidx.appcompat.app.AlertDialog.Builder(context);
+        // .setIcon(android.R.drawable.ic_dialog_alert)
+        // .setIconAttribute(android.R.attr.alertDialogIcon)
+        alertDialogBuilder.setTitle(title)
+                .setMessage(content)
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        okListener.onClick(dialog, which);
+                    }
+                })
+                .setNegativeButton("No", null);
+
+        androidx.appcompat.app.AlertDialog dialog = alertDialogBuilder.create();
+        dialog.setOnShowListener( new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface arg0) {
+                dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(context, R.color.dark_gray));
+            }
+        });
+        dialog.show();
+    }
 }
