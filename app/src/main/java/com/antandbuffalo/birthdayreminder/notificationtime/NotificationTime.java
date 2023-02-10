@@ -1,6 +1,5 @@
 package com.antandbuffalo.birthdayreminder.notificationtime;
 
-import android.app.Activity;
 import android.app.AlarmManager;
 import android.content.Context;
 import android.content.Intent;
@@ -11,7 +10,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageButton;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
@@ -30,6 +28,7 @@ import java.util.Date;
 public class NotificationTime extends AppCompatActivity {
     Intent intent;
     boolean is24HourFormat;
+    AdView mAdView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,7 +111,7 @@ public class NotificationTime extends AppCompatActivity {
     }
 
     public void loadAd() {
-        AdView mAdView = findViewById(R.id.adView);
+        mAdView = findViewById(R.id.adView);
         if(!Constants.enableAds) {
             mAdView.setVisibility(View.INVISIBLE);
             return;
@@ -127,5 +126,23 @@ public class NotificationTime extends AppCompatActivity {
             snowFlakes.setVisibility(View.VISIBLE);
         }
     }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mAdView.resume();
+    }
 
+    @Override
+    public void onPause() {
+        // Pause the AdView.
+        mAdView.pause();
+        super.onPause();
+    }
+
+    @Override
+    public void onDestroy() {
+        // Destroy the AdView.
+        mAdView.destroy();
+        super.onDestroy();
+    }
 }

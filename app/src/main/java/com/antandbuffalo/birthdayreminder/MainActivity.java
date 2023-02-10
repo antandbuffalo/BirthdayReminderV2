@@ -3,7 +3,6 @@ package com.antandbuffalo.birthdayreminder;
 import android.Manifest;
 import android.app.AlarmManager;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -15,7 +14,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -51,7 +49,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.Date;
-import java.util.concurrent.TimeUnit;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
     UpcomingListAdapter upcomingListAdapter;
@@ -74,71 +72,54 @@ public class MainActivity extends AppCompatActivity {
         checkTheme();
 
         FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showSnowFlakes();
-                Intent intent = new Intent(getApplicationContext(), AddNew.class);
-                startActivityForResult(intent, Constants.ADD_NEW_MEMBER);
-            }
+        fab.setOnClickListener(view -> {
+            showSnowFlakes();
+            Intent intent = new Intent(getApplicationContext(), AddNew.class);
+            startActivityForResult(intent, Constants.ADD_NEW_MEMBER);
         });
 
         // Util.copyFromAssetFileToDatabase("cse.txt");
 
         upcomingListAdapter = new UpcomingListAdapter();
         //http://stackoverflow.com/questions/6495898/findviewbyid-in-fragment
-        ListView upcomingListView = (ListView)findViewById(R.id.upcomingListView);
+        ListView upcomingListView = (ListView) findViewById(R.id.upcomingListView);
         upcomingListView.setAdapter(upcomingListAdapter);
 
-        upcomingListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                DateOfBirth dateOfBirth = upcomingListAdapter.getItem(position);
-                AlertDialog.Builder adb = new AlertDialog.Builder(MainActivity.this);
-                CharSequence items[] = new CharSequence[] {"Edit", "Wish", "Delete"};
-                adb.setItems(items, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        switch (i) {
-                            case 0:
-                                startUpdate(position);
-                                break;
-                            case 1:
-                                Intent shareWish = new Intent(MainActivity.this, ShareWish.class);
-                                startActivity(shareWish);
-                                break;
-                            case 2: {
-                                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                                builder.setTitle("Confirmation")
-                                    .setMessage("Are you sure you want to delete " + dateOfBirth.getName() + "?")
-                                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            DateOfBirthDBHelper.deleteRecordForTheId(dateOfBirth.getDobId());
-                                            Storage.setDbBackupTime(new Date());
-                                            Toast toast = Toast.makeText(getApplicationContext(), Constants.NOTIFICATION_DELETE_MEMBER_SUCCESS, Toast.LENGTH_SHORT);
-                                            toast.show();
-                                            upcomingListAdapter.refreshData();
-                                        }
-                                    })
-                                    .setNegativeButton("No", null);
-                                AlertDialog dialog = builder.create();
-                                dialog.setOnShowListener( new DialogInterface.OnShowListener() {
-                                    @Override
-                                    public void onShow(DialogInterface arg0) {
-                                        dialog.getButton(android.app.AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(MainActivity.this, R.color.dark_gray));
-                                    }
-                                });
-                                dialog.show();
-                                break;
-                            }
-                        }
+        upcomingListView.setOnItemClickListener((parent, view, position, id) -> {
+            DateOfBirth dateOfBirth = upcomingListAdapter.getItem(position);
+            AlertDialog.Builder adb = new AlertDialog.Builder(MainActivity.this);
+            CharSequence[] items = new CharSequence[]{"Edit", "Wish", "Delete"};
+            adb.setItems(items, (dialogInterface, i) -> {
+                switch (i) {
+                    case 0:
+                        startUpdate(position);
+                        break;
+                    case 1:
+                        Intent shareWish = new Intent(MainActivity.this, ShareWish.class);
+                        startActivity(shareWish);
+                        break;
+                    case 2: {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                        builder.setTitle("Confirmation")
+                                .setMessage("Are you sure you want to delete " + dateOfBirth.getName() + "?")
+                                .setPositiveButton("Yes", (dialog, which) -> {
+                                    DateOfBirthDBHelper.deleteRecordForTheId(dateOfBirth.getDobId());
+                                    Storage.setDbBackupTime(new Date());
+                                    Toast toast = Toast.makeText(getApplicationContext(), Constants.NOTIFICATION_DELETE_MEMBER_SUCCESS, Toast.LENGTH_SHORT);
+                                    toast.show();
+                                    upcomingListAdapter.refreshData();
+                                })
+                                .setNegativeButton("No", null);
+                        AlertDialog dialog = builder.create();
+                        dialog.setOnShowListener(arg0 -> dialog.getButton(android.app.AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(MainActivity.this, R.color.dark_gray)));
+                        dialog.show();
+                        break;
                     }
-                });
-                //adb.setNegativeButton("Cancel", null);
-                adb.setTitle(dateOfBirth.getName());
-                adb.show();
-            }
+                }
+            });
+            //adb.setNegativeButton("Cancel", null);
+            adb.setTitle(dateOfBirth.getName());
+            adb.show();
         });
 
         TextInputEditText filter = findViewById(R.id.filter);
@@ -154,10 +135,12 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void beforeTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) { }
+            public void beforeTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
+            }
 
             @Override
-            public void afterTextChanged(Editable arg0) {}
+            public void afterTextChanged(Editable arg0) {
+            }
         });
 //        FirebaseUser firebaseUser = checkFirebaseUser();
 //        if(firebaseUser != null) {
@@ -170,7 +153,7 @@ public class MainActivity extends AppCompatActivity {
 
         // startFirebaseAuth();
         setRepeatingAlarm();
-        if(Util.showHappyBirthdayIconAndView()) {
+        if (Util.showHappyBirthdayIconAndView()) {
             AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
             // Util.setHappyBirthdayAlarm(this, alarmManager, 0, 0);
         }
@@ -182,19 +165,17 @@ public class MainActivity extends AppCompatActivity {
 
     public void updateProfile() {
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        if(firebaseUser != null) {
+        if (firebaseUser != null) {
             FirebaseUtil.saveUserProfileToFirebase(FirebaseFirestore.getInstance(), firebaseUser);
         }
     }
 
     public void applyTheme() {
-        if(Storage.getTheme().equalsIgnoreCase(ThemeOptions.KEY_DEFAULT)) {
+        if (Storage.getTheme().equalsIgnoreCase(ThemeOptions.KEY_DEFAULT)) {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
-        }
-        else if(Storage.getTheme().equalsIgnoreCase(ThemeOptions.KEY_LIGHT)) {
+        } else if (Storage.getTheme().equalsIgnoreCase(ThemeOptions.KEY_LIGHT)) {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-        }
-        else {
+        } else {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
         }
     }
@@ -213,7 +194,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void launchAccountSetup() {
-        if(Storage.isFirstTimeLaunch()) {
+        if (Storage.isFirstTimeLaunch()) {
             // backup the older version of dob before upgrade to v2
             Util.writeToFile(this, "v2");
             Intent intent = new Intent(MainActivity.this, AccountSetup.class);
@@ -233,17 +214,12 @@ public class MainActivity extends AppCompatActivity {
     public void checkAccountSetup() {
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
-        if(!("none".equalsIgnoreCase(Storage.getAutoSyncFrequency())) && firebaseUser != null) {
+        if (!("none".equalsIgnoreCase(Storage.getAutoSyncFrequency())) && firebaseUser != null) {
             return;
         }
 
         Intent intent = new Intent(MainActivity.this, AccountSetup.class);
-        if("none".equalsIgnoreCase(Storage.getAutoSyncFrequency()) && firebaseUser == null) {
-            intent.putExtra("showAlert", false);
-        }
-        else {
-            intent.putExtra("showAlert", true);
-        }
+        intent.putExtra("showAlert", !"none".equalsIgnoreCase(Storage.getAutoSyncFrequency()) || firebaseUser != null);
         startActivity(intent);
     }
 
@@ -256,8 +232,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public FirebaseFirestore initFirebase() {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        return db;
+        return FirebaseFirestore.getInstance();
     }
 
     public void initValues() {
@@ -303,34 +278,34 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-         if(requestCode == Constants.firebaseSignInCode) {
+        if (requestCode == Constants.firebaseSignInCode) {
             IdpResponse response = IdpResponse.fromResultIntent(data);
 
             if (resultCode == RESULT_OK) {
                 // Successfully signed in
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                System.out.println(user.getDisplayName());
-                System.out.println(user.getEmail());
-                System.out.println(user.getPhoneNumber());
-                System.out.println(user.getProviderId());
-                System.out.println(user.getUid());
+                if (user != null) {
+                    System.out.println(user.getDisplayName());
+                    System.out.println(user.getEmail());
+                    System.out.println(user.getPhoneNumber());
+                    System.out.println(user.getProviderId());
+                    System.out.println(user.getUid());
 
-                Log.d("FirebaseAuth", user.getDisplayName());
-                Log.d("FirebaseAuth", user.getEmail());
-                Log.d("FirebaseAuth", user.getPhoneNumber() + " :a");
-                Log.d("FirebaseAuth", user.getProviderId());
-                Log.d("FirebaseAuth", user.getUid());
-
+                    Log.d("FirebaseAuth", user.getDisplayName());
+                    Log.d("FirebaseAuth", user.getEmail());
+                    Log.d("FirebaseAuth", user.getPhoneNumber() + " :a");
+                    Log.d("FirebaseAuth", user.getProviderId());
+                    Log.d("FirebaseAuth", user.getUid());
+                }
             } else {
                 Toast.makeText(DataHolder.getInstance().getAppContext(), "Not able to sign in", Toast.LENGTH_SHORT).show();
             }
-         }
-         else if(requestCode == Constants.DELETE_MEMBER) {
-             System.out.println("after delete activity");
-             if(resultCode == RESULT_OK) {
-                 refreshList();
-             }
-         }
+        } else if (requestCode == Constants.DELETE_MEMBER) {
+            System.out.println("after delete activity");
+            if (resultCode == RESULT_OK) {
+                refreshList();
+            }
+        }
     }
 
     public Boolean getStoragePermission(int permissionType) {
@@ -356,19 +331,35 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if(DataHolder.getInstance().refresh) {
+        if (DataHolder.getInstance().refresh) {
             DataHolder.getInstance().refresh = false;
             refreshList();
         }
         updateProfile();
+
+        mAdView.resume();
+    }
+
+    @Override
+    public void onPause() {
+        // Pause the AdView.
+        mAdView.pause();
+        super.onPause();
+    }
+
+    @Override
+    public void onDestroy() {
+        // Destroy the AdView.
+        mAdView.destroy();
+        super.onDestroy();
     }
 
     public void refreshList() {
         upcomingListAdapter.refreshData();
         //EditText filter = findViewById(R.id.upcomingFiler);
         TextInputEditText filter = findViewById(R.id.filter);
-        String filterText = filter.getText().toString();
-        if(!filterText.equalsIgnoreCase("")) {
+        String filterText = Objects.requireNonNull(filter.getText()).toString();
+        if (!filterText.equalsIgnoreCase("")) {
             upcomingListAdapter.filter(filterText);
         }
     }
@@ -386,7 +377,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void loadAd() {
         mAdView = this.findViewById(R.id.adView);
-        if(!Constants.enableAds) {
+        if (!Constants.enableAds) {
             mAdView.setVisibility(View.INVISIBLE);
             return;
         }
@@ -395,11 +386,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void showSnowFlakes() {
-        if(Util.showSnow()) {
+        if (Util.showSnow()) {
             View snowFlakes = this.findViewById(R.id.snowFlakes);
             snowFlakes.setVisibility(View.VISIBLE);
         }
-        if(Util.showHappyBirthdayIconAndView()) {
+        if (Util.showHappyBirthdayIconAndView()) {
             Util.showHappyBirthdayNotification(this);
         }
     }

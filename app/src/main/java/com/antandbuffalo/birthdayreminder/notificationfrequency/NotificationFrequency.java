@@ -1,17 +1,14 @@
 package com.antandbuffalo.birthdayreminder.notificationfrequency;
 
-import android.app.Activity;
 import android.app.AlarmManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageButton;
 import android.widget.NumberPicker;
 import android.widget.Toast;
 
@@ -30,6 +27,7 @@ import java.util.Date;
 public class NotificationFrequency extends AppCompatActivity {
     Intent intent;
     SharedPreferences settings;
+    AdView mAdView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,8 +83,7 @@ public class NotificationFrequency extends AppCompatActivity {
             saveNotificationFrequency();
             Storage.setDbBackupTime(new Date());
             setResult(RESULT_OK, intent);
-        }
-        else if(id == android.R.id.home) {
+        } else if (id == android.R.id.home) {
             Log.d("BRJB", item.getItemId() + " : back");
             setResult(RESULT_CANCELED, intent);
         }
@@ -99,8 +96,8 @@ public class NotificationFrequency extends AppCompatActivity {
     }
 
     public void loadAd() {
-        AdView mAdView = this.findViewById(R.id.adView);
-        if(!Constants.enableAds) {
+        mAdView = this.findViewById(R.id.adView);
+        if (!Constants.enableAds) {
             mAdView.setVisibility(View.INVISIBLE);
             return;
         }
@@ -109,9 +106,29 @@ public class NotificationFrequency extends AppCompatActivity {
     }
 
     public void showSnowFlakes() {
-        if(Util.showSnow()) {
+        if (Util.showSnow()) {
             View snowFlakes = this.findViewById(R.id.snowFlakes);
             snowFlakes.setVisibility(View.VISIBLE);
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mAdView.resume();
+    }
+
+    @Override
+    public void onPause() {
+        // Pause the AdView.
+        mAdView.pause();
+        super.onPause();
+    }
+
+    @Override
+    public void onDestroy() {
+        // Destroy the AdView.
+        mAdView.destroy();
+        super.onDestroy();
     }
 }

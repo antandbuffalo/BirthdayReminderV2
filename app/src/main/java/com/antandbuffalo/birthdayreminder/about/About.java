@@ -16,16 +16,16 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 
 public class About extends AppCompatActivity {
-
+    AdView mAdView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.about);
 
-        TextView version = (TextView)findViewById(R.id.version);
+        TextView version = (TextView) findViewById(R.id.version);
         version.setText("Version " + BuildConfig.VERSION_NAME + " (" + BuildConfig.VERSION_CODE + ")");
         loadAd();
-        Button contactUs = (Button)findViewById(R.id.contactUs);
+        Button contactUs = (Button) findViewById(R.id.contactUs);
         contactUs.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -40,7 +40,7 @@ public class About extends AppCompatActivity {
             }
         });
 
-        Button share = (Button)findViewById(R.id.share);
+        Button share = (Button) findViewById(R.id.share);
         share.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -57,8 +57,8 @@ public class About extends AppCompatActivity {
     }
 
     public void loadAd() {
-        AdView mAdView = this.findViewById(R.id.adView);
-        if(!Constants.enableAds) {
+        mAdView = this.findViewById(R.id.adView);
+        if (!Constants.enableAds) {
             mAdView.setVisibility(View.INVISIBLE);
             return;
         }
@@ -67,10 +67,29 @@ public class About extends AppCompatActivity {
     }
 
     public void showSnowFlakes() {
-        if(Util.showSnow()) {
+        if (Util.showSnow()) {
             View snowFlakes = this.findViewById(R.id.snowFlakes);
             snowFlakes.setVisibility(View.VISIBLE);
         }
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mAdView.resume();
+    }
+
+    @Override
+    public void onPause() {
+        // Pause the AdView.
+        mAdView.pause();
+        super.onPause();
+    }
+
+    @Override
+    public void onDestroy() {
+        // Destroy the AdView.
+        mAdView.destroy();
+        super.onDestroy();
+    }
 }

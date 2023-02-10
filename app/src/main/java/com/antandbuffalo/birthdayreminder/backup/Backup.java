@@ -3,13 +3,10 @@ package com.antandbuffalo.birthdayreminder.backup;
 import android.Manifest;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
-import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.res.ColorStateList;
-import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.util.Log;
@@ -697,7 +694,25 @@ public class Backup extends AppCompatActivity implements FirebaseHandler {
             snowFlakes.setVisibility(View.VISIBLE);
         }
     }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mAdView.resume();
+    }
 
+    @Override
+    public void onPause() {
+        // Pause the AdView.
+        mAdView.pause();
+        super.onPause();
+    }
+
+    @Override
+    public void onDestroy() {
+        // Destroy the AdView.
+        mAdView.destroy();
+        super.onDestroy();
+    }
     // download prgress link
     // https://developers.google.com/drive/android/files
 
