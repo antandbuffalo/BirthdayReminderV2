@@ -1,11 +1,10 @@
 package com.antandbuffalo.birthdayreminder;
 
-import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.AlarmManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.text.Editable;
@@ -39,7 +38,6 @@ import com.antandbuffalo.birthdayreminder.utilities.FirebaseUtil;
 import com.antandbuffalo.birthdayreminder.utilities.Storage;
 import com.antandbuffalo.birthdayreminder.utilities.ThemeOptions;
 import com.antandbuffalo.birthdayreminder.utilities.Util;
-import com.firebase.ui.auth.IdpResponse;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -82,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
 
         upcomingListAdapter = new UpcomingListAdapter();
         //http://stackoverflow.com/questions/6495898/findviewbyid-in-fragment
-        ListView upcomingListView = (ListView) findViewById(R.id.upcomingListView);
+        ListView upcomingListView = findViewById(R.id.upcomingListView);
         upcomingListView.setAdapter(upcomingListAdapter);
 
         upcomingListView.setOnItemClickListener((parent, view, position, id) -> {
@@ -153,10 +151,11 @@ public class MainActivity extends AppCompatActivity {
 
         // startFirebaseAuth();
         setRepeatingAlarm();
-        if (Util.showHappyBirthdayIconAndView()) {
-            AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-            // Util.setHappyBirthdayAlarm(this, alarmManager, 0, 0);
-        }
+//        THIS IS USED TO DISPLAY CUSTOM NOTIFICATION ON SPECIFIC DAY
+//        if (Util.showHappyBirthdayIconAndView()) {
+//            AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+//             Util.setHappyBirthdayAlarm(this, alarmManager, 0, 0);
+//        }
         launchAccountSetup();
         loadAd();
         showSnowFlakes();
@@ -211,17 +210,18 @@ public class MainActivity extends AppCompatActivity {
 //        }
     }
 
-    public void checkAccountSetup() {
-        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-
-        if (!("none".equalsIgnoreCase(Storage.getAutoSyncFrequency())) && firebaseUser != null) {
-            return;
-        }
-
-        Intent intent = new Intent(MainActivity.this, AccountSetup.class);
-        intent.putExtra("showAlert", !"none".equalsIgnoreCase(Storage.getAutoSyncFrequency()) || firebaseUser != null);
-        startActivity(intent);
-    }
+    // used to display account setup page when user opens after 30 days
+//    public void checkAccountSetup() {
+//        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+//
+//        if (!("none".equalsIgnoreCase(Storage.getAutoSyncFrequency())) && firebaseUser != null) {
+//            return;
+//        }
+//
+//        Intent intent = new Intent(MainActivity.this, AccountSetup.class);
+//        intent.putExtra("showAlert", !"none".equalsIgnoreCase(Storage.getAutoSyncFrequency()) || firebaseUser != null);
+//        startActivity(intent);
+//    }
 
     public void startUpdate(int position) {
         DateOfBirth dateOfBirth = upcomingListAdapter.getItem(position);
@@ -231,9 +231,10 @@ public class MainActivity extends AppCompatActivity {
         startActivityForResult(intent, Constants.DELETE_MEMBER);
     }
 
-    public FirebaseFirestore initFirebase() {
-        return FirebaseFirestore.getInstance();
-    }
+//    used for debugging
+//    public FirebaseFirestore initFirebase() {
+//        return FirebaseFirestore.getInstance();
+//    }
 
     public void initValues() {
         DBHelper.createInstance(this);
@@ -247,6 +248,7 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
+    @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -279,7 +281,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == Constants.firebaseSignInCode) {
-            IdpResponse response = IdpResponse.fromResultIntent(data);
+            // used for debugging
+//            IdpResponse response = IdpResponse.fromResultIntent(data);
 
             if (resultCode == RESULT_OK) {
                 // Successfully signed in
@@ -308,25 +311,26 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public Boolean getStoragePermission(int permissionType) {
-        switch (permissionType) {
-            case Constants.MY_PERMISSIONS_READ_WRITE: {
-                if (ContextCompat.checkSelfPermission(this,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                        != PackageManager.PERMISSION_GRANTED) {
-
-                    requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                            Constants.MY_PERMISSIONS_READ_WRITE);
-
-                    return false;
-                } else {
-                    // Permission has already been granted
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
+//    used for debugging store permission related details
+//    public Boolean getStoragePermission(int permissionType) {
+//        switch (permissionType) {
+//            case Constants.MY_PERMISSIONS_READ_WRITE: {
+//                if (ContextCompat.checkSelfPermission(this,
+//                        Manifest.permission.WRITE_EXTERNAL_STORAGE)
+//                        != PackageManager.PERMISSION_GRANTED) {
+//
+//                    requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+//                            Constants.MY_PERMISSIONS_READ_WRITE);
+//
+//                    return false;
+//                } else {
+//                    // Permission has already been granted
+//                    return true;
+//                }
+//            }
+//        }
+//        return false;
+//    }
 
     @Override
     protected void onResume() {
@@ -395,10 +399,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void hideSnowFlakes() {
-        View snowFlakes = this.findViewById(R.id.snowFlakes);
-        snowFlakes.setVisibility(View.INVISIBLE);
-    }
+    // will use this to show and hide snowflakes on christmas day
+//    public void hideSnowFlakes() {
+//        View snowFlakes = this.findViewById(R.id.snowFlakes);
+//        snowFlakes.setVisibility(View.INVISIBLE);
+//    }
 
 }
 
