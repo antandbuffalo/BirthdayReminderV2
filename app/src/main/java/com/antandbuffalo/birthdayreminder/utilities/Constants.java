@@ -1,9 +1,7 @@
 package com.antandbuffalo.birthdayreminder.utilities;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -204,6 +202,10 @@ public class Constants {
     public static final Boolean enableAds = true;
 
     public static final int defaultBuildNumber = 0;
+
+    public static final int DAYS_TO_SHOW_RATING_30 = 30;
+    public static final int DAYS_TO_SHOW_RATING_60 = 60;
+    public static final int DOB_COUNT_TO_SHOW_RATING = 3;
 
 //    public static final Integer SNOW_DAY = 11;
 //    public static final Integer SNOW_MONTH = 2;

@@ -40,14 +40,19 @@ import com.antandbuffalo.birthdayreminder.utilities.ThemeOptions;
 import com.antandbuffalo.birthdayreminder.utilities.Util;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.play.core.review.ReviewInfo;
+import com.google.android.play.core.review.ReviewManager;
+import com.google.android.play.core.review.ReviewManagerFactory;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.Date;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity {
     UpcomingListAdapter upcomingListAdapter;
@@ -409,6 +414,47 @@ public class MainActivity extends AppCompatActivity {
         }).start();
     }
 
+    public void showRatingReview() {
+        ReviewManager manager = ReviewManagerFactory.create(this);
+        Task<ReviewInfo> request = manager.requestReviewFlow();
+        request.addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                // We can get the ReviewInfo object
+                ReviewInfo reviewInfo = task.getResult();
+                Task<Void> flow = manager.launchReviewFlow(this, reviewInfo);
+                flow.addOnCompleteListener(task1 -> {
+                    // The flow has finished. The API does not indicate whether the user
+                    // reviewed or not, or even whether the review dialog was shown. Thus, no
+                    // matter the result, we continue our app flow.
+                    Storage.setRatingPresentedDate(new Date());
+                    finish();
+                });
+            } else {
+                // There was some problem, log or handle the error code.
+//                    @ReviewErrorCode int reviewErrorCode = task.getException().getErrorCode();
+                Storage.setRatingPresentedDate(new Date());
+                System.out.println("error while presenting rating review" + task.getException().getLocalizedMessage());
+                finish();
+            }
+        });
+    }
+
+    @Override
+    public void onBackPressed() {
+        long defaultDate = Util.getDateFromString("12/12/2012", Constants.LAST_APP_OPEN_DATE_FORMAT).getTime();
+        long oldDate = Storage.getRatingPresentedDate().getTime();
+        long diff = new Date().getTime() - oldDate;
+        long days = TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
+
+        if (upcomingListAdapter.getCount() >= Constants.DOB_COUNT_TO_SHOW_RATING && (oldDate == defaultDate || days >= Constants.DAYS_TO_SHOW_RATING_30)) {
+            showRatingReview();
+        } else if (upcomingListAdapter.getCount() < Constants.DOB_COUNT_TO_SHOW_RATING && (oldDate == defaultDate || days >= Constants.DAYS_TO_SHOW_RATING_60)) {
+            showRatingReview();
+        } else {
+            super.onBackPressed();
+        }
+    }
+
     // will use this to show and hide snowflakes on christmas day
 //    public void hideSnowFlakes() {
 //        View snowFlakes = this.findViewById(R.id.snowFlakes);
@@ -416,10 +462,6 @@ public class MainActivity extends AppCompatActivity {
 //    }
 
 }
-
-// TODO:
-// Show confirmation for remove account
-//
 
 // Get all documents
 // https://firebase.google.com/docs/firestore/query-data/get-data#java_2
