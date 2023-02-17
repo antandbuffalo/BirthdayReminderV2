@@ -160,6 +160,7 @@ public class MainActivity extends AppCompatActivity {
         loadAd();
         showSnowFlakes();
         updateProfile();
+        storeBuildNumber();
     }
 
     public void updateProfile() {
@@ -397,6 +398,15 @@ public class MainActivity extends AppCompatActivity {
         if (Util.showHappyBirthdayIconAndView()) {
             Util.showHappyBirthdayNotification(this);
         }
+    }
+
+    public void storeBuildNumber() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Storage.setLastBuildNumber(BuildConfig.VERSION_CODE);
+            }
+        }).start();
     }
 
     // will use this to show and hide snowflakes on christmas day
