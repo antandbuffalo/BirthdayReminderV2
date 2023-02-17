@@ -123,35 +123,36 @@ public class AlarmReceiver extends BroadcastReceiver {
         notificationManager.notify(notificationId, mBuilder.build());
     }
 
-    public void showNewFeatureNotification(Context context) {
-        Integer shown = Storage.getFeaturesNotificationStatus("newFeature");
-        if(shown > 0) {
-            return;
-        }
-
-        CharSequence from = "New Features added";
-        CharSequence message = "Complete revamp of UI. Sync with cloud. Multiple device support, Dark theme etc. Please have a look";
-
-        notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        String CHANNEL_ID = setChannel(notificationManager);
-
-        //notification opening intent
-        Intent resultingIntent = new Intent(context, MainActivity.class);
-        PendingIntent contentIntent = PendingIntent.getActivity(context, 0, resultingIntent, PendingIntent.FLAG_IMMUTABLE);
-        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context, CHANNEL_ID)
-                .setStyle(new NotificationCompat.BigTextStyle().bigText(message))
-                .setSmallIcon(notificationIcon)
-                .setContentTitle(from)
-                .setContentText(message);
-        mBuilder.setColor(ContextCompat.getColor(context, iconColor));
-        mBuilder.setAutoCancel(true);
-
-        mBuilder.setContentIntent(contentIntent);
-        int notificationId = 103;
-        notificationManager.notify(notificationId, mBuilder.build());
-
-        Storage.setFeaturesNotificationStatus("newFeature", 1);
-    }
+    // GUESS NEW FEATURES NOTIFICATION NOT NEEDED. CAN USE IT FOR ANY OTHER PURPOSE
+//    public void showNewFeatureNotification(Context context) {
+//        Integer shown = Storage.getFeaturesNotificationStatus("newFeature");
+//        if(shown > 0) {
+//            return;
+//        }
+//
+//        CharSequence from = "New Features added";
+//        CharSequence message = "Complete revamp of UI. Sync with cloud. Multiple device support, Dark theme etc. Please have a look";
+//
+//        notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+//        String CHANNEL_ID = setChannel(notificationManager);
+//
+//        //notification opening intent
+//        Intent resultingIntent = new Intent(context, MainActivity.class);
+//        PendingIntent contentIntent = PendingIntent.getActivity(context, 0, resultingIntent, PendingIntent.FLAG_IMMUTABLE);
+//        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context, CHANNEL_ID)
+//                .setStyle(new NotificationCompat.BigTextStyle().bigText(message))
+//                .setSmallIcon(notificationIcon)
+//                .setContentTitle(from)
+//                .setContentText(message);
+//        mBuilder.setColor(ContextCompat.getColor(context, iconColor));
+//        mBuilder.setAutoCancel(true);
+//
+//        mBuilder.setContentIntent(contentIntent);
+//        int notificationId = 103;
+//        notificationManager.notify(notificationId, mBuilder.build());
+//
+//        Storage.setFeaturesNotificationStatus("newFeature", 1);
+//    }
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -168,7 +169,7 @@ public class AlarmReceiver extends BroadcastReceiver {
             Storage.putInt(Util.getSharedPreference(), "isHappyBirthdayAt12Set", 1);
         }
 
-        showNewFeatureNotification(context);
+//        showNewFeatureNotification(context);
         final SharedPreferences settings = Util.getSharedPreference();
         int preNotifDays = settings.getInt(Constants.PREFERENCE_PRE_NOTIFICATION_DAYS, 0);
         if(preNotifDays > 0) {

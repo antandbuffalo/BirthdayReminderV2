@@ -39,6 +39,13 @@ public class Storage {
         return userProfile;
     }
 
+    public static int getLastBuildNumber() {
+        return Storage.getInt(Util.getSharedPreference(), "lastBuildNumber", Constants.defaultBuildNumber);
+    }
+
+    public static void setLastBuildNumber(int buildNumber) {
+        Storage.putInt(Util.getSharedPreference(), "lastBuildNumber", buildNumber);
+    }
 
     public static Date getLastAccSetupShownDate() {
         return Util.getDateFromString(Storage.getString("lastAppOpenDate", "12/12/2012"), "dd/MM/yyyy");
@@ -126,6 +133,7 @@ public class Storage {
     public static String getRestoreTime(String key) {
         return Storage.getString(key, new Date().toString());
     }
+
     public static Boolean setRestoreTime(String key, String dateTime) {
         return Storage.putString(key, dateTime);
     }
@@ -133,6 +141,7 @@ public class Storage {
     public static String getBackupTime(String key) {
         return Storage.getString(key, new Date().toString());
     }
+
     public static Boolean setBackupTime(String key, String dateTime) {
         return Storage.putString(key, dateTime);
     }
@@ -140,6 +149,7 @@ public class Storage {
     public static Integer getNotificationPerDay() {
         return Storage.getInt(Util.getSharedPreference(), Constants.PREFERENCE_NOTIFINCATION_FREQUENCY, 1);
     }
+
     public static Boolean setNotificationPerDay(Integer days) {
         return Storage.putInt(Util.getSharedPreference(), Constants.PREFERENCE_NOTIFINCATION_FREQUENCY, days);
     }
@@ -147,6 +157,7 @@ public class Storage {
     public static Integer getNotificationHours() {
         return Storage.getInt(Util.getSharedPreference(), Constants.PREFERENCE_NOTIFICATION_TIME_HOURS);
     }
+
     public static Integer getNotificationMinutes() {
         return Storage.getInt(Util.getSharedPreference(), Constants.PREFERENCE_NOTIFICATION_TIME_MINUTES);
     }
@@ -154,6 +165,7 @@ public class Storage {
     public static Boolean setNotificationHours(Integer value) {
         return Storage.putInt(Util.getSharedPreference(), Constants.PREFERENCE_NOTIFICATION_TIME_HOURS, value);
     }
+
     public static Boolean setNotificationMinutes(Integer value) {
         return Storage.putInt(Util.getSharedPreference(), Constants.PREFERENCE_NOTIFICATION_TIME_MINUTES, value);
     }
@@ -161,6 +173,7 @@ public class Storage {
     public static Integer getPreNotificationDays() {
         return Storage.getInt(Util.getSharedPreference(), Constants.PREFERENCE_PRE_NOTIFICATION_DAYS);
     }
+
     public static Boolean setPreNotificationDays(Integer days) {
         return Storage.putInt(Util.getSharedPreference(), Constants.PREFERENCE_PRE_NOTIFICATION_DAYS, days);
     }
@@ -170,9 +183,11 @@ public class Storage {
         editor.putString(key, value);
         return editor.commit();
     }
+
     public static String getString(String key) {
         return Storage.getString(key, "");
     }
+
     public static String getString(String key, String defaultValue) {
         return Util.getSharedPreference().getString(key, defaultValue);
     }
@@ -182,9 +197,11 @@ public class Storage {
         editor.putInt(key, value);
         return editor.commit();
     }
+
     public static Integer getInt(SharedPreferences preferences, String key) {
         return Storage.getInt(preferences, key, 0);
     }
+
     public static Integer getInt(SharedPreferences preferences, String key, Integer defaultValue) {
         return preferences.getInt(key, defaultValue);
     }
@@ -202,12 +219,11 @@ public class Storage {
         int hours = Storage.getNotificationHours();
         int minutes = Storage.getNotificationMinutes();
         boolean is24HourFormat = android.text.format.DateFormat.is24HourFormat(context);
-        if(is24HourFormat) {
+        if (is24HourFormat) {
             return Util.getTwoDigitsString(hours) + ":" + Util.getTwoDigitsString(minutes);
-        }
-        else {
+        } else {
             String amOrPm = "AM";
-            if(hours > 12) {
+            if (hours > 12) {
                 hours = hours - 12;
                 amOrPm = "PM";
             }
@@ -222,9 +238,9 @@ public class Storage {
         Storage.setServerBackupTime(userPreference.serverBackupTime);
 
         Boolean scheduleNotification = false;
-        if(Storage.getNotificationPerDay() != userPreference.numberOfNotifications ||
-            Storage.getNotificationHours() != userPreference.notificationHours ||
-            Storage.getNotificationMinutes() != userPreference.notificationMinutes) {
+        if (Storage.getNotificationPerDay() != userPreference.numberOfNotifications ||
+                Storage.getNotificationHours() != userPreference.notificationHours ||
+                Storage.getNotificationMinutes() != userPreference.notificationMinutes) {
             scheduleNotification = true;
         }
 
@@ -232,18 +248,17 @@ public class Storage {
         Storage.setNotificationHours(userPreference.notificationHours);
         Storage.setNotificationMinutes(userPreference.notificationMinutes);
 
-        if(alarmManager != null && context != null && scheduleNotification) {
+        if (alarmManager != null && context != null && scheduleNotification) {
             Util.setRepeatingAlarm(context, alarmManager, userPreference.notificationHours, userPreference.notificationMinutes, userPreference.numberOfNotifications);
         }
 
-        if(userPreference.autoSyncFrequency != null) {
+        if (userPreference.autoSyncFrequency != null) {
             Storage.setAutoSyncFrequency(userPreference.autoSyncFrequency);
         }
 
-        if(userPreference.theme != null) {
+        if (userPreference.theme != null) {
             Storage.setTheme(userPreference.theme);
-        }
-        else {
+        } else {
             Storage.setTheme(ThemeOptions.getInstance().getValues().get(0).get("key"));
         }
     }
@@ -258,7 +273,7 @@ public class Storage {
         userPreference.wishTemplate = Storage.getWishTemplate();
         userPreference.localBackupTime = Util.getDateFromString(Storage.getDbBackupTime(), Constants.backupDateFormatToStore);
         userPreference.versionName = BuildConfig.VERSION_NAME;
-        userPreference.versionCode =  BuildConfig.VERSION_CODE;
+        userPreference.versionCode = BuildConfig.VERSION_CODE;
         userPreference.autoSyncFrequency = Storage.getAutoSyncFrequency();
         userPreference.theme = Storage.getTheme();
         return userPreference;
@@ -267,39 +282,39 @@ public class Storage {
     public static UserPreference createUserPreferenceFromServer(Map<String, Object> genericPreference) {
         UserPreference userPreference = new UserPreference();
         userPreference.wishTemplate = (String) genericPreference.get("wishTemplate");
-        if(genericPreference.get("preNotificationDays") != null) {
+        if (genericPreference.get("preNotificationDays") != null) {
             userPreference.preNotificationDays = ((Long) genericPreference.get("preNotificationDays")).intValue();
         }
-        if(genericPreference.get("numberOfNotifications") != null) {
+        if (genericPreference.get("numberOfNotifications") != null) {
             userPreference.numberOfNotifications = ((Long) genericPreference.get("numberOfNotifications")).intValue();
         }
-        if(genericPreference.get("notificationHours") != null) {
+        if (genericPreference.get("notificationHours") != null) {
             userPreference.notificationHours = ((Long) genericPreference.get("notificationHours")).intValue();
         }
-        if(genericPreference.get("notificationMinutes") != null) {
+        if (genericPreference.get("notificationMinutes") != null) {
             userPreference.notificationMinutes = ((Long) genericPreference.get("notificationMinutes")).intValue();
         }
 
         Timestamp local = (Timestamp) genericPreference.get("localBackupTime");
-        if(local != null) {
+        if (local != null) {
             userPreference.localBackupTime = local.toDate();
         }
 
         Timestamp server = (Timestamp) genericPreference.get("serverBackupTime");
-        if(server != null) {
+        if (server != null) {
             userPreference.serverBackupTime = server.toDate();
         }
 
         userPreference.versionName = (String) genericPreference.get("versionName");
-        if(genericPreference.get("versionCode") != null) {
+        if (genericPreference.get("versionCode") != null) {
             userPreference.versionCode = ((Long) genericPreference.get("versionCode")).intValue();
         }
 
-        if(genericPreference.get("autoSyncFrequency") != null) {
+        if (genericPreference.get("autoSyncFrequency") != null) {
             userPreference.autoSyncFrequency = (String) genericPreference.get("autoSyncFrequency");
         }
 
-        if(genericPreference.get("theme") != null) {
+        if (genericPreference.get("theme") != null) {
             userPreference.theme = (String) genericPreference.get("theme");
         }
 

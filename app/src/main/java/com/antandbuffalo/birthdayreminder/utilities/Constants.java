@@ -203,6 +203,8 @@ public class Constants {
 
     public static final Boolean enableAds = true;
 
+    public static final int defaultBuildNumber = 0;
+
 //    public static final Integer SNOW_DAY = 11;
 //    public static final Integer SNOW_MONTH = 2;
 //    public static final String SNOW_EMAIL = "ja";
