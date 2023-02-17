@@ -9,8 +9,8 @@ android {
         applicationId "com.antandbuffalo.birthdayreminder"
         minSdkVersion 23
         targetSdkVersion 31
-        versionCode 84
-        versionName "3.13.6"
+        versionCode 85
+        versionName "3.13.7"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -82,4 +82,5 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-extensions:2.0.0'
     implementation 'com.github.jetradarmobile:android-snowfall:1.2.1'
 
+    implementation 'com.google.android.play:review:2.0.1'
 }

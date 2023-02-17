@@ -46,6 +46,13 @@ public class Storage {
     public static void setLastBuildNumber(int buildNumber) {
         Storage.putInt(Util.getSharedPreference(), "lastBuildNumber", buildNumber);
     }
+    public static Date getRatingPresentedDate() {
+        return Util.getDateFromString(Storage.getString("ratingPresentedDate", "12/12/2012"), "dd/MM/yyyy");
+    }
+
+    public static void setRatingPresentedDate(Date date) {
+        Storage.putString("ratingPresentedDate", Util.getStringFromDate(date, "dd/MM/yyyy"));
+    }
 
     public static Date getLastAccSetupShownDate() {
         return Util.getDateFromString(Storage.getString("lastAppOpenDate", "12/12/2012"), "dd/MM/yyyy");
