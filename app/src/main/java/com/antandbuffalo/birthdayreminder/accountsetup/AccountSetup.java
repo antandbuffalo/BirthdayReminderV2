@@ -60,6 +60,8 @@ public class AccountSetup extends AppCompatActivity implements FirebaseHandler {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.account_setup);
 
+        DataHolder.getInstance().setAppContext(getApplicationContext());
+
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close_white);
