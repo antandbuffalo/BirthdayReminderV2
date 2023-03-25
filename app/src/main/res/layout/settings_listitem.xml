@@ -5,7 +5,7 @@
     >
 
     <LinearLayout
-        android:id="@+id/circlebg"
+        android:id="@+id/todayCirclebg"
         android:orientation="vertical"
         android:layout_width="46sp"
         android:layout_height="46sp"
@@ -34,12 +34,12 @@
     </LinearLayout>
 
     <TextView
-        android:id="@+id/nameField"
+        android:id="@+id/todayNameField"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="5dp"
         android:layout_marginTop="8dp"
-        android:layout_toRightOf="@+id/circlebg"
+        android:layout_toRightOf="@+id/todayCirclebg"
         android:text="CodeLearn Chapter 1"
         android:textSize="18sp" />
 
@@ -51,7 +51,7 @@
         android:textSize="11sp"
         android:alpha="0.7"
         android:layout_alignParentTop="true"
-        android:layout_alignStart="@+id/nameField"
+        android:layout_alignStart="@+id/todayNameField"
         android:layout_marginTop="30dp" />
 
     <TextView

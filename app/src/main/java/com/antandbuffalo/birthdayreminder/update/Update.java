@@ -276,18 +276,18 @@ public class Update extends AppCompatActivity {
         name = (EditText)findViewById(R.id.personName);
 
         monthSpinner = (Spinner) findViewById(R.id.monthSpinner);
-        dateText = findViewById(R.id.date);
+        dateText = findViewById(R.id.todayBDate);
         yearText = findViewById(R.id.year);
 
         removeYear = (CheckBox) findViewById(R.id.removeYear);
 
-        namePreview = (TextView)findViewById(R.id.nameField);
+        namePreview = (TextView)findViewById(R.id.todayNameField);
         desc = (TextView)findViewById(R.id.ageField);
         dateField = (TextView)findViewById(R.id.dateField);
         monthField = (TextView)findViewById(R.id.monthField);
         yearField = (TextView)findViewById(R.id.yearField);
 
-        circle = (LinearLayout)findViewById(R.id.circlebg);
+        circle = (LinearLayout)findViewById(R.id.todayCirclebg);
         todayImage = (LinearLayout)findViewById(R.id.todayImage);
     }
 

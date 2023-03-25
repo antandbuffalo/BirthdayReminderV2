@@ -7,18 +7,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.antandbuffalo.birthdayreminder.R;
-import com.antandbuffalo.birthdayreminder.database.OptionsDBHelper;
 import com.antandbuffalo.birthdayreminder.models.SettingsModel;
 import com.antandbuffalo.birthdayreminder.utilities.Constants;
 import com.antandbuffalo.birthdayreminder.utilities.Storage;
 import com.antandbuffalo.birthdayreminder.utilities.ThemeOptions;
 import com.antandbuffalo.birthdayreminder.utilities.Util;
 
-import java.security.cert.PKIXRevocationChecker;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -82,10 +79,10 @@ public class SettingsListAdapter extends BaseAdapter {
             convertView = inflater.inflate(R.layout.settings_listitem_default, parent, false);
         }
 
-        TextView name = (TextView)convertView.findViewById(R.id.nameField);
+        TextView name = (TextView)convertView.findViewById(R.id.todayNameField);
         name.setText(option.getTitle());
 
-        ImageView listItemIcon = convertView.findViewById(R.id.listItemIcon);
+        ImageView listItemIcon = convertView.findViewById(R.id.todayListItemIcon);
         listItemIcon.setBackgroundResource(option.getIconId());
 
         TextView currentValue = (TextView)convertView.findViewById(R.id.currentValue);

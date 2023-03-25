@@ -1,13 +1,10 @@
 package com.antandbuffalo.birthdayreminder.upcoming;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Filter;
-import android.widget.Filterable;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -15,8 +12,10 @@ import com.antandbuffalo.birthdayreminder.R;
 import com.antandbuffalo.birthdayreminder.database.DateOfBirthDBHelper;
 import com.antandbuffalo.birthdayreminder.models.DateOfBirth;
 import com.antandbuffalo.birthdayreminder.utilities.Constants;
+import com.antandbuffalo.birthdayreminder.utilities.DataHolder;
 import com.antandbuffalo.birthdayreminder.utilities.Util;
 
+import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -33,10 +32,12 @@ public class UpcomingListAdapter extends BaseAdapter {
     Calendar cal;
     List<DateOfBirth> dobs;
     List<DateOfBirth> allDobs;
-    SimpleDateFormat dateFormatter;
+    SimpleDateFormat dateFormatter, todayDateFormatWithYear, todayDateFormatNoYear;
     List<DateOfBirth> filteredDobs = new ArrayList<DateOfBirth>();
     public UpcomingListAdapter() {
         dateFormatter = new SimpleDateFormat("MMM");
+        todayDateFormatWithYear = new SimpleDateFormat(Constants.todayDateFormatWithYear);
+        todayDateFormatNoYear = new SimpleDateFormat(Constants.todayDateFormatNoYear);
         cal = Calendar.getInstance();
         setDefaultValues();
     }
@@ -71,6 +72,25 @@ public class UpcomingListAdapter extends BaseAdapter {
         return dayOfYear == currentDayOfYear? 0 : 1;
     }
 
+    public View getTodayView(View convertView, DateOfBirth dateOfBirth) {
+        TextView name = (TextView)convertView.findViewById(R.id.todayNameField);
+        TextView age = (TextView)convertView.findViewById(R.id.todayAge);
+        TextView desc = (TextView)convertView.findViewById(R.id.todayDesc);
+        TextView bDate = (TextView)convertView.findViewById(R.id.todayBDate);
+        name.setText(dateOfBirth.getName());
+        age.setText("Age: " + dateOfBirth.getAge());
+        desc.setText(dateOfBirth.getDescription());
+        if(dateOfBirth.getRemoveYear()) {
+            bDate.setText(todayDateFormatNoYear.format(dateOfBirth.getDobDate()));
+        }
+        else {
+            Format dateFormat = android.text.format.DateFormat.getDateFormat(DataHolder.getInstance().getAppContext());
+            bDate.setText(dateFormat.format(dateOfBirth.getDobDate()));
+            bDate.setText(todayDateFormatWithYear.format(dateOfBirth.getDobDate()));
+        }
+        return convertView;
+    }
+
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
@@ -83,15 +103,24 @@ public class UpcomingListAdapter extends BaseAdapter {
                     convertView = inflater.inflate(R.layout.list_item_jb, parent, false);
                 }
                 else {
-                    convertView = inflater.inflate(R.layout.list_item_today, parent, false);
+                    convertView = inflater.inflate(R.layout.list_item_today_v2, parent, false);
+                    System.out.println("convert view " + convertView);
+                    convertView = getTodayView(convertView, dob);
+                    System.out.println("convert view after assign" + convertView);
+                    return convertView;
                 }
             }
             else {
                 LayoutInflater inflater = (LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 convertView = inflater.inflate(R.layout.list_item_default, parent, false);
+                System.out.println("convert view normal " + convertView);
             }
         }
-        TextView name = (TextView)convertView.findViewById(R.id.nameField);
+        if(dayOfYear == currentDayOfYear) {
+            System.out.println("convert view exist" + convertView);
+            return getTodayView(convertView, dob);
+        }
+        TextView name = (TextView)convertView.findViewById(R.id.todayNameField);
         TextView desc = (TextView)convertView.findViewById(R.id.ageField);
         TextView yearField = (TextView)convertView.findViewById(R.id.yearField);
         TextView dayField = (TextView)convertView.findViewById(R.id.dayField);
@@ -103,6 +132,10 @@ public class UpcomingListAdapter extends BaseAdapter {
         yearField.setText(cal.get(Calendar.YEAR) + "");
         dayField.setText(Util.getDay(cal.get(Calendar.MONTH), cal.get(Calendar.DATE)));
 
+        LinearLayout circle = (LinearLayout)convertView.findViewById(R.id.todayCirclebg);
+//        if(dayOfYear == currentDayOfYear) {
+//            circle.setBackgroundResource(R.drawable.cirlce_today);
+//        }
         if(dayOfYear != currentDayOfYear) {
             TextView dateField = (TextView)convertView.findViewById(R.id.dateField);
             TextView monthField = (TextView)convertView.findViewById(R.id.monthField);
@@ -110,12 +143,9 @@ public class UpcomingListAdapter extends BaseAdapter {
             dateField.setText(cal.get(Calendar.DATE) + "");
             monthField.setText(dateFormatter.format(cal.getTime()));
 
-            LinearLayout circle = (LinearLayout)convertView.findViewById(R.id.circlebg);
+//            LinearLayout circle = (LinearLayout)convertView.findViewById(R.id.circlebg);
             dayOfYear = Integer.parseInt(Util.getStringFromDate(dob.getDobDate(), Constants.DAY_OF_YEAR));
-            if(dayOfYear == currentDayOfYear) {
-                circle.setBackgroundResource(R.drawable.cirlce_today);
-            }
-            else if(recentDayOfYear < currentDayOfYear) {   //year end case
+            if(recentDayOfYear < currentDayOfYear) {   //year end case
                 if(dayOfYear > currentDayOfYear || dayOfYear < recentDayOfYear) {
                     circle.setBackgroundResource(R.drawable.cirlce_recent);
                 }

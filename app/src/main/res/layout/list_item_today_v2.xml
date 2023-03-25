@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:id="@+id/todayCirclebg"
+        android:layout_width="46sp"
+        android:layout_height="46sp"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="10dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/todayListItemIcon"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_margin="5dp"
+            app:srcCompat="@drawable/ic_app_icon_clipart_primary_dark" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/todayNameField"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="10dp"
+        android:layout_toRightOf="@+id/todayCirclebg"
+        android:text="CodeLearn Chapter 1"
+        android:textColor="@color/aandb_primay_text_color"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toStartOf="@+id/sendWish"
+        app:layout_constraintStart_toEndOf="@+id/todayCirclebg"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/todayAge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:text="Age"
+        android:textColor="@color/aandb_primay_text_color"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toStartOf="@+id/sendWish"
+        app:layout_constraintStart_toEndOf="@+id/todayCirclebg"
+        app:layout_constraintTop_toBottomOf="@+id/todayNameField" />
+
+    <TextView
+        android:id="@+id/todayDesc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_toRightOf="@+id/todayCirclebg"
+        android:text="Desc"
+        android:textColor="@color/aandb_primay_text_color"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toStartOf="@+id/sendWish"
+        app:layout_constraintStart_toEndOf="@+id/todayCirclebg"
+        app:layout_constraintTop_toBottomOf="@+id/todayAge" />
+
+    <TextView
+        android:id="@+id/todayBDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="20dp"
+        android:layout_toRightOf="@+id/todayCirclebg"
+        android:text="Date"
+        android:textColor="@color/aandb_primay_text_color"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/sendWish"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toEndOf="@+id/todayCirclebg"
+        app:layout_constraintTop_toBottomOf="@+id/todayDesc" />
+
+    <Button
+        android:id="@+id/sendWish"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="10dp"
+        android:text="Wish"
+        android:tooltipText="Send Wishes"
+        android:backgroundTint="@color/colorAccent"
+        android:textColor="@color/aandb_btn_text_color"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

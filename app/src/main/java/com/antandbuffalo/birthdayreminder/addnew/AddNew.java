@@ -365,18 +365,18 @@ public class AddNew extends AppCompatActivity {
 
     public void initLayout() {
         name = (EditText)findViewById(R.id.personName);
-        dateInput = (EditText) findViewById(R.id.date);
+        dateInput = (EditText) findViewById(R.id.todayBDate);
         monthSpinner = (Spinner) findViewById(R.id.monthSpinner);
         yearInput = findViewById(R.id.year);
         removeYear = (CheckBox) findViewById(R.id.removeYear);
 
-        namePreview = (TextView)findViewById(R.id.nameField);
+        namePreview = (TextView)findViewById(R.id.todayNameField);
         desc = (TextView)findViewById(R.id.ageField);
         dateField = (TextView)findViewById(R.id.dateField);
         monthField = (TextView)findViewById(R.id.monthField);
         yearField = (TextView)findViewById(R.id.yearField);
 
-        circle = (LinearLayout)findViewById(R.id.circlebg);
+        circle = (LinearLayout)findViewById(R.id.todayCirclebg);
         todayImage = (LinearLayout)findViewById(R.id.todayImage);
     }
 

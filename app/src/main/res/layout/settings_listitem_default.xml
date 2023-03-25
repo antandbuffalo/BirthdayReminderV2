@@ -6,7 +6,7 @@
     android:layout_height="match_parent">
 
     <LinearLayout
-        android:id="@+id/circlebg"
+        android:id="@+id/todayCirclebg"
         android:layout_width="46sp"
         android:layout_height="46sp"
         android:layout_margin="6dp"
@@ -16,7 +16,7 @@
 
 
         <ImageView
-            android:id="@+id/listItemIcon"
+            android:id="@+id/todayListItemIcon"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="center"
@@ -24,25 +24,25 @@
     </LinearLayout>
 
     <TextView
-        android:id="@+id/nameField"
+        android:id="@+id/todayNameField"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:layout_marginStart="10dp"
         android:layout_marginTop="15dp"
-        android:layout_toRightOf="@+id/circlebg"
+        android:layout_toRightOf="@+id/todayCirclebg"
         android:text="CodeLearn Chapter 1"
         android:textColor="@color/aandb_primay_text_color"
         android:textSize="18sp"
-        app:layout_constraintStart_toEndOf="@+id/circlebg"
+        app:layout_constraintStart_toEndOf="@+id/todayCirclebg"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/currentValue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/nameField"
-        android:layout_alignBottom="@+id/nameField"
+        android:layout_alignBaseline="@+id/todayNameField"
+        android:layout_alignBottom="@+id/todayNameField"
         android:layout_alignParentEnd="true"
         android:layout_marginTop="15dp"
         android:layout_marginEnd="5dp"

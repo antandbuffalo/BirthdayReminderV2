@@ -47,7 +47,7 @@
         android:checked="true"
         android:text="I don't know year"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/date" />
+        app:layout_constraintTop_toBottomOf="@+id/todayBDate" />
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
@@ -80,7 +80,7 @@
         app:layout_constraintTop_toBottomOf="@+id/toolbar" />
 
     <EditText
-        android:id="@+id/date"
+        android:id="@+id/todayBDate"
         android:layout_width="60dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
@@ -104,7 +104,7 @@
         android:layout_marginTop="20dp"
         android:background="@color/edit_text_bg"
         android:dropDownSelector="@color/sub_text_color"
-        app:layout_constraintStart_toEndOf="@+id/date"
+        app:layout_constraintStart_toEndOf="@+id/todayBDate"
         app:layout_constraintTop_toBottomOf="@+id/personName" />
 
     <EditText
@@ -136,7 +136,7 @@
         app:layout_constraintTop_toBottomOf="@+id/textView2">
 
         <LinearLayout
-            android:id="@+id/circlebg"
+            android:id="@+id/todayCirclebg"
             android:layout_width="46sp"
             android:layout_height="46sp"
             android:layout_margin="6dp"
@@ -171,7 +171,7 @@
             android:layout_margin="6dp"
             android:orientation="vertical">
             <ImageView
-                android:id="@+id/listItemIcon"
+                android:id="@+id/todayListItemIcon"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
@@ -180,13 +180,13 @@
         </LinearLayout>
 
         <TextView
-            android:id="@+id/nameField"
+            android:id="@+id/todayNameField"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="5dp"
             android:layout_marginTop="5dp"
             android:layout_toLeftOf="@+id/yearField"
-            android:layout_toRightOf="@+id/circlebg"
+            android:layout_toRightOf="@+id/todayCirclebg"
             android:text="CodeLearn Chapter 1"
             android:textColor="@color/aandb_primay_text_color"
             android:textSize="18sp" />
@@ -195,8 +195,8 @@
             android:id="@+id/ageField"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/nameField"
-            android:layout_alignStart="@+id/nameField"
+            android:layout_below="@+id/todayNameField"
+            android:layout_alignStart="@+id/todayNameField"
             android:layout_marginBottom="5dp"
             android:alpha="0.7"
             android:text="Description"

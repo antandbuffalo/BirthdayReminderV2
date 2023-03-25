@@ -180,6 +180,11 @@ public class Constants {
 
     public static final String backupDateFormat = "dd MMM yyyy, HH:mm";
     public static final String backupDateFormatToStore = "dd MMM yyyy, HH:mm:ss";
+
+    public static final String todayDateFormatWithYear = "E, dd MMM yyyy";
+
+    public static final String todayDateFormatNoYear = "dd MMM";
+
     public static final String dbBackupTime = "dbBackupTime";
     public static final String serverBackupTime = "serverBackupTime";
 
