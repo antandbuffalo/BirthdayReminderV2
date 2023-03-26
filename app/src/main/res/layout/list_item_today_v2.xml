@@ -29,15 +29,14 @@
         android:id="@+id/todayNameField"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="20dp"
         android:layout_toRightOf="@+id/todayCirclebg"
         android:text="CodeLearn Chapter 1"
         android:textColor="@color/aandb_primay_text_color"
         android:textSize="18sp"
-        app:layout_constraintEnd_toStartOf="@+id/sendWish"
-        app:layout_constraintStart_toEndOf="@+id/todayCirclebg"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
@@ -46,12 +45,12 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:layout_marginTop="10dp"
-        android:layout_marginEnd="10dp"
+        android:layout_marginEnd="20dp"
         android:text="Age"
         android:textColor="@color/aandb_primay_text_color"
         android:textSize="18sp"
-        app:layout_constraintEnd_toStartOf="@+id/sendWish"
-        app:layout_constraintStart_toEndOf="@+id/todayCirclebg"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/todayNameField" />
 
     <TextView
@@ -60,13 +59,13 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:layout_marginTop="10dp"
-        android:layout_marginEnd="10dp"
+        android:layout_marginEnd="20dp"
         android:layout_toRightOf="@+id/todayCirclebg"
         android:text="Desc"
         android:textColor="@color/aandb_primay_text_color"
         android:textSize="18sp"
-        app:layout_constraintEnd_toStartOf="@+id/sendWish"
-        app:layout_constraintStart_toEndOf="@+id/todayCirclebg"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/todayAge" />
 
     <TextView
@@ -75,29 +74,43 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:layout_marginTop="10dp"
-        android:layout_marginEnd="10dp"
-        android:layout_marginBottom="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="10dp"
         android:layout_toRightOf="@+id/todayCirclebg"
         android:text="Date"
         android:textColor="@color/aandb_primay_text_color"
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/sendWish"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
-        app:layout_constraintStart_toEndOf="@+id/todayCirclebg"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/todayDesc" />
 
-    <Button
+    <ImageButton
         android:id="@+id/sendWish"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
         android:layout_marginEnd="10dp"
+        android:background="?selectableItemBackgroundBorderless"
+
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:padding="6dp"
         android:text="Wish"
-        android:tooltipText="Send Wishes"
-        android:backgroundTint="@color/colorAccent"
         android:textColor="@color/aandb_btn_text_color"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:textSize="12sp"
+        android:tooltipText="Send Wishes"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_send_accent" />
+
+    <!--    <ImageButton-->
+    <!--        android:id="@+id/imageButton3"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        app:srcCompat="@drawable/ic_add_white"-->
+    <!--        tools:layout_editor_absoluteX="286dp"-->
+    <!--        tools:layout_editor_absoluteY="57dp" />-->
 
 </androidx.constraintlayout.widget.ConstraintLayout>

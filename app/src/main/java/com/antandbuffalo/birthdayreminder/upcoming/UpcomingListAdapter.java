@@ -1,21 +1,22 @@
 package com.antandbuffalo.birthdayreminder.upcoming;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.antandbuffalo.birthdayreminder.R;
 import com.antandbuffalo.birthdayreminder.database.DateOfBirthDBHelper;
 import com.antandbuffalo.birthdayreminder.models.DateOfBirth;
+import com.antandbuffalo.birthdayreminder.sharewish.ShareWish;
 import com.antandbuffalo.birthdayreminder.utilities.Constants;
-import com.antandbuffalo.birthdayreminder.utilities.DataHolder;
 import com.antandbuffalo.birthdayreminder.utilities.Util;
 
-import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -72,7 +73,7 @@ public class UpcomingListAdapter extends BaseAdapter {
         return dayOfYear == currentDayOfYear? 0 : 1;
     }
 
-    public View getTodayView(View convertView, DateOfBirth dateOfBirth) {
+    public View getTodayView(View convertView, DateOfBirth dateOfBirth, ViewGroup parent) {
         TextView name = (TextView)convertView.findViewById(R.id.todayNameField);
         TextView age = (TextView)convertView.findViewById(R.id.todayAge);
         TextView desc = (TextView)convertView.findViewById(R.id.todayDesc);
@@ -84,10 +85,15 @@ public class UpcomingListAdapter extends BaseAdapter {
             bDate.setText(todayDateFormatNoYear.format(dateOfBirth.getDobDate()));
         }
         else {
-            Format dateFormat = android.text.format.DateFormat.getDateFormat(DataHolder.getInstance().getAppContext());
-            bDate.setText(dateFormat.format(dateOfBirth.getDobDate()));
             bDate.setText(todayDateFormatWithYear.format(dateOfBirth.getDobDate()));
         }
+
+        ImageButton sendWish = convertView.findViewById(R.id.sendWish);
+        sendWish.setOnClickListener(view -> {
+            Intent shareWish = new Intent(parent.getContext(), ShareWish.class);
+            parent.getContext().startActivity(shareWish);
+        });
+
         return convertView;
     }
 
@@ -104,9 +110,7 @@ public class UpcomingListAdapter extends BaseAdapter {
                 }
                 else {
                     convertView = inflater.inflate(R.layout.list_item_today_v2, parent, false);
-                    System.out.println("convert view " + convertView);
-                    convertView = getTodayView(convertView, dob);
-                    System.out.println("convert view after assign" + convertView);
+                    convertView = getTodayView(convertView, dob, parent);
                     return convertView;
                 }
             }
@@ -118,7 +122,7 @@ public class UpcomingListAdapter extends BaseAdapter {
         }
         if(dayOfYear == currentDayOfYear) {
             System.out.println("convert view exist" + convertView);
-            return getTodayView(convertView, dob);
+            return getTodayView(convertView, dob, parent);
         }
         TextView name = (TextView)convertView.findViewById(R.id.todayNameField);
         TextView desc = (TextView)convertView.findViewById(R.id.ageField);
