@@ -9,8 +9,8 @@ android {
         applicationId "com.antandbuffalo.birthdayreminder"
         minSdkVersion 23
         targetSdkVersion 31
-        versionCode 89
-        versionName "3.14.10"
+        versionCode 90
+        versionName "3.14.11"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {

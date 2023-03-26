@@ -89,6 +89,7 @@ public class UpcomingListAdapter extends BaseAdapter {
         }
 
         ImageButton sendWish = convertView.findViewById(R.id.sendWish);
+        sendWish.setFocusable(false);
         sendWish.setOnClickListener(view -> {
             Intent shareWish = new Intent(parent.getContext(), ShareWish.class);
             parent.getContext().startActivity(shareWish);

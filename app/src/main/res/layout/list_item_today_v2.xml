@@ -105,12 +105,4 @@
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_send_accent" />
 
-    <!--    <ImageButton-->
-    <!--        android:id="@+id/imageButton3"-->
-    <!--        android:layout_width="wrap_content"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        app:srcCompat="@drawable/ic_add_white"-->
-    <!--        tools:layout_editor_absoluteX="286dp"-->
-    <!--        tools:layout_editor_absoluteY="57dp" />-->
-
 </androidx.constraintlayout.widget.ConstraintLayout>
