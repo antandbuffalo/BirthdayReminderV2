@@ -19,4 +19,6 @@
 
 <!--    <color name="aandb_toolbar_bg">#006a5f</color>-->
     <color name="aandb_toolbar_bg">#3a3a3a</color>
+
+    <color name="aandb_popup_menu_divider">#11FFFFFF</color>
 </resources>
