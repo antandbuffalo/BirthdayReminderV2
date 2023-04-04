@@ -12,6 +12,8 @@
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+        <item name="android:dropDownListViewStyle">@style/PopupMenuListView</item>
+        <item name="android:listPreferredItemHeightSmall">50sp</item>
     </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
@@ -23,4 +25,8 @@
     </style>
 
 
+    <style name="PopupMenuListView" parent="@android:style/Widget.Holo.ListView.DropDown">
+        <item name="android:divider">@color/aandb_popup_menu_divider</item>
+        <item name="android:dividerHeight">1dp</item>
+    </style>
 </resources>

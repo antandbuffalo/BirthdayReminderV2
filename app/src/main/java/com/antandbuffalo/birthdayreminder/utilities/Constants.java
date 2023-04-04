@@ -212,6 +212,8 @@ public class Constants {
     public static final int DAYS_TO_SHOW_RATING_60 = 60;
     public static final int DOB_COUNT_TO_SHOW_RATING = 3;
 
+    public static final String WEB_URL = "https://birthdayreminder-antandbuffalo.web.app/";
+
 //    public static final Integer SNOW_DAY = 11;
 //    public static final Integer SNOW_MONTH = 2;
 //    public static final String SNOW_EMAIL = "ja";

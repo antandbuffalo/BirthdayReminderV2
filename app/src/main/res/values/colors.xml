@@ -59,4 +59,6 @@
 
     <color name="aandb_dob_preview">#f1f1f1</color>
 
+    <color name="aandb_popup_menu_divider">#11000000</color>
+
 </resources>

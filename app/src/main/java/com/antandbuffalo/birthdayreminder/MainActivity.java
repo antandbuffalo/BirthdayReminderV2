@@ -1,11 +1,14 @@
 package com.antandbuffalo.birthdayreminder;
 
+import static com.antandbuffalo.birthdayreminder.utilities.Constants.WEB_URL;
+
 import android.annotation.SuppressLint;
 import android.app.AlarmManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -272,6 +275,11 @@ public class MainActivity extends AppCompatActivity {
             case R.id.action_settings: {
                 Intent settings = new Intent(this, Settings.class);
                 startActivity(settings);
+                return true;
+            }
+            case R.id.action_web: {
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(WEB_URL));
+                startActivity(browserIntent);
                 return true;
             }
             case R.id.action_about: {
