@@ -47,6 +47,21 @@
         android:layout_centerHorizontal="true" />
 
     <TextView
+        android:id="@+id/web_url"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/imageView"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="45dp"
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp"
+        android:textIsSelectable="true"
+        android:text="@string/web_url"
+        android:textAlignment="center"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="#ffffff" />
+
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="\u00A9 Ant and Buffalo"

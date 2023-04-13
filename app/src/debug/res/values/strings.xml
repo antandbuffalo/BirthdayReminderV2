@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">Birthday Reminder</string>
 
+    <string name="web_url">https://birthdayreminder-antandbuffalo.web.app/</string>
+
     <string name="ad_addnew">ca-app-pub-3940256099942544/6300978111</string>
     <string name="ad_main">ca-app-pub-3940256099942544/6300978111</string>
     <string name="ad_modifytoday">ca-app-pub-3940256099942544/6300978111</string>
