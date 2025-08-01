@@ -611,29 +611,70 @@ public class Util {
     }
 
     public static void setRepeatingAlarm(Context context, AlarmManager alarmManager, int hour, int minute, int frequency) {
-        Log.i("UTIL", "Setting repeating alarm in util");
+        Log.i("UTIL", "Setting exact alarm in util (battery optimized)");
+
+        // Cancel any existing alarms first to avoid duplicates
+        cancelExistingAlarm(context, alarmManager);
+
+        // Get current user preferences instead of using passed parameters
+        int userHour = Storage.getNotificationHours();
+        int userMinute = Storage.getNotificationMinutes();
+        int userFrequency = Storage.getNotificationFrequency();
+        
+        // Use user preferences if available, otherwise use passed parameters
+        if (userHour != 0 || userMinute != 0) {
+            hour = userHour;
+            minute = userMinute;
+        }
+        if (userFrequency > 0) {
+            frequency = userFrequency;
+        }
 
         Intent intent = new Intent(context, AlarmReceiver.class);
+        intent.putExtra("hour", hour);
+        intent.putExtra("minute", minute);
+        intent.putExtra("frequency", frequency);
+        
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 123,
                 intent, PendingIntent.FLAG_IMMUTABLE);
+        
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
-        // 12:00 AM
         calendar.set(Calendar.HOUR_OF_DAY, hour);
         calendar.set(Calendar.MINUTE, minute);
         calendar.set(Calendar.SECOND, 0);
 
-        long frequencyTime = Math.round(AlarmManager.INTERVAL_DAY / frequency);
+        // If the time has already passed today, schedule for tomorrow
+        if (calendar.getTimeInMillis() <= System.currentTimeMillis()) {
+            calendar.add(Calendar.DAY_OF_MONTH, 1);
+        }
 
-        //Send notification twice a day
-        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), frequencyTime, pendingIntent);
+        // Use setExactAndAllowWhileIdle for better reliability with permission check
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+            // Android 12+ requires SCHEDULE_EXACT_ALARM permission
+            if (alarmManager.canScheduleExactAlarms()) {
+                alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+                Log.i("UTIL", "Exact alarm scheduled with permission");
+            } else {
+                // Fallback to inexact alarm if permission not granted
+                alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+                Log.w("UTIL", "Exact alarm permission not granted, using inexact alarm");
+            }
+        } else if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+        } else {
+            alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+        }
 
-        //Send notification every 5 seconds
-        //alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), (60   * 1000), pendingIntent);
+        Log.i("UTIL", "Next alarm scheduled for: " + calendar.getTime() + " (User settings: " + hour + ":" + minute + ", frequency: " + frequency + ")");
+    }
 
-        //alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), (5 * 1000), pendingIntent);
-
-        //https://developer.android.com/training/scheduling/alarms.html#type
+    public static void cancelExistingAlarm(Context context, AlarmManager alarmManager) {
+        Intent intent = new Intent(context, AlarmReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 123,
+                intent, PendingIntent.FLAG_IMMUTABLE);
+        alarmManager.cancel(pendingIntent);
+        Log.i("UTIL", "Cancelled existing alarm");
     }
 
     public static void setHappyBirthdayAlarm(Context context, AlarmManager alarmManager, int hour, int minute) {
@@ -650,7 +691,20 @@ public class Util {
         calendar.set(Calendar.MINUTE, minute);
         calendar.set(Calendar.SECOND, 0);
 
-        alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+        // Use setExactAndAllowWhileIdle for better reliability with permission check
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+            // Android 12+ requires SCHEDULE_EXACT_ALARM permission
+            if (alarmManager.canScheduleExactAlarms()) {
+                alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+            } else {
+                // Fallback to inexact alarm if permission not granted
+                alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+            }
+        } else if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+        } else {
+            alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+        }
     }
 
 //    public static boolean setNumberPickerTextColor(NumberPicker numberPicker, int color) {

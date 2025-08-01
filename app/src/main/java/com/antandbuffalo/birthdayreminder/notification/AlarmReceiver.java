@@ -161,6 +161,9 @@ public class AlarmReceiver extends BroadcastReceiver {
         // Need to set the context first to make the app work properly
         DataHolder.getInstance().setAppContext(context);
 
+        // Schedule the next alarm first to ensure continuity
+        scheduleNextAlarm(context, intent);
+
         int isHappyBirthdayAt12Set = Storage.getInt(Util.getSharedPreference(), "isHappyBirthdayAt12Set", 0);
         if(Util.showHappyBirthdayIconAndView() && isHappyBirthdayAt12Set == 0) {
             AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
@@ -248,6 +251,60 @@ public class AlarmReceiver extends BroadcastReceiver {
         else if(Storage.getAutoSyncFrequency().equalsIgnoreCase("monthly") && date == 1) {
             autoSyncService.syncNow();
         }
+    }
+
+    private void scheduleNextAlarm(Context context, Intent intent) {
+        // Get alarm parameters from user preferences stored in Storage
+        int hour = Storage.getNotificationHours();
+        int minute = Storage.getNotificationMinutes();
+        int frequency = Storage.getNotificationFrequency();
+        
+        // Default values if not set
+        if (hour == 0 && minute == 0) {
+            hour = 9; // Default to 9 AM
+        }
+        if (frequency <= 0) {
+            frequency = 1; // Default to once per day
+        }
+        
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        
+        Intent nextIntent = new Intent(context, AlarmReceiver.class);
+        nextIntent.putExtra("hour", hour);
+        nextIntent.putExtra("minute", minute);
+        nextIntent.putExtra("frequency", frequency);
+        
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 123,
+                nextIntent, PendingIntent.FLAG_IMMUTABLE);
+        
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+        
+        // Calculate next alarm time based on frequency
+        long frequencyTime = Math.round(AlarmManager.INTERVAL_DAY / frequency);
+        calendar.setTimeInMillis(System.currentTimeMillis() + frequencyTime);
+        
+        // Set hour and minute for next alarm
+        calendar.set(Calendar.HOUR_OF_DAY, hour);
+        calendar.set(Calendar.MINUTE, minute);
+        calendar.set(Calendar.SECOND, 0);
+        
+        // Use setExactAndAllowWhileIdle for better reliability with permission check
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+            // Android 12+ requires SCHEDULE_EXACT_ALARM permission
+            if (alarmManager.canScheduleExactAlarms()) {
+                alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+            } else {
+                // Fallback to inexact alarm if permission not granted
+                alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+            }
+        } else if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+        } else {
+            alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+        }
+        
+        System.out.println("Next alarm scheduled for: " + calendar.getTime() + " (frequency: " + frequency + " times per day)");
     }
 
     public String setChannel(NotificationManager notificationManager) {

@@ -9,7 +9,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -266,27 +268,22 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        switch (id) {
-            case R.id.action_add_new: {
-                Intent intent = new Intent(this, AddNew.class);
-                startActivityForResult(intent, Constants.ADD_NEW_MEMBER);
-                return true;
-            }
-            case R.id.action_settings: {
-                Intent settings = new Intent(this, Settings.class);
-                startActivity(settings);
-                return true;
-            }
-            case R.id.action_web: {
-                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(WEB_URL));
-                startActivity(browserIntent);
-                return true;
-            }
-            case R.id.action_about: {
-                Intent intent = new Intent(this, About.class);
-                startActivity(intent);
-                return true;
-            }
+        if (id == R.id.action_add_new) {
+            Intent intent = new Intent(this, AddNew.class);
+            startActivityForResult(intent, Constants.ADD_NEW_MEMBER);
+            return true;
+        } else if (id == R.id.action_settings) {
+            Intent settings = new Intent(this, com.antandbuffalo.birthdayreminder.settings.Settings.class);
+            startActivity(settings);
+            return true;
+        } else if (id == R.id.action_web) {
+            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(WEB_URL));
+            startActivity(browserIntent);
+            return true;
+        } else if (id == R.id.action_about) {
+            Intent intent = new Intent(this, About.class);
+            startActivity(intent);
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -384,13 +381,49 @@ public class MainActivity extends AppCompatActivity {
 
     public void setRepeatingAlarm() {
         Log.i("MAIN", "Setting repeating alarm in main activity");
+        
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        
+        // Check for exact alarm permission on Android 12+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            if (!alarmManager.canScheduleExactAlarms()) {
+                // Show dialog to user about exact alarm permission
+                showExactAlarmPermissionDialog();
+                return;
+            }
+        }
+        
         SharedPreferences settings = Util.getSharedPreference();
         int hour = Storage.getInt(settings, Constants.PREFERENCE_NOTIFICATION_TIME_HOURS, 0);
         int minute = Storage.getInt(settings, Constants.PREFERENCE_NOTIFICATION_TIME_MINUTES, 0);
 
-        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         int frequency = Storage.getNotificationFrequency();
         Util.setRepeatingAlarm(this, alarmManager, hour, minute, frequency);
+    }
+    
+    private void showExactAlarmPermissionDialog() {
+        new AlertDialog.Builder(this)
+            .setTitle("Exact Alarm Permission Needed")
+            .setMessage("Birthday Reminder needs permission to schedule exact alarms for reliable notifications. This ensures you don't miss any birthday reminders.")
+            .setPositiveButton("Grant Permission", (dialog, which) -> {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    Intent intent = new Intent(android.provider.Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM);
+                    intent.setData(Uri.parse("package:" + getPackageName()));
+                    startActivity(intent);
+                }
+            })
+            .setNegativeButton("Continue without", (dialog, which) -> {
+                // Continue with inexact alarms
+                SharedPreferences settings = Util.getSharedPreference();
+                int hour = Storage.getInt(settings, Constants.PREFERENCE_NOTIFICATION_TIME_HOURS, 0);
+                int minute = Storage.getInt(settings, Constants.PREFERENCE_NOTIFICATION_TIME_MINUTES, 0);
+                AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+                int frequency = Storage.getNotificationFrequency();
+                Util.setRepeatingAlarm(this, alarmManager, hour, minute, frequency);
+                Toast.makeText(this, "Using inexact alarms - notifications may be delayed", Toast.LENGTH_LONG).show();
+            })
+            .setCancelable(false)
+            .show();
     }
 
     public void loadAd() {

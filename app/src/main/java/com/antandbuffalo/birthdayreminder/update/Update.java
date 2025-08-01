@@ -361,19 +361,13 @@ public class Update extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        switch (id) {
-            case R.id.action_menu_done: {
-                update();
-                break;
-            }
-            case R.id.action_menu_delete: {
-                delete();
-                break;
-            }
-            case android.R.id.home: {
-                setResult(RESULT_CANCELED, intent);
-                finish();
-            }
+        if (id == R.id.action_menu_done) {
+            update();
+        } else if (id == R.id.action_menu_delete) {
+            delete();
+        } else if (id == android.R.id.home) {
+            setResult(RESULT_CANCELED, intent);
+            finish();
         }
         return true;
     }
