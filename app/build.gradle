@@ -90,7 +90,7 @@ dependencies {
     // Play Services (only what we need)
     implementation "com.google.android.gms:play-services-auth:18.1.0"
 
-    implementation 'com.google.firebase:firebase-ads:17.0.0'
+    implementation 'com.google.firebase:firebase-ads:22.6.0'
 
     implementation 'com.google.firebase:firebase-firestore:24.10.0'
     implementation 'com.google.firebase:firebase-auth:22.3.0'
