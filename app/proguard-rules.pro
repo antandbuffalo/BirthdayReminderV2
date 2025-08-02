@@ -34,13 +34,7 @@
 -dontwarn org.xmlpull.v1.**
 -dontwarn kxml2.io.**
 
-# Google API Client & HTTP dependencies
--dontwarn com.google.api.client.http.**
--dontwarn com.google.api.client.googleapis.**
--dontwarn com.google.api.client.util.**
--dontwarn com.google.http.client.**
--dontwarn org.apache.http.**
--dontwarn org.apache.commons.**
+# Removed Google API Client dependencies (no longer needed)
 
 # Firebase & Google Play Services
 -keep class com.google.firebase.** { *; }
@@ -48,15 +42,9 @@
 -dontwarn com.google.firebase.**
 -dontwarn com.google.android.gms.**
 
-# Google API Services & Drive
--keep class com.google.api.client.** { *; }
--keep class com.google.api.services.** { *; }
--dontwarn com.google.api.client.**
--dontwarn com.google.api.services.**
+# Removed Google API Services & Drive (no longer needed)
 
-# Jackson JSON (used by Google API Client)
--dontwarn com.fasterxml.jackson.**
--dontwarn org.codehaus.jackson.**
+# Removed Jackson JSON (no longer needed without Google API Client)
 
 # Jetty HTTP (Google OAuth Client)
 -dontwarn org.mortbay.jetty.**
@@ -148,8 +136,7 @@
 -dontwarn com.google.firebase.**
 -dontwarn com.google.api.**
 
-# Remove unused Google Play Services modules
--dontwarn com.google.android.gms.ads.**
+# Remove unused Google Play Services modules (keeping ads since we use them)
 -dontwarn com.google.android.gms.games.**
 -dontwarn com.google.android.gms.plus.**
 -dontwarn com.google.android.gms.wearable.**
@@ -162,10 +149,7 @@
 -dontwarn com.google.firebase.storage.**
 -dontwarn com.google.firebase.functions.**
 
-# Aggressive optimization for Apache HTTP (reduce Google API client size)
--dontwarn org.apache.http.**
--dontwarn org.apache.commons.**
--dontwarn com.google.http.client.**
+# Removed Apache HTTP optimizations (no longer needed without Google API client)
 
 # Shrink unused parts of support libraries
 -dontwarn androidx.appcompat.widget.**

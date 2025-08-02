@@ -85,15 +85,7 @@ dependencies {
     androidTestImplementation 'androidx.test:runner:1.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 
-    // Google API Client (unified versions)
-    implementation('com.google.api-client:google-api-client-android:1.26.0') {
-        exclude group: 'org.apache.httpcomponents'
-        exclude group: 'com.google.guava'
-    }
-    implementation('com.google.apis:google-api-services-drive:v3-rev136-1.25.0') {
-        exclude group: 'org.apache.httpcomponents'
-    }
-    implementation 'com.google.http-client:google-http-client-gson:1.26.0'
+    // Google API Client dependencies removed - unused Google Drive API
     
     // Play Services (only what we need)
     implementation "com.google.android.gms:play-services-auth:18.1.0"
