@@ -42,14 +42,14 @@ android {
     
     buildTypes {
         release {
-            minifyEnabled false  // Temporarily disable for testing
-            shrinkResources false // Temporarily disable
+            minifyEnabled true          // Enable R8 code shrinking
+            shrinkResources true        // Enable resource shrinking
             signingConfig signingConfigs.release
-            // proguardFiles getDefaultProguardFile(
-            //         'proguard-android-optimize.txt'),
-            //         'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile(
+                    'proguard-android-optimize.txt'),
+                    'proguard-rules.pro'
         }
-        // Temporary: disable minification for debug to avoid R8 issues
+        // Keep debug without minification for faster builds
         debug {
             minifyEnabled false
             shrinkResources false
@@ -85,20 +85,18 @@ dependencies {
     androidTestImplementation 'androidx.test:runner:1.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 
-    implementation 'com.google.api-client:google-api-client:1.23.0'
-    implementation 'com.google.oauth-client:google-oauth-client-jetty:1.23.0'
-    implementation 'com.google.apis:google-api-services-drive:v3-rev110-1.23.0'
-
-    implementation "com.google.android.gms:play-services-auth:17.0.0"
-    implementation "com.google.android.gms:play-services-drive:17.0.0"
-
-    implementation 'com.google.http-client:google-http-client-gson:1.26.0'
+    // Google API Client (unified versions)
     implementation('com.google.api-client:google-api-client-android:1.26.0') {
         exclude group: 'org.apache.httpcomponents'
+        exclude group: 'com.google.guava'
     }
     implementation('com.google.apis:google-api-services-drive:v3-rev136-1.25.0') {
         exclude group: 'org.apache.httpcomponents'
     }
+    implementation 'com.google.http-client:google-http-client-gson:1.26.0'
+    
+    // Play Services (only what we need)
+    implementation "com.google.android.gms:play-services-auth:18.1.0"
 
     implementation 'com.google.firebase:firebase-ads:17.0.0'
 

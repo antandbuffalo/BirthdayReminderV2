@@ -80,6 +80,16 @@
 -keep class com.antandbuffalo.birthdayreminder.notification.AlarmReceiver { *; }
 -keep class com.antandbuffalo.birthdayreminder.notification.BootComplete { *; }
 
+# Keep all database-related classes (for proper SQLite operation)
+-keep class com.antandbuffalo.birthdayreminder.database.** { *; }
+-keep class com.antandbuffalo.birthdayreminder.utilities.Storage { *; }
+-keep class com.antandbuffalo.birthdayreminder.utilities.Util { *; }
+
+# Keep activities and their methods (for proper navigation)
+-keep class com.antandbuffalo.birthdayreminder.MainActivity { *; }
+-keep class com.antandbuffalo.birthdayreminder.addnew.AddNew { *; }
+-keep class com.antandbuffalo.birthdayreminder.settings.Settings { *; }
+
 # Keep serializable classes
 -keepclassmembers class * implements java.io.Serializable {
     static final long serialVersionUID;
@@ -117,7 +127,7 @@
 # Conscrypt (Google security library)
 -dontwarn org.conscrypt.**
 
-# Remove debug logging in release
+# Remove debug logging in release (saves space)
 -assumenosideeffects class android.util.Log {
     public static boolean isLoggable(java.lang.String, int);
     public static int v(...);
@@ -126,3 +136,38 @@
     public static int d(...);
     public static int e(...);
 }
+
+# Additional space-saving optimizations
+-optimizations !code/simplification/arithmetic,!code/simplification/cast,!field/*,!class/merging/*
+-optimizationpasses 5
+-allowaccessmodification
+-dontpreverify
+
+# Aggressive shrinking for Google services (only keep what we use)
+-dontwarn com.google.android.gms.**
+-dontwarn com.google.firebase.**
+-dontwarn com.google.api.**
+
+# Remove unused Google Play Services modules
+-dontwarn com.google.android.gms.ads.**
+-dontwarn com.google.android.gms.games.**
+-dontwarn com.google.android.gms.plus.**
+-dontwarn com.google.android.gms.wearable.**
+-dontwarn com.google.android.gms.panorama.**
+
+# Remove unused Firebase modules
+-dontwarn com.google.firebase.analytics.**
+-dontwarn com.google.firebase.crashlytics.**
+-dontwarn com.google.firebase.messaging.**
+-dontwarn com.google.firebase.storage.**
+-dontwarn com.google.firebase.functions.**
+
+# Aggressive optimization for Apache HTTP (reduce Google API client size)
+-dontwarn org.apache.http.**
+-dontwarn org.apache.commons.**
+-dontwarn com.google.http.client.**
+
+# Shrink unused parts of support libraries
+-dontwarn androidx.appcompat.widget.**
+-dontwarn androidx.core.widget.**
+-dontwarn androidx.fragment.app.**
