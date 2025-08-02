@@ -8,12 +8,29 @@ android {
         applicationId "com.antandbuffalo.birthdayreminder"
         minSdkVersion 23
         targetSdkVersion 34
-        versionCode 92
-        versionName "3.15.0"
+        versionCode 94
+        versionName "3.16.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     
     namespace 'com.antandbuffalo.birthdayreminder'
+    
+    // Load keystore properties if file exists
+    def keystorePropertiesFile = rootProject.file("keystore.properties")
+    def keystoreProperties = new Properties()
+    if (keystorePropertiesFile.exists()) {
+        keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+    }
+    
+    // Signing configurations
+    signingConfigs {
+        release {
+            storeFile file('../BirthdayReminderKeyStore.jks')
+            storePassword System.getenv("KEYSTORE_PASSWORD") ?: keystoreProperties['KEYSTORE_PASSWORD'] ?: ""
+            keyAlias System.getenv("KEY_ALIAS") ?: keystoreProperties['KEY_ALIAS'] ?: ""
+            keyPassword System.getenv("KEY_PASSWORD") ?: keystoreProperties['KEY_PASSWORD'] ?: ""
+        }
+    }
     
     buildFeatures {
         buildConfig true
@@ -25,19 +42,18 @@ android {
     
     buildTypes {
         release {
-            minifyEnabled true
-            shrinkResources true
-            proguardFiles getDefaultProguardFile(
-                    'proguard-android-optimize.txt'),
-                    'proguard-rules.pro'
+            minifyEnabled false  // Temporarily disable for testing
+            shrinkResources false // Temporarily disable
+            signingConfig signingConfigs.release
+            // proguardFiles getDefaultProguardFile(
+            //         'proguard-android-optimize.txt'),
+            //         'proguard-rules.pro'
         }
-        // use this for testing
+        // Temporary: disable minification for debug to avoid R8 issues
         debug {
-            minifyEnabled true
-            shrinkResources true
-            proguardFiles getDefaultProguardFile(
-                    'proguard-android-optimize.txt'),
-                    'proguard-rules.pro'
+            minifyEnabled false
+            shrinkResources false
+            debuggable true
         }
     }
     compileOptions {

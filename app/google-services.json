@@ -15,6 +15,22 @@
       },
       "oauth_client": [
         {
+          "client_id": "405608185466-1ertijbnjfc99cgdvbmplv7r0c840vu6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.antandbuffalo.birthdayreminder",
+            "certificate_hash": "3eaaab0fe39cb122db2c92e9414151e356e02237"
+          }
+        },
+        {
+          "client_id": "405608185466-h5q95golqd3nahtttl4fqimighclugja.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.antandbuffalo.birthdayreminder",
+            "certificate_hash": "9706c3130ac657f5fbc6207550dfe6d61009ee53"
+          }
+        },
+        {
           "client_id": "405608185466-n4vjpvhgg3of1qqukdakfm0q6i00eoi5.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
@@ -23,11 +39,11 @@
           }
         },
         {
-          "client_id": "405608185466-1ertijbnjfc99cgdvbmplv7r0c840vu6.apps.googleusercontent.com",
+          "client_id": "405608185466-omse23s7thm62ss4nj1la0kkvrh62mf9.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.antandbuffalo.birthdayreminder",
-            "certificate_hash": "3eaaab0fe39cb122db2c92e9414151e356e02237"
+            "certificate_hash": "9461814335a3b28bc209786104b66fabb210059a"
           }
         },
         {
@@ -49,8 +65,7 @@
             }
           ]
         }
-      },
-      "admob_app_id": "ca-app-pub-2477570555850305~1117992584"
+      }
     }
   ],
   "configuration_version": "1"

@@ -59,10 +59,19 @@ captures/
 .idea/migrations.xml
 .idea/AndroidProjectSystem.xml
 
-# Keystore files
-# Uncomment the following lines if you do not want to check your keystore files in.
-#*.jks
-#*.keystore
+# Keystore files - NEVER commit these!
+*.jks
+*.keystore
+*.p12
+*.pfx
+keystore.properties
+key.properties
+release-keystore.jks
+debug-keystore.jks
+
+# Keep build scripts
+!build-release.sh
+!RELEASE_BUILD_SETUP.md
 
 # External native build folder generated in Android Studio 2.2 and later
 .externalNativeBuild
