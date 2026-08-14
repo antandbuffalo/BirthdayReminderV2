@@ -75,10 +75,14 @@ dependencies {
     }
 
     implementation 'com.google.firebase:firebase-ads:17.0.0'
+    // firebase-ads 17.0.0 drags in work-runtime 2.1.0, which builds PendingIntents
+    // without FLAG_IMMUTABLE and crashes on launch on Android 12+ under targetSdk 31.
+    // 2.7.1 is the newest release that still builds against compileSdk 31.
+    implementation 'androidx.work:work-runtime:2.7.1'
 
     implementation 'com.google.firebase:firebase-firestore:21.4.2'
     implementation 'com.google.firebase:firebase-auth:19.3.0'
-    implementation 'com.firebaseui:firebase-ui-auth:6.2.0'
+    implementation 'com.firebaseui:firebase-ui-auth:7.2.0'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.0.0'
     implementation 'com.github.jetradarmobile:android-snowfall:1.2.1'
 
