@@ -2,6 +2,20 @@ apply plugin: 'com.android.application'
 
 apply plugin: 'com.google.gms.google-services'
 
+// Release signing credentials. Kept out of the repo: keystore.properties and
+// *.jks are gitignored. Environment variables win over the file so CI can sign
+// without one on disk. See keystore.properties.example.
+def keystorePropertiesFile = rootProject.file('keystore.properties')
+def keystoreProperties = new Properties()
+if (keystorePropertiesFile.exists()) {
+    keystorePropertiesFile.withInputStream { keystoreProperties.load(it) }
+}
+def signingValue = { String key, String envName ->
+    return System.getenv(envName) ?: keystoreProperties.getProperty(key)
+}
+def releaseStorePath = signingValue('storeFile', 'BR_STORE_FILE')
+def canSignRelease = releaseStorePath != null && rootProject.file(releaseStorePath).exists()
+
 android {
     compileSdkVersion 31
     buildToolsVersion "29.0.0"
@@ -13,8 +27,23 @@ android {
         versionName "3.15.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
+    signingConfigs {
+        release {
+            if (canSignRelease) {
+                storeFile rootProject.file(releaseStorePath)
+                storePassword signingValue('storePassword', 'BR_STORE_PASSWORD')
+                keyAlias signingValue('keyAlias', 'BR_KEY_ALIAS')
+                keyPassword signingValue('keyPassword', 'BR_KEY_PASSWORD')
+            }
+        }
+    }
     buildTypes {
         release {
+            // Without credentials the release build stays unsigned rather than
+            // failing, so debug builds and CI checks still work on a clean clone.
+            if (canSignRelease) {
+                signingConfig signingConfigs.release
+            }
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile(

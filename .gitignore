@@ -12,3 +12,10 @@
 /captures
 .externalNativeBuild
 /app/release
+
+# Signing material — never commit. Losing the keystore means you can no
+# longer publish updates to the existing Play listing, so keep a backup
+# of it somewhere safe outside this repo.
+*.jks
+*.keystore
+keystore.properties
