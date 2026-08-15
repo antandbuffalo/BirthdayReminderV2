@@ -2,18 +2,20 @@ apply plugin: 'com.android.application'
 
 apply plugin: 'com.google.gms.google-services'
 
-// Release signing credentials. Kept out of the repo: keystore.properties and
-// *.jks are gitignored. Environment variables win over the file so CI can sign
-// without one on disk. See keystore.properties.example.
+// Release signing credentials, read only from keystore.properties (gitignored,
+// see keystore.properties.example).
+//
+// Deliberately NOT System.getenv(): inside a build script that reads the Gradle
+// daemon's environment, captured when the daemon started, not the environment of
+// the shell running this build. A daemon left over from an earlier command signs
+// with that command's stale credentials. Callers needing environment variables
+// (CI) should write keystore.properties instead — build-release-bundle.sh does.
 def keystorePropertiesFile = rootProject.file('keystore.properties')
 def keystoreProperties = new Properties()
 if (keystorePropertiesFile.exists()) {
     keystorePropertiesFile.withInputStream { keystoreProperties.load(it) }
 }
-def signingValue = { String key, String envName ->
-    return System.getenv(envName) ?: keystoreProperties.getProperty(key)
-}
-def releaseStorePath = signingValue('storeFile', 'BR_STORE_FILE')
+def releaseStorePath = keystoreProperties.getProperty('storeFile')
 def canSignRelease = releaseStorePath != null && rootProject.file(releaseStorePath).exists()
 
 android {
@@ -23,17 +25,17 @@ android {
         applicationId "com.antandbuffalo.birthdayreminder"
         minSdkVersion 23
         targetSdkVersion 31
-        versionCode 92
-        versionName "3.15.0"
+        versionCode 96
+        versionName "3.16.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     signingConfigs {
         release {
             if (canSignRelease) {
                 storeFile rootProject.file(releaseStorePath)
-                storePassword signingValue('storePassword', 'BR_STORE_PASSWORD')
-                keyAlias signingValue('keyAlias', 'BR_KEY_ALIAS')
-                keyPassword signingValue('keyPassword', 'BR_KEY_PASSWORD')
+                storePassword keystoreProperties.getProperty('storePassword')
+                keyAlias keystoreProperties.getProperty('keyAlias')
+                keyPassword keystoreProperties.getProperty('keyPassword')
             }
         }
     }
