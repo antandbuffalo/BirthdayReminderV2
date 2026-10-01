@@ -14,7 +14,7 @@ import android.view.WindowInsets;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
+import androidx.annotation.RequiresApi;
 
 public class BirthdayReminderApp extends Application {
 
@@ -29,18 +29,22 @@ public class BirthdayReminderApp extends Application {
         }
     }
 
+    @RequiresApi(35)
     private static class SystemBarPadding implements ActivityLifecycleCallbacks {
         @Override
         public void onActivityPostCreated(@NonNull Activity activity, @Nullable Bundle savedInstanceState) {
-            if (Build.VERSION.SDK_INT < 35) return;
             View decor = activity.getWindow().getDecorView();
             View content = activity.findViewById(android.R.id.content);
             Drawable windowBackground = decor.getBackground();
-            int statusBarColor = ContextCompat.getColor(activity, R.color.colorPrimaryDark);
+            int statusBarColor = activity.getColor(R.color.colorPrimaryDark);
+            // Insets are re-dispatched on every keyboard frame; repaint only when the strip changes.
+            int[] paintedTop = {-1};
 
             content.setOnApplyWindowInsetsListener((v, insets) -> {
                 Insets bars = insets.getInsets(WindowInsets.Type.systemBars() | WindowInsets.Type.displayCutout());
                 v.setPadding(bars.left, bars.top, bars.right, bars.bottom);
+                if (bars.top == paintedTop[0]) return WindowInsets.CONSUMED;
+                paintedTop[0] = bars.top;
 
                 LayerDrawable background = new LayerDrawable(new Drawable[]{
                         windowBackground != null ? windowBackground : new ColorDrawable(0),

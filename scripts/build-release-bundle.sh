@@ -119,13 +119,10 @@ AAB="app/build/outputs/bundle/release/app-release.aab"
 # file is gone, that is far safer than shipping a stale or wrongly signed one.
 rm -f "$AAB"
 
-if [ "$SKIP_CLEAN" -eq 0 ]; then
-    echo "==> Cleaning"
-    ./gradlew clean --console=plain -q
-fi
-
-echo "==> Building release bundle"
-./gradlew bundleRelease --console=plain
+TASKS=(bundleRelease)
+[ "$SKIP_CLEAN" -eq 0 ] && TASKS=(clean bundleRelease)
+echo "==> Building release bundle (${TASKS[*]})"
+./gradlew "${TASKS[@]}" --console=plain
 
 [ -f "$AAB" ] || fail "expected bundle not produced at $AAB"
 
@@ -142,7 +139,7 @@ if [ "$ACTUAL_SHA256" != "$EXPECTED_SHA256" ]; then
     rm -f "$AAB"
     echo "  expected $EXPECTED_SHA256" >&2
     echo "  actual   $ACTUAL_SHA256" >&2
-    fail "bundle was signed by a different key than $STORE_FILE alias '$KEY_ALIAS'. Bundle deleted. Try: ./gradlew --stop"
+    fail "bundle was signed by a different key than $STORE_FILE alias '$KEY_ALIAS'. Bundle deleted."
 fi
 echo "    signed by the expected key"
 

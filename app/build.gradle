@@ -109,9 +109,8 @@ dependencies {
     }
 
     implementation 'com.google.firebase:firebase-ads:17.0.0'
-    // firebase-ads 17.0.0 drags in work-runtime 2.1.0, which builds PendingIntents
-    // without FLAG_IMMUTABLE and crashes on launch on Android 12+ under targetSdk 31.
-    // 2.7.1 is the newest release that still builds against compileSdk 31.
+    // firebase-ads 17.0.0 drags in work-runtime 2.1.0, whose PendingIntents lack
+    // FLAG_IMMUTABLE and crash on launch on Android 12+. 2.7.1 fixes that.
     implementation 'androidx.work:work-runtime:2.7.1'
 
     // Firestore before 24.x bundles grpc-okhttp 1.28, whose Android ALPN path calls the
