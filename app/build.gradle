@@ -108,9 +108,13 @@ dependencies {
         exclude group: 'org.apache.httpcomponents'
     }
 
-    implementation 'com.google.firebase:firebase-ads:17.0.0'
-    // firebase-ads 17.0.0 drags in work-runtime 2.1.0, whose PendingIntents lack
-    // FLAG_IMMUTABLE and crash on launch on Android 12+. 2.7.1 fixes that.
+    // 25.5.0+ needs minSdk 24; 25.4.0 is the newest that still runs on Android 6 (minSdk 23).
+    implementation 'com.google.android.gms:play-services-ads:25.4.0'
+    // firebase-ads used to pull analytics in. Keep it, at the measurement version
+    // play-services-ads 25.4.0 brings (20.1.2), so usage stats keep flowing.
+    implementation 'com.google.firebase:firebase-analytics:20.1.2'
+    // Keep work-runtime at 2.7.1+: older releases (firebase-ads 17 pulled in 2.1.0) build
+    // PendingIntents without FLAG_IMMUTABLE and crash on launch on Android 12+.
     implementation 'androidx.work:work-runtime:2.7.1'
 
     // Firestore before 24.x bundles grpc-okhttp 1.28, whose Android ALPN path calls the
