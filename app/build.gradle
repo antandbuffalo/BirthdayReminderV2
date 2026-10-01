@@ -2,19 +2,50 @@ apply plugin: 'com.android.application'
 
 apply plugin: 'com.google.gms.google-services'
 
+// Release signing credentials, read only from keystore.properties (gitignored,
+// see keystore.properties.example).
+//
+// Deliberately NOT System.getenv(): inside a build script that reads the Gradle
+// daemon's environment, captured when the daemon started, not the environment of
+// the shell running this build. A daemon left over from an earlier command signs
+// with that command's stale credentials. Callers needing environment variables
+// (CI) should write keystore.properties instead — build-release-bundle.sh does.
+def keystorePropertiesFile = rootProject.file('keystore.properties')
+def keystoreProperties = new Properties()
+if (keystorePropertiesFile.exists()) {
+    keystorePropertiesFile.withInputStream { keystoreProperties.load(it) }
+}
+def releaseStorePath = keystoreProperties.getProperty('storeFile')
+def canSignRelease = releaseStorePath != null && rootProject.file(releaseStorePath).exists()
+
 android {
-    compileSdkVersion 31
-    buildToolsVersion "29.0.0"
+    namespace "com.antandbuffalo.birthdayreminder"
+    compileSdkVersion 36
     defaultConfig {
         applicationId "com.antandbuffalo.birthdayreminder"
         minSdkVersion 23
-        targetSdkVersion 31
-        versionCode 92
-        versionName "3.15.0"
+        targetSdkVersion 36
+        versionCode 100
+        versionName "3.16.2"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+    signingConfigs {
+        release {
+            if (canSignRelease) {
+                storeFile rootProject.file(releaseStorePath)
+                storePassword keystoreProperties.getProperty('storePassword')
+                keyAlias keystoreProperties.getProperty('keyAlias')
+                keyPassword keystoreProperties.getProperty('keyPassword')
+            }
+        }
     }
     buildTypes {
         release {
+            // Without credentials the release build stays unsigned rather than
+            // failing, so debug builds and CI checks still work on a clean clone.
+            if (canSignRelease) {
+                signingConfig signingConfigs.release
+            }
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile(
@@ -29,6 +60,9 @@ android {
                     'proguard-android-optimize.txt'),
                     'proguard-rules.pro'
         }
+    }
+    buildFeatures {
+        buildConfig true
     }
     compileOptions {
         sourceCompatibility = '1.8'
@@ -75,10 +109,17 @@ dependencies {
     }
 
     implementation 'com.google.firebase:firebase-ads:17.0.0'
+    // firebase-ads 17.0.0 drags in work-runtime 2.1.0, whose PendingIntents lack
+    // FLAG_IMMUTABLE and crash on launch on Android 12+. 2.7.1 fixes that.
+    implementation 'androidx.work:work-runtime:2.7.1'
 
-    implementation 'com.google.firebase:firebase-firestore:21.4.2'
-    implementation 'com.google.firebase:firebase-auth:19.3.0'
-    implementation 'com.firebaseui:firebase-ui-auth:6.2.0'
+    // Firestore before 24.x bundles grpc-okhttp 1.28, whose Android ALPN path calls the
+    // reflective getAlpnSelectedProtocol. Conscrypt dropped that method in Android 10, so
+    // the first Firestore connection dies with an AssertionError on the grpc thread.
+    // grpc 1.32+ uses the standard getApplicationProtocol(); 24.0.0 ships grpc 1.42.
+    implementation 'com.google.firebase:firebase-firestore:24.0.0'
+    implementation 'com.google.firebase:firebase-auth:21.0.1'
+    implementation 'com.firebaseui:firebase-ui-auth:7.2.0'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.0.0'
     implementation 'com.github.jetradarmobile:android-snowfall:1.2.1'
 

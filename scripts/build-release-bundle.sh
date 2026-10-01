@@ -1,0 +1,153 @@
+#!/usr/bin/env bash
+#
+# Builds the signed production Android App Bundle (.aab) for the Play Store.
+#
+#   ./scripts/build-release-bundle.sh [--skip-clean]
+#
+# Signing credentials come from keystore.properties at the repo root (copy
+# keystore.properties.example and fill it in). That file is the single source
+# of truth and is gitignored, as is the keystore itself.
+#
+# For CI, set BR_STORE_FILE / BR_STORE_PASSWORD / BR_KEY_ALIAS / BR_KEY_PASSWORD
+# and this script writes a temporary keystore.properties, then deletes it on
+# exit. Those variables are used ONLY when keystore.properties does not already
+# exist -- an existing file always wins, and the script says which one it used.
+
+set -euo pipefail
+
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$REPO_ROOT"
+
+SKIP_CLEAN=0
+for arg in "$@"; do
+    case "$arg" in
+        --skip-clean) SKIP_CLEAN=1 ;;
+        -h|--help) sed -n '2,16p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'; exit 0 ;;
+        *) echo "unknown option: $arg" >&2; exit 2 ;;
+    esac
+done
+
+fail() { echo "error: $*" >&2; exit 1; }
+
+# --- Toolchain -------------------------------------------------------------
+# AGP 8.10 needs JDK 17, and macOS usually has a different default JDK on
+# PATH, so pin JDK 17 explicitly.
+is_jdk17() { [ -x "$1/bin/java" ] && "$1/bin/java" -version 2>&1 | grep -q '"17\.'; }
+
+find_jdk17() {
+    if [ -n "${JAVA_HOME:-}" ] && is_jdk17 "$JAVA_HOME"; then
+        echo "$JAVA_HOME"; return 0
+    fi
+    if [ -x /usr/libexec/java_home ]; then
+        local home
+        home="$(/usr/libexec/java_home -v 17 2>/dev/null || true)"
+        if [ -n "$home" ] && is_jdk17 "$home"; then echo "$home"; return 0; fi
+    fi
+    local candidate
+    for candidate in /opt/homebrew/opt/openjdk@17 /usr/local/opt/openjdk@17 \
+                     /Library/Java/JavaVirtualMachines/*/Contents/Home; do
+        if is_jdk17 "$candidate"; then echo "$candidate"; return 0; fi
+    done
+    return 1
+}
+
+JAVA_HOME="$(find_jdk17)" || fail "no JDK 17 found. Install one with: brew install openjdk@17"
+export JAVA_HOME
+echo "==> JDK        $JAVA_HOME"
+
+# --- Signing credentials ---------------------------------------------------
+# Gradle reads keystore.properties directly, so that file must be the only
+# source the build sees. Anything else risks the build signing with different
+# credentials than the ones reported here.
+PROPS="$REPO_ROOT/keystore.properties"
+
+if [ -f "$PROPS" ]; then
+    echo "==> Signing    keystore.properties"
+else
+    [ -n "${BR_STORE_FILE:-}" ] \
+        || fail "no signing config. Copy keystore.properties.example to keystore.properties and fill it in."
+    for required in BR_STORE_PASSWORD BR_KEY_ALIAS BR_KEY_PASSWORD; do
+        [ -n "${!required:-}" ] || fail "$required is not set"
+    done
+    echo "==> Signing    BR_* environment variables (temporary keystore.properties)"
+    umask 077
+    cat > "$PROPS" <<EOF
+storeFile=$BR_STORE_FILE
+storePassword=$BR_STORE_PASSWORD
+keyAlias=$BR_KEY_ALIAS
+keyPassword=$BR_KEY_PASSWORD
+EOF
+    trap 'rm -f "$PROPS"' EXIT
+fi
+
+prop() { sed -n "s/^$1=//p" "$PROPS" | head -1; }
+STORE_FILE="$(prop storeFile)"
+STORE_PASSWORD="$(prop storePassword)"
+KEY_ALIAS="$(prop keyAlias)"
+KEY_PASSWORD="$(prop keyPassword)"
+
+[ -n "$STORE_FILE" ] || fail "storeFile is empty in keystore.properties"
+[ -f "$STORE_FILE" ] || fail "keystore not found at: $STORE_FILE"
+[ -n "$STORE_PASSWORD" ] || fail "storePassword is empty in keystore.properties"
+[ -n "$KEY_ALIAS" ] || fail "keyAlias is empty in keystore.properties"
+[ -n "$KEY_PASSWORD" ] || fail "keyPassword is empty in keystore.properties"
+echo "==> Keystore   $STORE_FILE (alias: $KEY_ALIAS)"
+
+# Fingerprint of the key we intend to sign with. Passwords go in over stdin so
+# they never appear in the process list.
+cert_sha256() { grep -m1 'SHA256:' | tr -d ' \t' | sed 's/^SHA256://'; }
+
+EXPECTED_SHA256="$(printf '%s\n' "$STORE_PASSWORD" \
+    | "$JAVA_HOME/bin/keytool" -list -v -keystore "$STORE_FILE" -alias "$KEY_ALIAS" 2>/dev/null \
+    | cert_sha256)"
+[ -n "$EXPECTED_SHA256" ] \
+    || fail "could not read alias '$KEY_ALIAS' from $STORE_FILE. Wrong password, or wrong alias?"
+echo "==> Signing key $EXPECTED_SHA256"
+
+# --- Version ---------------------------------------------------------------
+VERSION_CODE="$(sed -n 's/^ *versionCode *\([0-9]*\).*/\1/p' app/build.gradle | head -1)"
+VERSION_NAME="$(sed -n 's/^ *versionName *"\(.*\)".*/\1/p' app/build.gradle | head -1)"
+echo "==> Version    $VERSION_NAME (versionCode $VERSION_CODE)"
+echo
+echo "    Play rejects an upload whose versionCode already exists. Bump"
+echo "    versionCode in app/build.gradle if $VERSION_CODE is already live."
+echo
+
+# --- Build -----------------------------------------------------------------
+AAB="app/build/outputs/bundle/release/app-release.aab"
+# Never leave a previous run's bundle behind: if this build fails after the old
+# file is gone, that is far safer than shipping a stale or wrongly signed one.
+rm -f "$AAB"
+
+TASKS=(bundleRelease)
+[ "$SKIP_CLEAN" -eq 0 ] && TASKS=(clean bundleRelease)
+echo "==> Building release bundle (${TASKS[*]})"
+./gradlew "${TASKS[@]}" --console=plain
+
+[ -f "$AAB" ] || fail "expected bundle not produced at $AAB"
+
+# --- Verify ----------------------------------------------------------------
+# An unsigned or wrongly signed bundle uploads fine and is only then rejected by
+# Play, so confirm here that the signature exists AND belongs to the key above.
+echo
+echo "==> Verifying signature"
+"$JAVA_HOME/bin/jarsigner" -verify "$AAB" >/dev/null \
+    || fail "bundle is not signed correctly"
+
+ACTUAL_SHA256="$("$JAVA_HOME/bin/keytool" -printcert -jarfile "$AAB" | cert_sha256)"
+if [ "$ACTUAL_SHA256" != "$EXPECTED_SHA256" ]; then
+    rm -f "$AAB"
+    echo "  expected $EXPECTED_SHA256" >&2
+    echo "  actual   $ACTUAL_SHA256" >&2
+    fail "bundle was signed by a different key than $STORE_FILE alias '$KEY_ALIAS'. Bundle deleted."
+fi
+echo "    signed by the expected key"
+
+echo
+echo "==> Done"
+echo "    bundle     $REPO_ROOT/$AAB"
+echo "    size       $(du -h "$AAB" | cut -f1)"
+echo "    sha256     $(shasum -a 256 "$AAB" | cut -d' ' -f1)"
+echo "    signing key $EXPECTED_SHA256"
+echo
+echo "    Upload at https://play.google.com/console -> Production -> Create new release."
