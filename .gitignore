@@ -19,3 +19,14 @@
 *.jks
 *.keystore
 keystore.properties
+
+# Android Studio files that are generated or tied to one machine. Shared
+# settings (codeStyles, inspectionProfiles, encodings, vcs) stay tracked.
+/.idea/gradle.xml
+/.idea/misc.xml
+/.idea/deploymentTargetDropDown.xml
+/.idea/deploymentTargetSelector.xml
+/.idea/compiler.xml
+/.idea/jarRepositories.xml
+/.idea/runConfigurations.xml
+/.idea/AndroidProjectSystem.xml
