@@ -2,13 +2,16 @@ package com.antandbuffalo.birthdayreminder;
 
 import static com.antandbuffalo.birthdayreminder.utilities.Constants.WEB_URL;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlarmManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -71,6 +74,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        requestNotificationPermission();
 
         initValues();
 
@@ -379,6 +383,15 @@ public class MainActivity extends AppCompatActivity {
         String filterText = Objects.requireNonNull(filter.getText()).toString();
         if (!filterText.equalsIgnoreCase("")) {
             upcomingListAdapter.filter(filterText);
+        }
+    }
+
+    // Android 13+ hides every notification until the user grants this, so without the
+    // prompt a fresh install never shows a birthday reminder.
+    private void requestNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= 33
+                && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, Constants.NOTIFICATION_PERMISSION);
         }
     }
 

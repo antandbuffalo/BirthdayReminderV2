@@ -19,14 +19,14 @@ def releaseStorePath = keystoreProperties.getProperty('storeFile')
 def canSignRelease = releaseStorePath != null && rootProject.file(releaseStorePath).exists()
 
 android {
-    compileSdkVersion 31
-    buildToolsVersion "29.0.0"
+    namespace "com.antandbuffalo.birthdayreminder"
+    compileSdkVersion 36
     defaultConfig {
         applicationId "com.antandbuffalo.birthdayreminder"
         minSdkVersion 23
-        targetSdkVersion 31
-        versionCode 96
-        versionName "3.16.0"
+        targetSdkVersion 36
+        versionCode 99
+        versionName "3.16.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     signingConfigs {
@@ -60,6 +60,9 @@ android {
                     'proguard-android-optimize.txt'),
                     'proguard-rules.pro'
         }
+    }
+    buildFeatures {
+        buildConfig true
     }
     compileOptions {
         sourceCompatibility = '1.8'

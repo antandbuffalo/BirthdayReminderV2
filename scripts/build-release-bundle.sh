@@ -30,28 +30,28 @@ done
 fail() { echo "error: $*" >&2; exit 1; }
 
 # --- Toolchain -------------------------------------------------------------
-# Gradle 6.7.1 / AGP 4.2.2 refuse to run on JDK 16+, and macOS usually has a
-# much newer default JDK on PATH, so pin JDK 11 explicitly.
-is_jdk11() { [ -x "$1/bin/java" ] && "$1/bin/java" -version 2>&1 | grep -q '"11\.'; }
+# AGP 8.10 needs JDK 17, and macOS usually has a different default JDK on
+# PATH, so pin JDK 17 explicitly.
+is_jdk17() { [ -x "$1/bin/java" ] && "$1/bin/java" -version 2>&1 | grep -q '"17\.'; }
 
-find_jdk11() {
-    if [ -n "${JAVA_HOME:-}" ] && is_jdk11 "$JAVA_HOME"; then
+find_jdk17() {
+    if [ -n "${JAVA_HOME:-}" ] && is_jdk17 "$JAVA_HOME"; then
         echo "$JAVA_HOME"; return 0
     fi
     if [ -x /usr/libexec/java_home ]; then
         local home
-        home="$(/usr/libexec/java_home -v 11 2>/dev/null || true)"
-        if [ -n "$home" ] && is_jdk11 "$home"; then echo "$home"; return 0; fi
+        home="$(/usr/libexec/java_home -v 17 2>/dev/null || true)"
+        if [ -n "$home" ] && is_jdk17 "$home"; then echo "$home"; return 0; fi
     fi
     local candidate
-    for candidate in /opt/homebrew/opt/openjdk@11 /usr/local/opt/openjdk@11 \
+    for candidate in /opt/homebrew/opt/openjdk@17 /usr/local/opt/openjdk@17 \
                      /Library/Java/JavaVirtualMachines/*/Contents/Home; do
-        if is_jdk11 "$candidate"; then echo "$candidate"; return 0; fi
+        if is_jdk17 "$candidate"; then echo "$candidate"; return 0; fi
     done
     return 1
 }
 
-JAVA_HOME="$(find_jdk11)" || fail "no JDK 11 found. Install one with: brew install openjdk@11"
+JAVA_HOME="$(find_jdk17)" || fail "no JDK 17 found. Install one with: brew install openjdk@17"
 export JAVA_HOME
 echo "==> JDK        $JAVA_HOME"
 
