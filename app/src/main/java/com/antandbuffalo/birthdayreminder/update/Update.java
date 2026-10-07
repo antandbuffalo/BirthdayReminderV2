@@ -29,6 +29,7 @@ import com.antandbuffalo.birthdayreminder.R;
 import com.antandbuffalo.birthdayreminder.database.DBHelper;
 import com.antandbuffalo.birthdayreminder.models.DateOfBirth;
 import com.antandbuffalo.birthdayreminder.utilities.Constants;
+import com.antandbuffalo.birthdayreminder.utilities.ReviewPrompt;
 import com.antandbuffalo.birthdayreminder.utilities.Storage;
 import com.antandbuffalo.birthdayreminder.utilities.Util;
 import com.google.android.gms.ads.AdRequest;
@@ -316,6 +317,7 @@ public class Update extends AppCompatActivity {
                 status = Constants.NOTIFICATION_UPDATE_MEMBER_SUCCESS + ". " + Util.getNotificationMessageWithTime(getApplicationContext(), updateViewModel.dateOfBirth.getDobDate());
                 Toast toast = Toast.makeText(getApplicationContext(), status, Toast.LENGTH_LONG);
                 toast.show();
+                ReviewPrompt.markPositiveMoment();
                 setResult(RESULT_OK, intent);
                 finish();
             }

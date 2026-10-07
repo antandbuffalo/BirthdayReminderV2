@@ -195,7 +195,6 @@ public class Constants {
 
     public static final String ACCOUNT_SETUP_SYNC = "ACCOUNT_SETUP_SYNC";
     public static final Integer DATE_ACCOUNT_SETUP_SYNC = 11;
-    public static final String LAST_APP_OPEN_DATE_FORMAT = "dd/MM/yyyy";
 
     public static final Integer SNOW_DAY = 12;
     public static final Integer SNOW_MONTH = 4; // MAY
@@ -209,8 +208,7 @@ public class Constants {
 
     public static final int defaultBuildNumber = 0;
 
-    public static final int DAYS_TO_SHOW_RATING_30 = 30;
-    public static final int DAYS_TO_SHOW_RATING_60 = 60;
+    public static final int DAYS_TO_SHOW_RATING = 30;
     public static final int DOB_COUNT_TO_SHOW_RATING = 3;
 
     public static final String WEB_URL = "https://birthdayreminder-antandbuffalo.web.app/";
