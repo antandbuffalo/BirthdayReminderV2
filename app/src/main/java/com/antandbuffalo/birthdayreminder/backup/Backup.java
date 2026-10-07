@@ -31,6 +31,7 @@ import com.antandbuffalo.birthdayreminder.utilities.Constants;
 import com.antandbuffalo.birthdayreminder.utilities.DataHolder;
 import com.antandbuffalo.birthdayreminder.utilities.FirebaseHandler;
 import com.antandbuffalo.birthdayreminder.utilities.FirebaseUtil;
+import com.antandbuffalo.birthdayreminder.utilities.ReviewPrompt;
 import com.antandbuffalo.birthdayreminder.utilities.Storage;
 import com.antandbuffalo.birthdayreminder.utilities.UIUtil;
 import com.antandbuffalo.birthdayreminder.utilities.Util;
@@ -330,6 +331,7 @@ public class Backup extends AppCompatActivity implements FirebaseHandler {
                         Storage.setServerBackupTime(Util.getDateFromString(Storage.getDbBackupTime(), Constants.backupDateFormatToStore));
                         backupUserPreferenceToFirebase(firebaseFirestore, firebaseUser);
                         Toast.makeText(DataHolder.getInstance().getAppContext(), "Birthday informations uploaded successfully", Toast.LENGTH_SHORT).show();
+                        ReviewPrompt.showNow(Backup.this);
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -620,6 +622,7 @@ public class Backup extends AppCompatActivity implements FirebaseHandler {
                 Util.inserDateOfBirthFromServer(document.getData());
                 DataHolder.getInstance().refresh = true;
                 Toast.makeText(Backup.this, "Successfully Restored Birthday Informations from server", Toast.LENGTH_SHORT).show();
+                ReviewPrompt.showNow(Backup.this);
             } else {
                 Log.d("FirebaseGetData", "No such document");
             }

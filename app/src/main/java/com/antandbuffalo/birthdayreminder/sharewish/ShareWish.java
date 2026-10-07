@@ -12,6 +12,7 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.antandbuffalo.birthdayreminder.R;
 import com.antandbuffalo.birthdayreminder.utilities.Constants;
+import com.antandbuffalo.birthdayreminder.utilities.ReviewPrompt;
 import com.antandbuffalo.birthdayreminder.utilities.Storage;
 import com.antandbuffalo.birthdayreminder.utilities.Util;
 import com.google.android.gms.ads.AdRequest;
@@ -61,6 +62,7 @@ public class ShareWish extends AppCompatActivity {
         String shareBody = editText.getText().toString();
         sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
         startActivity(Intent.createChooser(sharingIntent, "Send via..."));
+        ReviewPrompt.markPositiveMoment();
     }
     public void setCurrentValue() {
         EditText editText = findViewById(R.id.shareWishText);
