@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Shared by add_new.xml and update.xml -->
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:letterSpacing="0.12"
+        android:text="PREVIEW"
+        android:textColor="@color/aandb_muted_text_color"
+        android:textSize="11sp"
+        android:textStyle="bold" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/today_card_bg"
+        android:backgroundTint="@color/aandb_dob_preview">
+
+        <include
+            android:id="@+id/previewRow"
+            layout="@layout/list_item_default" />
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp">
+
+        <EditText
+            android:id="@+id/personName"
+            style="@style/FormField"
+            android:inputType="textPersonName|textCapWords" />
+
+        <TextView style="@style/FieldLabel" android:text="Name" />
+    </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:orientation="horizontal">
+
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:id="@+id/todayBDate"
+                style="@style/FormField"
+                android:inputType="number"
+                android:maxLength="2" />
+
+            <TextView style="@style/FieldLabel" android:text="Day" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_weight="1.5">
+
+            <Spinner
+                android:id="@+id/monthSpinner"
+                style="@style/FormField"
+                android:background="@drawable/spinner_outline"
+                android:paddingEnd="28dp" />
+
+            <TextView style="@style/FieldLabel" android:text="Month" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/yearBox"
+            android:layout_width="0dp"
+            android:layout_marginStart="10dp"
+            android:layout_weight="1.2"
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:id="@+id/year"
+                style="@style/FormField"
+                android:inputType="number"
+                android:maxLength="4" />
+
+            <TextView style="@style/FieldLabel" android:text="Year" />
+        </FrameLayout>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/dateHint"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:gravity="end"
+        android:textColor="@color/aandb_error_text"
+        android:textSize="12sp"
+        android:visibility="gone" />
+
+    <CheckBox
+        android:id="@+id/removeYear"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="-6dp"
+        android:layout_marginTop="8dp"
+        android:text="I don't know the year"
+        android:textSize="15sp" />
+</merge>

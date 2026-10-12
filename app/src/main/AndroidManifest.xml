@@ -44,7 +44,7 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".update.Update"
-            android:label="Update"
+            android:label="Edit birthday"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="adjustPan" />
         <activity

@@ -15,7 +15,6 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,6 +27,7 @@ import androidx.lifecycle.ViewModelProviders;
 import com.antandbuffalo.birthdayreminder.R;
 import com.antandbuffalo.birthdayreminder.database.DBHelper;
 import com.antandbuffalo.birthdayreminder.models.DateOfBirth;
+import com.antandbuffalo.birthdayreminder.upcoming.UpcomingListAdapter;
 import com.antandbuffalo.birthdayreminder.utilities.Constants;
 import com.antandbuffalo.birthdayreminder.utilities.DataHolder;
 import com.antandbuffalo.birthdayreminder.utilities.Storage;
@@ -40,12 +40,12 @@ import java.util.Date;
 public class AddNew extends AppCompatActivity {
     EditText name;
     Intent intent = null;
-    int dayOfYear, currentDayOfYear, recentDayOfYear;
+    int currentDayOfYear, recentDayOfYear;
     AddNewViewModel addNewViewModel;
 
-    TextView namePreview, desc, dateField, monthField, yearField;
+    TextView namePreview, desc, dateHint;
+    View yearBox, previewRow;
     EditText dateInput, yearInput;
-    LinearLayout circle, todayImage;
     CheckBox removeYear;
     Spinner monthSpinner;
     AdView mAdView;
@@ -144,10 +144,10 @@ public class AddNew extends AppCompatActivity {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 addNewViewModel.setBirthdayInfoRemoveYear(isChecked);
                 if(isChecked) {
-                    yearInput.setVisibility(View.INVISIBLE);
+                    yearBox.setVisibility(View.INVISIBLE);
                 }
                 else {
-                    yearInput.setVisibility(View.VISIBLE);
+                    yearBox.setVisibility(View.VISIBLE);
                 }
                 preview();
             }
@@ -158,7 +158,7 @@ public class AddNew extends AppCompatActivity {
         setResult(RESULT_OK, intent);
 
         removeYear.setChecked(addNewViewModel.birthdayInfo.isRemoveYear);
-        yearInput.setVisibility(View.INVISIBLE);
+        yearBox.setVisibility(View.INVISIBLE);
 
         showSnowFlakes();
     }
@@ -282,6 +282,8 @@ public class AddNew extends AppCompatActivity {
     }
 
     public void preview() {
+        dateHint.setVisibility(View.GONE);
+        yearInput.setActivated(false);
         if(!addNewViewModel.isValidDateOfBirth(addNewViewModel.birthdayInfo)) {
             if(addNewViewModel.birthdayInfo.name == null || ("".equalsIgnoreCase(addNewViewModel.birthdayInfo.name))) {
                 namePreview.setText("Enter Name");
@@ -289,78 +291,30 @@ public class AddNew extends AppCompatActivity {
             } else {
                 namePreview.setText("Error in birthdate");
                 desc.setText("Please enter valid date");
+                dateHint.setText("Not a valid date");
+                dateHint.setVisibility(View.VISIBLE);
             }
             return;
         }
         populateBirthdayInfo();
-        namePreview.setText(addNewViewModel.birthdayInfo.name);
         addNewViewModel.setDateOfBirth(addNewViewModel.birthdayInfo);
-
-        dayOfYear = Util.getDayOfYear(addNewViewModel.dateOfBirth.getDobDate());
-
-        if(dayOfYear == currentDayOfYear) {
-            circle.setBackgroundResource(R.drawable.cirlce_today);
-            todayImage.setVisibility(View.VISIBLE);
-            circle.setVisibility(View.INVISIBLE);
+        DateOfBirth dob = addNewViewModel.dateOfBirth;
+        // Show the age they are turning, like the list does
+        if(Util.getDayOfYear(dob.getDobDate()) != currentDayOfYear) {
+            dob.setAge(dob.getAge() + 1);
         }
-        else if(recentDayOfYear < currentDayOfYear) {   //year end case
-            todayImage.setVisibility(View.INVISIBLE);
-            circle.setVisibility(View.VISIBLE);
-            if(dayOfYear > currentDayOfYear || dayOfYear < recentDayOfYear) {
-                circle.setBackgroundResource(R.drawable.cirlce_recent);
-            }
-            else {
-                circle.setBackgroundResource(R.drawable.cirlce_normal);
-            }
-        }
-        else if(dayOfYear <= recentDayOfYear && dayOfYear > currentDayOfYear ){
-            todayImage.setVisibility(View.INVISIBLE);
-            circle.setVisibility(View.VISIBLE);
-            circle.setBackgroundResource(R.drawable.cirlce_recent);
-        }
-        else {
-            todayImage.setVisibility(View.INVISIBLE);
-            circle.setVisibility(View.VISIBLE);
-            circle.setBackgroundResource(R.drawable.cirlce_normal);
+        UpcomingListAdapter.bindRow(previewRow, dob, currentDayOfYear, recentDayOfYear);
+        if(addNewViewModel.birthdayInfo.name.trim().isEmpty()) {
+            namePreview.setText("Enter Name");
         }
 
-        populateDescription(addNewViewModel.dateOfBirth);
-
-        if(addNewViewModel.birthdayInfo.isRemoveYear) {
-            yearField.setVisibility(View.INVISIBLE);
-            //desc.setVisibility(View.INVISIBLE);
+        boolean isFuture = !dob.getRemoveYear() && dob.getDobDate().after(new Date());
+        if(isFuture) {
+            dateHint.setText("Date is in the future");
+            dateHint.setVisibility(View.VISIBLE);
+            yearInput.setActivated(true);
         }
-        else {
-            if(addNewViewModel.dateOfBirth.getAge() < 0) {
-                desc.setVisibility(View.INVISIBLE);
-            } else {
-                desc.setVisibility(View.VISIBLE);
-            }
-            yearField.setVisibility(View.VISIBLE);
-        }
-
-        dateField.setText(addNewViewModel.birthdayInfo.date + "");
-        monthField.setText(Util.getStringFromDate(addNewViewModel.dateOfBirth.getDobDate(), "MMM"));
-        yearField.setText(addNewViewModel.birthdayInfo.year + "");
-        desc.setText(addNewViewModel.dateOfBirth.getDescription());
-    }
-
-    public void populateDescription(DateOfBirth dateOfBirth) {
-        int currentDayInNumber = Integer.parseInt(Util.getStringFromDate(new Date(), Constants.DAY_OF_YEAR));
-        int birthdayInNumber = Integer.parseInt(Util.getStringFromDate(dateOfBirth.getDobDate(), Constants.DAY_OF_YEAR));
-
-        int diff = Util.getDefaultDayOfYear(dateOfBirth.getDobDate()) - Util.getDefaultDayOfYear(new Date());
-        if(diff < 0) {
-            diff = Util.getSubstractionFactor() + diff;
-        }
-
-        if(currentDayInNumber == birthdayInNumber) {
-            Util.setDescriptionForToday(dateOfBirth);
-        }
-        else {
-            dateOfBirth.setAge(dateOfBirth.getAge() + 1);
-            Util.setDescriptionForUpcoming(dateOfBirth, diff);
-        }
+        desc.setVisibility(isFuture ? View.INVISIBLE : View.VISIBLE);
     }
 
     public void initLayout() {
@@ -372,12 +326,10 @@ public class AddNew extends AppCompatActivity {
 
         namePreview = (TextView)findViewById(R.id.todayNameField);
         desc = (TextView)findViewById(R.id.ageField);
-        dateField = (TextView)findViewById(R.id.dateField);
-        monthField = (TextView)findViewById(R.id.monthField);
-        yearField = (TextView)findViewById(R.id.yearField);
+        dateHint = findViewById(R.id.dateHint);
+        yearBox = findViewById(R.id.yearBox);
+        previewRow = findViewById(R.id.previewRow);
 
-        circle = (LinearLayout)findViewById(R.id.todayCirclebg);
-        todayImage = (LinearLayout)findViewById(R.id.todayImage);
     }
 
     public void initViewValues() {

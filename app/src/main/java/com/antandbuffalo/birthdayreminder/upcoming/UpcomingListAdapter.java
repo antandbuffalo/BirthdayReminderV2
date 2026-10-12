@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.antandbuffalo.birthdayreminder.R;
@@ -35,12 +34,10 @@ public class UpcomingListAdapter extends BaseAdapter {
     Calendar cal;
     List<DateOfBirth> dobs;
     List<DateOfBirth> allDobs;
-    SimpleDateFormat dateFormatter, yearFormatter;
+    private static final SimpleDateFormat MONTH_FORMAT = new SimpleDateFormat("MMM");
     boolean happyBdayMode;
     List<DateOfBirth> filteredDobs = new ArrayList<DateOfBirth>();
     public UpcomingListAdapter() {
-        dateFormatter = new SimpleDateFormat("MMM");
-        yearFormatter = new SimpleDateFormat("yyyy");
         cal = Calendar.getInstance();
         setDefaultValues();
     }
@@ -116,63 +113,51 @@ public class UpcomingListAdapter extends BaseAdapter {
             System.out.println("convert view exist" + convertView);
             return getTodayView(convertView, dob, parent);
         }
-        TextView name = (TextView)convertView.findViewById(R.id.todayNameField);
-        TextView desc = (TextView)convertView.findViewById(R.id.ageField);
-        TextView daysCount = (TextView)convertView.findViewById(R.id.daysCount);
-        TextView daysLabel = (TextView)convertView.findViewById(R.id.daysLabel);
-
-        name.setText(dob.getName());
-        desc.setText(getSubtitle(dob));
-
-        int days = Util.getDaysLeft(dob.getDobDate());
-        daysCount.setText(days + "");
-        daysLabel.setText(days == 1 ? "day" : "days");
-        boolean soon = days <= 7;
-        int countColor = ContextCompat.getColor(parent.getContext(), soon ? R.color.aandb_soon_text_color : R.color.aandb_muted_text_color);
-        daysCount.setTextColor(countColor);
-        daysLabel.setTextColor(countColor);
-        daysCount.setTypeface(null, soon ? Typeface.BOLD : Typeface.NORMAL);
-
-        Date date = dob.getDobDate();
-        cal.setTime(date);
-
-        LinearLayout circle = (LinearLayout)convertView.findViewById(R.id.todayCirclebg);
-//        if(dayOfYear == currentDayOfYear) {
-//            circle.setBackgroundResource(R.drawable.cirlce_today);
-//        }
-        if(dayOfYear != currentDayOfYear) {
-            TextView dateField = (TextView)convertView.findViewById(R.id.dateField);
-            TextView monthField = (TextView)convertView.findViewById(R.id.monthField);
-
-            dateField.setText(cal.get(Calendar.DATE) + "");
-            monthField.setText(dateFormatter.format(cal.getTime()));
-
-//            LinearLayout circle = (LinearLayout)convertView.findViewById(R.id.circlebg);
-            dayOfYear = Integer.parseInt(Util.getStringFromDate(dob.getDobDate(), Constants.DAY_OF_YEAR));
-            if(recentDayOfYear < currentDayOfYear) {   //year end case
-                if(dayOfYear > currentDayOfYear || dayOfYear < recentDayOfYear) {
-                    circle.setBackgroundResource(R.drawable.cirlce_recent);
-                }
-                else {
-                    circle.setBackgroundResource(R.drawable.cirlce_normal);
-                }
-            }
-            else if(dayOfYear <= recentDayOfYear && dayOfYear > currentDayOfYear ){
-                circle.setBackgroundResource(R.drawable.cirlce_recent);
-            }
-            else {
-                circle.setBackgroundResource(R.drawable.cirlce_normal);
-            }
-        }
+        bindRow(convertView, dob, currentDayOfYear, recentDayOfYear);
+        TextView desc = convertView.findViewById(R.id.ageField);
         desc.setVisibility(dob.getRemoveYear() || dob.getAge() >= 0 ? View.VISIBLE : View.INVISIBLE);
         return convertView;
     }
 
-    private String getSubtitle(DateOfBirth dob) {
+    public static String getSubtitle(DateOfBirth dob) {
         if(dob.getRemoveYear()) {
             return "No birth year saved";
         }
-        return "Turns " + dob.getAge() + " · born " + yearFormatter.format(dob.getDobDate());
+        return "Turns " + dob.getAge() + " · born " + Util.getCalendar(dob.getDobDate()).get(Calendar.YEAR);
+    }
+
+    // Fills a list_item_default row. Also used by the Add New / Edit preview.
+    public static void bindRow(View row, DateOfBirth dob, int currentDayOfYear, int recentDayOfYear) {
+        Date date = dob.getDobDate();
+        ((TextView)row.findViewById(R.id.todayNameField)).setText(dob.getName());
+        ((TextView)row.findViewById(R.id.ageField)).setText(getSubtitle(dob));
+        ((TextView)row.findViewById(R.id.dateField)).setText(Util.getCalendar(date).get(Calendar.DATE) + "");
+        ((TextView)row.findViewById(R.id.monthField)).setText(MONTH_FORMAT.format(date));
+
+        int dayOfYear = Util.getDayOfYear(date);
+        int circle;
+        if(dayOfYear == currentDayOfYear) {
+            circle = R.drawable.cirlce_today;
+        }
+        else if(recentDayOfYear < currentDayOfYear) {   //year end case
+            circle = dayOfYear > currentDayOfYear || dayOfYear < recentDayOfYear ? R.drawable.cirlce_recent : R.drawable.cirlce_normal;
+        }
+        else {
+            circle = dayOfYear <= recentDayOfYear && dayOfYear > currentDayOfYear ? R.drawable.cirlce_recent : R.drawable.cirlce_normal;
+        }
+        row.findViewById(R.id.todayCirclebg).setBackgroundResource(circle);
+
+        int days = Util.getDaysLeft(date);
+        row.findViewById(R.id.daysLeft).setVisibility(days == 0 ? View.INVISIBLE : View.VISIBLE);
+        TextView daysCount = row.findViewById(R.id.daysCount);
+        TextView daysLabel = row.findViewById(R.id.daysLabel);
+        daysCount.setText(days + "");
+        daysLabel.setText(days == 1 ? "day" : "days");
+        boolean soon = days <= 7;
+        int countColor = ContextCompat.getColor(row.getContext(), soon ? R.color.aandb_soon_text_color : R.color.aandb_muted_text_color);
+        daysCount.setTextColor(countColor);
+        daysLabel.setTextColor(countColor);
+        daysCount.setTypeface(null, soon ? Typeface.BOLD : Typeface.NORMAL);
     }
 
     public void refreshData() {
@@ -203,7 +188,7 @@ public class UpcomingListAdapter extends BaseAdapter {
         for (int i = 0; i < allDobs.size(); i++) {
             dob = allDobs.get(i);
             dateString = Util.getStringFromDate(dob.getDobDate());
-            monthString = dateFormatter.format(Util.getCalendar(dob.getDobDate()).getTime());
+            monthString = MONTH_FORMAT.format(Util.getCalendar(dob.getDobDate()).getTime());
             input = input.toLowerCase();
             if (dob.getName().toLowerCase().contains(input) || dateString.contains(input) || monthString.toLowerCase().contains(input))  {
                 filteredDobs.add(dob);

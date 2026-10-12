@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -22,33 +21,6 @@
         app:snowflakesFadingEnabled="true"
         app:snowflakesNum="250" />
 
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/removeYear"
-        android:layout_alignStart="@+id/removeYear"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="10dp"
-        android:text="You cannot select a future date. Please change the year accordingly to select an upcoming date"
-        android:textSize="12sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/removeYear" />
-
-    <CheckBox
-        android:id="@+id/removeYear"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignStart="@+id/personName"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="20dp"
-        android:checked="true"
-        android:text="I don't know year"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/todayBDate" />
-
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
@@ -60,174 +32,29 @@
         app:layout_constraintTop_toTopOf="parent"
         app:popupTheme="@style/AppTheme.PopupOverlay" />
 
-    <EditText
-        android:id="@+id/personName"
+    <LinearLayout
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="10dp"
-        android:background="@color/edit_text_bg"
-        android:ems="10"
-        android:hint="Name"
-        android:inputType="textPersonName|textCapWords"
-        android:paddingLeft="5dp"
-        android:paddingTop="10dp"
-        android:paddingBottom="10dp"
-        android:text="Name"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        android:padding="16dp"
+        app:layout_constraintBottom_toTopOf="@+id/adView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
+        app:layout_constraintTop_toBottomOf="@+id/toolbar">
 
-    <EditText
-        android:id="@+id/todayBDate"
-        android:layout_width="60dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="20dp"
-        android:background="@color/edit_text_bg"
-        android:ems="10"
-        android:hint="Date"
-        android:inputType="date"
-        android:paddingLeft="5dp"
-        android:paddingTop="8dp"
-        android:paddingBottom="8dp"
-        android:text="Date"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/personName" />
+        <include layout="@layout/birthday_form" />
 
-    <Spinner
-        android:id="@+id/monthSpinner"
-        android:layout_width="112dp"
-        android:layout_height="40dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="20dp"
-        android:background="@color/edit_text_bg"
-        android:dropDownSelector="@color/sub_text_color"
-        app:layout_constraintStart_toEndOf="@+id/todayBDate"
-        app:layout_constraintTop_toBottomOf="@+id/personName" />
-
-    <EditText
-        android:id="@+id/year"
-        android:layout_width="100dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp"
-        android:background="@color/edit_text_bg"
-        android:ems="10"
-        android:inputType="number"
-        android:paddingLeft="5dp"
-        android:paddingTop="8dp"
-        android:paddingBottom="8dp"
-        android:text="Year"
-        app:layout_constraintStart_toEndOf="@+id/monthSpinner"
-        app:layout_constraintTop_toBottomOf="@+id/personName" />
-
-    <RelativeLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignStart="@+id/personName"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="30dp"
-        android:layout_marginEnd="10dp"
-        android:background="@color/aandb_dob_preview"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView2">
-
-        <LinearLayout
-            android:id="@+id/todayCirclebg"
-            android:layout_width="46sp"
-            android:layout_height="46sp"
-            android:layout_margin="6dp"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/dateField"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="3dp"
-                android:text="12"
-                android:textColor="@color/white"
-                android:textSize="16sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/monthField"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="-4dp"
-                android:text="Dec"
-                android:textColor="@color/white"
-                android:textSize="14sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/todayImage"
-            android:layout_width="46sp"
-            android:layout_height="46sp"
-            android:layout_margin="6dp"
-            android:orientation="vertical">
-            <ImageView
-                android:id="@+id/todayListItemIcon"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_gravity="center"
-                android:layout_margin="5dp"
-                app:srcCompat="@drawable/ic_app_icon_clipart_primary_dark" />
-        </LinearLayout>
-
-        <TextView
-            android:id="@+id/todayNameField"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
-            android:layout_marginTop="5dp"
-            android:layout_toLeftOf="@+id/yearField"
-            android:layout_toRightOf="@+id/todayCirclebg"
-            android:text="CodeLearn Chapter 1"
-            android:textColor="@color/aandb_primay_text_color"
-            android:textSize="18sp" />
-
-        <TextView
-            android:id="@+id/ageField"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/todayNameField"
-            android:layout_alignStart="@+id/todayNameField"
-            android:layout_marginBottom="5dp"
-            android:alpha="0.7"
-            android:text="Description"
-            android:textColor="@color/aandb_sub_text_color"
-            android:textSize="11sp" />
-
-        <TextView
-            android:id="@+id/yearField"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:layout_marginRight="10dp"
-            android:alpha="0.38"
-            android:text="1988"
-            android:textColor="@color/aandb_sub_text_color"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-
-    </RelativeLayout>
+    </LinearLayout>
 
     <com.google.android.gms.ads.AdView
         android:id="@+id/adView"
         android:layout_width="wrap_content"
         android:layout_height="50dp"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
         android:background="#00D33636"
         app:adSize="BANNER"
         app:adUnitId="@string/ad_account_setup"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"></com.google.android.gms.ads.AdView>
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

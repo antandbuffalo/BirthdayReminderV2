@@ -29,4 +29,27 @@
         <item name="android:divider">@color/aandb_popup_menu_divider</item>
         <item name="android:dividerHeight">1dp</item>
     </style>
+    <!-- Outlined input used by birthday_form; FieldLabel sits on its top border -->
+    <style name="FormField">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">52dp</item>
+        <item name="android:layout_marginTop">8dp</item>
+        <item name="android:background">@drawable/field_outline</item>
+        <item name="android:paddingStart">12dp</item>
+        <item name="android:paddingEnd">12dp</item>
+        <item name="android:textColor">@color/aandb_primay_text_color</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+
+    <style name="FieldLabel">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">10dp</item>
+        <item name="android:background">?android:attr/colorBackground</item>
+        <item name="android:paddingStart">4dp</item>
+        <item name="android:paddingEnd">4dp</item>
+        <item name="android:textColor">@color/aandb_muted_text_color</item>
+        <item name="android:textSize">12sp</item>
+    </style>
 </resources>

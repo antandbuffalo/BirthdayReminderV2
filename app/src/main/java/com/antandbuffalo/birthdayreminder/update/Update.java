@@ -15,7 +15,6 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,6 +27,8 @@ import androidx.lifecycle.ViewModelProviders;
 import com.antandbuffalo.birthdayreminder.R;
 import com.antandbuffalo.birthdayreminder.database.DBHelper;
 import com.antandbuffalo.birthdayreminder.models.DateOfBirth;
+import com.antandbuffalo.birthdayreminder.sharewish.ShareWish;
+import com.antandbuffalo.birthdayreminder.upcoming.UpcomingListAdapter;
 import com.antandbuffalo.birthdayreminder.utilities.Constants;
 import com.antandbuffalo.birthdayreminder.utilities.ReviewPrompt;
 import com.antandbuffalo.birthdayreminder.utilities.Storage;
@@ -43,11 +44,11 @@ public class Update extends AppCompatActivity {
     Intent intent;
 
     private UpdateViewModel updateViewModel;
-    int dayOfYear, currentDayOfYear, recentDayOfYear;
-    TextView namePreview, desc, dateField, monthField, yearField;
+    int currentDayOfYear, recentDayOfYear;
+    TextView namePreview, desc, dateHint;
+    View yearBox, previewRow;
     Spinner monthSpinner;
     EditText dateText, yearText;
-    LinearLayout circle, todayImage;
     CheckBox removeYear;
     AdView mAdView;
 
@@ -76,10 +77,10 @@ public class Update extends AppCompatActivity {
         removeYear.setChecked(updateViewModel.birthdayInfo.isRemoveYear);
 
         if(updateViewModel.birthdayInfo.isRemoveYear) {
-            yearText.setVisibility(View.INVISIBLE);
+            yearBox.setVisibility(View.INVISIBLE);
         }
         else {
-            yearText.setVisibility(View.VISIBLE);
+            yearBox.setVisibility(View.VISIBLE);
         }
 
         currentDayOfYear = Util.getCurrentDayOfYear();
@@ -160,10 +161,10 @@ public class Update extends AppCompatActivity {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 updateViewModel.setRemoveYear(isChecked);
                 if(isChecked) {
-                    yearText.setVisibility(View.INVISIBLE);
+                    yearBox.setVisibility(View.INVISIBLE);
                 }
                 else {
-                    yearText.setVisibility(View.VISIBLE);
+                    yearBox.setVisibility(View.VISIBLE);
                 }
                 addMonthsToSpinner(monthSpinner);
                 monthSpinner.setSelection(updateViewModel.getSelectedMonthPosition());
@@ -173,6 +174,8 @@ public class Update extends AppCompatActivity {
 
         intent = new Intent();
         showSnowFlakes();
+
+        findViewById(R.id.sendWish).setOnClickListener(view -> startActivity(new Intent(this, ShareWish.class)));
     }
 
     public void addMonthsToSpinner(Spinner spinner) {
@@ -192,6 +195,8 @@ public class Update extends AppCompatActivity {
     }
 
     public void preview() {
+        dateHint.setVisibility(View.GONE);
+        yearText.setActivated(false);
         if(!updateViewModel.isValidDateOfBirth(updateViewModel.birthdayInfo)) {
             if(updateViewModel.birthdayInfo.name == null || ("".equalsIgnoreCase(updateViewModel.birthdayInfo.name))) {
                 namePreview.setText("Enter Name");
@@ -199,78 +204,30 @@ public class Update extends AppCompatActivity {
             } else {
                 namePreview.setText("Error in birthdate");
                 desc.setText("Please enter valid date");
+                dateHint.setText("Not a valid date");
+                dateHint.setVisibility(View.VISIBLE);
             }
             return;
         }
         populateBirthdayInfo();
-
-        namePreview.setText(updateViewModel.birthdayInfo.name);
         updateViewModel.setDateOfBirth(updateViewModel.birthdayInfo);
-        dayOfYear = Util.getDayOfYear(updateViewModel.dateOfBirth.getDobDate());
-
-        if(dayOfYear == currentDayOfYear) {
-            circle.setBackgroundResource(R.drawable.cirlce_today);
-            todayImage.setVisibility(View.VISIBLE);
-            circle.setVisibility(View.INVISIBLE);
+        DateOfBirth dob = updateViewModel.dateOfBirth;
+        // Show the age they are turning, like the list does
+        if(Util.getDayOfYear(dob.getDobDate()) != currentDayOfYear) {
+            dob.setAge(dob.getAge() + 1);
         }
-        else if(recentDayOfYear < currentDayOfYear) {   //year end case
-            todayImage.setVisibility(View.INVISIBLE);
-            circle.setVisibility(View.VISIBLE);
-            if(dayOfYear > currentDayOfYear || dayOfYear < recentDayOfYear) {
-                circle.setBackgroundResource(R.drawable.cirlce_recent);
-            }
-            else {
-                circle.setBackgroundResource(R.drawable.cirlce_normal);
-            }
-        }
-        else if(dayOfYear <= recentDayOfYear && dayOfYear > currentDayOfYear ){
-            todayImage.setVisibility(View.INVISIBLE);
-            circle.setVisibility(View.VISIBLE);
-            circle.setBackgroundResource(R.drawable.cirlce_recent);
-        }
-        else {
-            todayImage.setVisibility(View.INVISIBLE);
-            circle.setVisibility(View.VISIBLE);
-            circle.setBackgroundResource(R.drawable.cirlce_normal);
+        UpcomingListAdapter.bindRow(previewRow, dob, currentDayOfYear, recentDayOfYear);
+        if(updateViewModel.birthdayInfo.name.trim().isEmpty()) {
+            namePreview.setText("Enter Name");
         }
 
-        populateDescription(updateViewModel.dateOfBirth);
-
-        if(updateViewModel.getRemoveYear()) {
-            yearField.setVisibility(View.INVISIBLE);
-            //desc.setVisibility(View.INVISIBLE);
+        boolean isFuture = !dob.getRemoveYear() && dob.getDobDate().after(new Date());
+        if(isFuture) {
+            dateHint.setText("Date is in the future");
+            dateHint.setVisibility(View.VISIBLE);
+            yearText.setActivated(true);
         }
-        else {
-            if(updateViewModel.dateOfBirth.getAge() < 0) {
-                desc.setVisibility(View.INVISIBLE);
-            } else {
-                desc.setVisibility(View.VISIBLE);
-            }
-            yearField.setVisibility(View.VISIBLE);
-        }
-
-        dateField.setText(updateViewModel.birthdayInfo.date);
-        monthField.setText(Util.getStringFromDate(updateViewModel.dateOfBirth.getDobDate(), "MMM"));
-        yearField.setText(updateViewModel.birthdayInfo.year + "");
-        desc.setText(updateViewModel.dateOfBirth.getDescription());
-    }
-
-    public void populateDescription(DateOfBirth dateOfBirth) {
-        int currentDayInNumber = Integer.parseInt(Util.getStringFromDate(new Date(), Constants.DAY_OF_YEAR));
-        int birthdayInNumber = Integer.parseInt(Util.getStringFromDate(dateOfBirth.getDobDate(), Constants.DAY_OF_YEAR));
-
-        int diff = Util.getDefaultDayOfYear(dateOfBirth.getDobDate()) - Util.getDefaultDayOfYear(new Date());
-        if(diff < 0) {
-            diff = Util.getSubstractionFactor() + diff;
-        }
-
-        if(currentDayInNumber == birthdayInNumber) {
-            Util.setDescriptionForToday(dateOfBirth);
-        }
-        else {
-            dateOfBirth.setAge(dateOfBirth.getAge() + 1);
-            Util.setDescriptionForUpcoming(dateOfBirth, diff);
-        }
+        desc.setVisibility(isFuture ? View.INVISIBLE : View.VISIBLE);
     }
 
     public void initLayout() {
@@ -284,12 +241,10 @@ public class Update extends AppCompatActivity {
 
         namePreview = (TextView)findViewById(R.id.todayNameField);
         desc = (TextView)findViewById(R.id.ageField);
-        dateField = (TextView)findViewById(R.id.dateField);
-        monthField = (TextView)findViewById(R.id.monthField);
-        yearField = (TextView)findViewById(R.id.yearField);
+        dateHint = findViewById(R.id.dateHint);
+        yearBox = findViewById(R.id.yearBox);
+        previewRow = findViewById(R.id.previewRow);
 
-        circle = (LinearLayout)findViewById(R.id.todayCirclebg);
-        todayImage = (LinearLayout)findViewById(R.id.todayImage);
     }
 
     public void update() {

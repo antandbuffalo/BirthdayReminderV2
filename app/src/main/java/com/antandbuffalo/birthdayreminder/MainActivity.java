@@ -22,20 +22,16 @@ import android.view.View;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.content.ContextCompat;
 
 import com.antandbuffalo.birthdayreminder.about.About;
 import com.antandbuffalo.birthdayreminder.accountsetup.AccountSetup;
 import com.antandbuffalo.birthdayreminder.addnew.AddNew;
 import com.antandbuffalo.birthdayreminder.database.DBHelper;
-import com.antandbuffalo.birthdayreminder.database.DateOfBirthDBHelper;
 import com.antandbuffalo.birthdayreminder.models.DateOfBirth;
 import com.antandbuffalo.birthdayreminder.settings.Settings;
-import com.antandbuffalo.birthdayreminder.sharewish.ShareWish;
 import com.antandbuffalo.birthdayreminder.upcoming.UpcomingListAdapter;
 import com.antandbuffalo.birthdayreminder.update.Update;
 import com.antandbuffalo.birthdayreminder.utilities.Constants;
@@ -53,7 +49,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.util.Date;
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
@@ -91,42 +86,7 @@ public class MainActivity extends AppCompatActivity {
         ListView upcomingListView = findViewById(R.id.upcomingListView);
         upcomingListView.setAdapter(upcomingListAdapter);
 
-        upcomingListView.setOnItemClickListener((parent, view, position, id) -> {
-            DateOfBirth dateOfBirth = upcomingListAdapter.getItem(position);
-            AlertDialog.Builder adb = new AlertDialog.Builder(MainActivity.this);
-            CharSequence[] items = new CharSequence[]{"Edit", "Wish", "Delete"};
-            adb.setItems(items, (dialogInterface, i) -> {
-                switch (i) {
-                    case 0:
-                        startUpdate(position);
-                        break;
-                    case 1:
-                        Intent shareWish = new Intent(MainActivity.this, ShareWish.class);
-                        startActivity(shareWish);
-                        break;
-                    case 2: {
-                        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                        builder.setTitle("Confirmation")
-                                .setMessage("Are you sure you want to delete " + dateOfBirth.getName() + "?")
-                                .setPositiveButton("Yes", (dialog, which) -> {
-                                    DateOfBirthDBHelper.deleteRecordForTheId(dateOfBirth.getDobId());
-                                    Storage.setDbBackupTime(new Date());
-                                    Toast toast = Toast.makeText(getApplicationContext(), Constants.NOTIFICATION_DELETE_MEMBER_SUCCESS, Toast.LENGTH_SHORT);
-                                    toast.show();
-                                    upcomingListAdapter.refreshData();
-                                })
-                                .setNegativeButton("No", null);
-                        AlertDialog dialog = builder.create();
-                        dialog.setOnShowListener(arg0 -> dialog.getButton(android.app.AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(MainActivity.this, R.color.dark_gray)));
-                        dialog.show();
-                        break;
-                    }
-                }
-            });
-            //adb.setNegativeButton("Cancel", null);
-            adb.setTitle(dateOfBirth.getName());
-            adb.show();
-        });
+        upcomingListView.setOnItemClickListener((parent, view, position, id) -> startUpdate(position));
 
         TextInputEditText filter = findViewById(R.id.filter);
 

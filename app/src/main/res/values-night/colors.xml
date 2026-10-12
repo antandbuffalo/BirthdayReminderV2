@@ -28,4 +28,6 @@
     <color name="aandb_today_ring">#2F5E58</color>
     <color name="aandb_today_accent_text">@color/aandb_soon_text_color</color>
     <color name="aandb_search_bg">#383838</color>
+    <color name="aandb_field_stroke">#616161</color>
+    <color name="aandb_error_text">#EF9A9A</color>
 </resources>

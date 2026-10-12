@@ -3,4 +3,5 @@
     android:id="@android:id/text1"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:textColor="@color/aandb_primay_text_color" />
+    android:textColor="@color/aandb_primay_text_color"
+    android:textSize="16sp" />

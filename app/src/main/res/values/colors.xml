@@ -69,4 +69,6 @@
     <color name="aandb_today_accent_text">@color/colorAccent</color>
     <color name="aandb_search_bg">#F3F3F3</color>
 
+    <color name="aandb_field_stroke">#BDBDBD</color>
+    <color name="aandb_error_text">#C62828</color>
 </resources>
