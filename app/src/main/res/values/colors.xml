@@ -61,4 +61,11 @@
 
     <color name="aandb_popup_menu_divider">#11000000</color>
 
+
+    <color name="aandb_muted_text_color">#757575</color>
+    <color name="aandb_soon_text_color">#00796B</color>
+    <color name="aandb_today_card_bg">#FCE4EC</color>
+    <color name="aandb_today_ring">#F8BBD0</color>
+    <color name="aandb_search_bg">#F3F3F3</color>
+
 </resources>

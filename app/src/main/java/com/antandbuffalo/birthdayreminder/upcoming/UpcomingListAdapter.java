@@ -2,11 +2,11 @@ package com.antandbuffalo.birthdayreminder.upcoming;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -23,6 +23,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import androidx.core.content.ContextCompat;
+
 
 /**
  * Created by i677567 on 23/9/15.
@@ -33,12 +35,12 @@ public class UpcomingListAdapter extends BaseAdapter {
     Calendar cal;
     List<DateOfBirth> dobs;
     List<DateOfBirth> allDobs;
-    SimpleDateFormat dateFormatter, todayDateFormatWithYear, todayDateFormatNoYear;
+    SimpleDateFormat dateFormatter, yearFormatter;
+    boolean happyBdayMode;
     List<DateOfBirth> filteredDobs = new ArrayList<DateOfBirth>();
     public UpcomingListAdapter() {
         dateFormatter = new SimpleDateFormat("MMM");
-        todayDateFormatWithYear = new SimpleDateFormat(Constants.todayDateFormatWithYear);
-        todayDateFormatNoYear = new SimpleDateFormat(Constants.todayDateFormatNoYear);
+        yearFormatter = new SimpleDateFormat("yyyy");
         cal = Calendar.getInstance();
         setDefaultValues();
     }
@@ -75,20 +77,11 @@ public class UpcomingListAdapter extends BaseAdapter {
 
     public View getTodayView(View convertView, DateOfBirth dateOfBirth, ViewGroup parent) {
         TextView name = (TextView)convertView.findViewById(R.id.todayNameField);
-        TextView age = (TextView)convertView.findViewById(R.id.todayAge);
         TextView desc = (TextView)convertView.findViewById(R.id.todayDesc);
-        TextView bDate = (TextView)convertView.findViewById(R.id.todayBDate);
         name.setText(dateOfBirth.getName());
-        age.setText("Age: " + dateOfBirth.getAge());
-        desc.setText(dateOfBirth.getDescription());
-        if(dateOfBirth.getRemoveYear()) {
-            bDate.setText(todayDateFormatNoYear.format(dateOfBirth.getDobDate()));
-        }
-        else {
-            bDate.setText(todayDateFormatWithYear.format(dateOfBirth.getDobDate()));
-        }
+        desc.setText(happyBdayMode ? dateOfBirth.getDescription() : getSubtitle(dateOfBirth));
 
-        ImageButton sendWish = convertView.findViewById(R.id.sendWish);
+        View sendWish = convertView.findViewById(R.id.sendWish);
         sendWish.setFocusable(false);
         sendWish.setOnClickListener(view -> {
             Intent shareWish = new Intent(parent.getContext(), ShareWish.class);
@@ -126,15 +119,23 @@ public class UpcomingListAdapter extends BaseAdapter {
         }
         TextView name = (TextView)convertView.findViewById(R.id.todayNameField);
         TextView desc = (TextView)convertView.findViewById(R.id.ageField);
-        TextView yearField = (TextView)convertView.findViewById(R.id.yearField);
-        TextView dayField = (TextView)convertView.findViewById(R.id.dayField);
+        TextView daysCount = (TextView)convertView.findViewById(R.id.daysCount);
+        TextView daysLabel = (TextView)convertView.findViewById(R.id.daysLabel);
 
         name.setText(dob.getName());
-        desc.setText(dob.getDescription());
+        desc.setText(getSubtitle(dob));
+
+        int days = Util.getDaysLeft(dob.getDobDate());
+        daysCount.setText(days + "");
+        daysLabel.setText(days == 1 ? "day" : "days");
+        boolean soon = days <= 7;
+        int countColor = ContextCompat.getColor(parent.getContext(), soon ? R.color.aandb_soon_text_color : R.color.aandb_muted_text_color);
+        daysCount.setTextColor(countColor);
+        daysLabel.setTextColor(countColor);
+        daysCount.setTypeface(null, soon ? Typeface.BOLD : Typeface.NORMAL);
+
         Date date = dob.getDobDate();
         cal.setTime(date);
-        yearField.setText(cal.get(Calendar.YEAR) + "");
-        dayField.setText(Util.getDay(cal.get(Calendar.MONTH), cal.get(Calendar.DATE)));
 
         LinearLayout circle = (LinearLayout)convertView.findViewById(R.id.todayCirclebg);
 //        if(dayOfYear == currentDayOfYear) {
@@ -164,20 +165,15 @@ public class UpcomingListAdapter extends BaseAdapter {
                 circle.setBackgroundResource(R.drawable.cirlce_normal);
             }
         }
-        if(dob.getRemoveYear()) {
-            yearField.setVisibility(View.INVISIBLE);
-            desc.setVisibility(View.VISIBLE);
-        }
-        else {
-            if(dob.getAge() >= 0) {
-                desc.setVisibility(View.VISIBLE);
-            }
-            else {
-                desc.setVisibility(View.INVISIBLE);
-            }
-            yearField.setVisibility(View.VISIBLE);
-        }
+        desc.setVisibility(dob.getRemoveYear() || dob.getAge() >= 0 ? View.VISIBLE : View.INVISIBLE);
         return convertView;
+    }
+
+    private String getSubtitle(DateOfBirth dob) {
+        if(dob.getRemoveYear()) {
+            return "No birth year saved";
+        }
+        return "Turns " + dob.getAge() + " · born " + yearFormatter.format(dob.getDobDate());
     }
 
     public void refreshData() {
@@ -193,7 +189,8 @@ public class UpcomingListAdapter extends BaseAdapter {
         allDobs = DateOfBirthDBHelper.selectUpcoming();
         dobs = DateOfBirthDBHelper.selectUpcoming();
 
-        if(Util.showHappyBirthdayIconAndView()) {
+        happyBdayMode = Util.showHappyBirthdayIconAndView();
+        if(happyBdayMode) {
             allDobs = getHappyBday();
             dobs = getHappyBday();
         }

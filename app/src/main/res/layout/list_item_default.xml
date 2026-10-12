@@ -1,17 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:paddingTop="6dp"
-    android:paddingBottom="6dp"
-    android:layout_height="wrap_content">
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="68dp"
+    android:paddingStart="10dp"
+    android:paddingTop="8dp"
+    android:paddingEnd="16dp"
+    android:paddingBottom="8dp">
 
     <LinearLayout
         android:id="@+id/todayCirclebg"
-        android:orientation="vertical"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         android:layout_centerVertical="true"
-        android:layout_width="46sp"
-        android:layout_height="46sp"
-        android:layout_margin="6dp">
+        android:layout_margin="6dp"
+        android:gravity="center"
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/dateField"
@@ -19,76 +23,72 @@
             android:layout_height="wrap_content"
             android:text="12"
             android:textColor="@color/white"
-            android:layout_gravity="center_horizontal"
             android:textSize="16sp"
-            android:layout_marginTop="3dp"
-            android:textStyle="bold"
-             />
+            android:textStyle="bold" />
+
         <TextView
             android:id="@+id/monthField"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="-4dp"
             android:text="Dec"
             android:textColor="@color/white"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="-4dp"
-            android:textSize="14sp" />
+            android:textSize="13sp" />
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/todayNameField"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="5dp"
-        android:layout_marginTop="7dp"
-        android:layout_toLeftOf="@+id/yearAndDay"
-        android:layout_toRightOf="@+id/todayCirclebg"
-        android:text="CodeLearn Chapter 1"
-        android:textColor="@color/aandb_primay_text_color"
-        android:textSize="18sp" />
-
-    <TextView
-        android:id="@+id/ageField"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/todayNameField"
-        android:layout_alignStart="@+id/todayNameField"
-        android:layout_marginTop="2dp"
-        android:alpha="0.7"
-        android:text="Description"
-        android:textColor="@color/aandb_sub_text_color"
-        android:textSize="12sp" />
-
     <LinearLayout
-        android:id="@+id/yearAndDay"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_marginRight="10dp"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="8dp"
+        android:layout_toStartOf="@+id/daysLeft"
+        android:layout_toEndOf="@+id/todayCirclebg"
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/dayField"
+            android:id="@+id/todayNameField"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:alpha="0.38"
-            android:text="Mon"
-            android:layout_marginTop="10dp"
-            android:layout_gravity="center"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textColor="@color/aandb_sub_text_color"
-            android:textSize="12sp" />
-        <TextView
-            android:id="@+id/yearField"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:alpha="0.38"
-            android:text="1988"
-            android:layout_gravity="center"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textColor="@color/aandb_sub_text_color" />
+            android:text="Name"
+            android:textColor="@color/aandb_primay_text_color"
+            android:textSize="17sp" />
 
+        <TextView
+            android:id="@+id/ageField"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:text="Turns 30 · born 1996"
+            android:textColor="@color/aandb_muted_text_color"
+            android:textSize="13sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/daysLeft"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:gravity="center_horizontal"
+        android:minWidth="44dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/daysCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="16"
+            android:textColor="@color/aandb_muted_text_color"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/daysLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="-2dp"
+            android:text="days"
+            android:textColor="@color/aandb_muted_text_color"
+            android:textSize="11sp" />
     </LinearLayout>
 
 </RelativeLayout>

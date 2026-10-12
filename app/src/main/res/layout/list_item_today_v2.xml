@@ -1,112 +1,85 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:padding="12dp">
 
     <LinearLayout
-        android:id="@+id/todayCirclebg"
-        android:layout_width="46sp"
-        android:layout_height="46sp"
-        android:layout_centerVertical="true"
-        android:layout_marginStart="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/today_card_bg"
         android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:padding="16dp">
 
-        <ImageView
-            android:id="@+id/todayListItemIcon"
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:letterSpacing="0.12"
+            android:text="TODAY"
+            android:textColor="@color/colorAccent"
+            android:textSize="11sp"
+            android:textStyle="bold" />
+
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:layout_margin="5dp"
-            app:srcCompat="@drawable/ic_app_icon_clipart_primary_dark" />
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="52dp"
+                android:layout_height="52dp"
+                android:background="@drawable/today_cake_circle"
+                android:padding="12dp"
+                app:srcCompat="@drawable/ic_app_icon_clipart_primary_dark"
+                app:tint="@color/white" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="14dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/todayNameField"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Name"
+                    android:textColor="@color/aandb_primay_text_color"
+                    android:textSize="22sp" />
+
+                <TextView
+                    android:id="@+id/todayDesc"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="Turns 30 · born 1996"
+                    android:textColor="@color/aandb_muted_text_color"
+                    android:textSize="14sp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/sendWish"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginTop="10dp"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:letterSpacing="0"
+            android:text="Send wish"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            app:backgroundTint="@color/colorAccent"
+            app:cornerRadius="20dp"
+            app:icon="@drawable/ic_send_white"
+            app:iconSize="16dp"
+            app:iconTint="@color/white" />
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/todayNameField"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="6dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="6dp"
-        android:layout_toRightOf="@+id/todayCirclebg"
-        android:text="CodeLearn Chapter 1"
-        android:textAlignment="center"
-        android:textColor="@color/aandb_primay_text_color"
-        android:textSize="18sp"
-        app:layout_constraintEnd_toStartOf="@+id/sendWish"
-        app:layout_constraintStart_toEndOf="@+id/todayCirclebg"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/todayAge"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="6dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="6dp"
-        android:text="Age"
-        android:textColor="@color/aandb_primay_text_color"
-        android:textSize="18sp"
-        app:layout_constraintEnd_toStartOf="@+id/sendWish"
-        app:layout_constraintStart_toEndOf="@+id/todayCirclebg"
-        app:layout_constraintTop_toBottomOf="@+id/todayNameField" />
-
-    <TextView
-        android:id="@+id/todayDesc"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="6dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="6dp"
-        android:layout_toRightOf="@+id/todayCirclebg"
-        android:alpha="0.5"
-        android:text="Desc"
-        android:textColor="@color/aandb_sub_text_color"
-        android:textSize="18sp"
-        app:layout_constraintEnd_toStartOf="@+id/sendWish"
-        app:layout_constraintStart_toEndOf="@+id/todayCirclebg"
-        app:layout_constraintTop_toBottomOf="@+id/todayAge" />
-
-    <TextView
-        android:id="@+id/todayBDate"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="6dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="6dp"
-        android:layout_marginBottom="10dp"
-        android:layout_toRightOf="@+id/todayCirclebg"
-        android:alpha="0.5"
-        android:text="Date"
-        android:textColor="@color/aandb_sub_text_color"
-        android:textSize="18sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/sendWish"
-        app:layout_constraintHorizontal_bias="0.497"
-        app:layout_constraintStart_toEndOf="@+id/todayCirclebg"
-        app:layout_constraintTop_toBottomOf="@+id/todayDesc" />
-
-    <ImageButton
-        android:id="@+id/sendWish"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:layout_marginEnd="12dp"
-        android:background="?selectableItemBackgroundBorderless"
-
-        android:focusable="false"
-        android:focusableInTouchMode="false"
-        android:padding="6dp"
-        android:text="Wish"
-        android:textColor="@color/aandb_btn_text_color"
-        android:textSize="12sp"
-        android:tooltipText="Send Wishes"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_send_accent" />
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>

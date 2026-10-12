@@ -21,4 +21,10 @@
     <color name="aandb_toolbar_bg">#3a3a3a</color>
 
     <color name="aandb_popup_menu_divider">#11FFFFFF</color>
+
+    <color name="aandb_muted_text_color">#B0B0B0</color>
+    <color name="aandb_soon_text_color">#4DB6AC</color>
+    <color name="aandb_today_card_bg">#3D2A31</color>
+    <color name="aandb_today_ring">#5C3443</color>
+    <color name="aandb_search_bg">#383838</color>
 </resources>

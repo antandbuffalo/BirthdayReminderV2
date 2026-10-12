@@ -60,14 +60,6 @@ import java.util.Map;
  */
 public class Util {
 
-    public static String getDay(int month, int date) {
-        Calendar calendar = Util.getCalendar();
-        calendar.set(Util.getCalendar(new Date()).get(Calendar.YEAR), month, date);
-        Date calDate = calendar.getTime();
-        DateFormat formatter = new SimpleDateFormat("EEE");
-        return formatter.format(calDate);
-    }
-
 //    public static File getCachedFile(String defaultFileName) {
 //        Context context = DataHolder.getInstance().getAppContext();
 //        File cacheFile = new File(DataHolder.getInstance().getAppContext().getCacheDir(), "dob.txt");
@@ -563,6 +555,14 @@ public class Util {
         }
 
         return monthsList;
+    }
+
+    public static int getDaysLeft(Date dobDate) {
+        int diff = getDefaultDayOfYear(dobDate) - getDefaultDayOfYear(new Date());
+        if(diff < 0) {
+            diff = getSubstractionFactor() + diff;
+        }
+        return diff;
     }
 
     public static Integer getDefaultDayOfYear(Date date) {
