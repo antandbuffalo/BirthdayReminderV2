@@ -7,7 +7,7 @@
 
     <color name="aandb_primay_text_color">#FFFFFF</color>
     <color name="aandb_sub_text_color">#F0F0F0</color>
-    <color name="aandb_icon_primay">#D81B60</color>
+    <color name="aandb_icon_primay">@color/aandb_soon_text_color</color>
     <color name="aandb_backgroud">#484848</color>
 
     <color name="aandb_btn_bg">#00574B</color>
@@ -24,7 +24,8 @@
 
     <color name="aandb_muted_text_color">#B0B0B0</color>
     <color name="aandb_soon_text_color">#4DB6AC</color>
-    <color name="aandb_today_card_bg">#3D2A31</color>
-    <color name="aandb_today_ring">#5C3443</color>
+    <color name="aandb_today_card_bg">#263D3A</color>
+    <color name="aandb_today_ring">#2F5E58</color>
+    <color name="aandb_today_accent_text">@color/aandb_soon_text_color</color>
     <color name="aandb_search_bg">#383838</color>
 </resources>

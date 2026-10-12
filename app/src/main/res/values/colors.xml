@@ -2,11 +2,11 @@
 <resources>
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
-    <color name="colorAccent">#D81B60</color>
+    <color name="colorAccent">#00897B</color>
 
     <color name="aandb_normal_circle_bg">#00574B</color>
 
-    <color name="aandb_btn_bg">#D81B60</color>
+    <color name="aandb_btn_bg">@color/colorAccent</color>
     <color name="aandb_btn_text_color">#FFFFFF</color>
 
     <color name="aandb_icon_primay">#00574B</color>
@@ -64,8 +64,9 @@
 
     <color name="aandb_muted_text_color">#757575</color>
     <color name="aandb_soon_text_color">#00796B</color>
-    <color name="aandb_today_card_bg">#FCE4EC</color>
-    <color name="aandb_today_ring">#F8BBD0</color>
+    <color name="aandb_today_card_bg">#E0F2F1</color>
+    <color name="aandb_today_ring">#B2DFDB</color>
+    <color name="aandb_today_accent_text">@color/colorAccent</color>
     <color name="aandb_search_bg">#F3F3F3</color>
 
 </resources>

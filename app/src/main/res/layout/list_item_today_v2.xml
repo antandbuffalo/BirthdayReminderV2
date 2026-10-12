@@ -9,39 +9,37 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/today_card_bg"
-        android:orientation="vertical"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
         android:padding="16dp">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:letterSpacing="0.12"
-            android:text="TODAY"
-            android:textColor="@color/colorAccent"
-            android:textSize="11sp"
-            android:textStyle="bold" />
+        <ImageView
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:background="@drawable/today_cake_circle"
+            android:padding="12dp"
+            app:srcCompat="@drawable/ic_app_icon_clipart_primary_dark"
+            app:tint="@color/white" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
+        <FrameLayout
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:layout_width="52dp"
-                android:layout_height="52dp"
-                android:background="@drawable/today_cake_circle"
-                android:padding="12dp"
-                app:srcCompat="@drawable/ic_app_icon_clipart_primary_dark"
-                app:tint="@color/white" />
+            android:layout_marginStart="14dp"
+            android:layout_weight="1">
 
             <LinearLayout
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="14dp"
-                android:layout_weight="1"
                 android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:letterSpacing="0.12"
+                    android:text="TODAY"
+                    android:textColor="@color/aandb_today_accent_text"
+                    android:textSize="11sp"
+                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/todayNameField"
@@ -60,26 +58,23 @@
                     android:textColor="@color/aandb_muted_text_color"
                     android:textSize="14sp" />
             </LinearLayout>
-        </LinearLayout>
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/sendWish"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:layout_marginTop="10dp"
-            android:focusable="false"
-            android:focusableInTouchMode="false"
-            android:letterSpacing="0"
-            android:text="Send wish"
-            android:textAllCaps="false"
-            android:textColor="@color/white"
-            android:textSize="14sp"
-            app:backgroundTint="@color/colorAccent"
-            app:cornerRadius="20dp"
-            app:icon="@drawable/ic_send_white"
-            app:iconSize="16dp"
-            app:iconTint="@color/white" />
+            <TextView
+                android:id="@+id/sendWish"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|end"
+                android:layout_marginEnd="-8dp"
+                android:layout_marginBottom="-8dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:focusable="false"
+                android:padding="8dp"
+                android:text="Send wish ›"
+                android:textColor="@color/aandb_today_accent_text"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+        </FrameLayout>
+
     </LinearLayout>
 
 </FrameLayout>
