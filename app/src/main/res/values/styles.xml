@@ -52,4 +52,19 @@
         <item name="android:textColor">@color/aandb_muted_text_color</item>
         <item name="android:textSize">12sp</item>
     </style>
+
+    <!-- "Today" pill on the today card and the add/edit preview -->
+    <style name="TodayBadge">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@drawable/today_badge_bg</item>
+        <item name="android:paddingStart">10dp</item>
+        <item name="android:paddingTop">3dp</item>
+        <item name="android:paddingEnd">10dp</item>
+        <item name="android:paddingBottom">3dp</item>
+        <item name="android:text">Today</item>
+        <item name="android:textColor">@color/aandb_today_accent_text</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
 </resources>

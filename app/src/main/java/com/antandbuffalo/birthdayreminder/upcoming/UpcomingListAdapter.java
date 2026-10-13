@@ -148,11 +148,14 @@ public class UpcomingListAdapter extends BaseAdapter {
         row.findViewById(R.id.todayCirclebg).setBackgroundResource(circle);
 
         int days = Util.getDaysLeft(date);
-        row.findViewById(R.id.daysLeft).setVisibility(days == 0 ? View.INVISIBLE : View.VISIBLE);
         TextView daysCount = row.findViewById(R.id.daysCount);
         TextView daysLabel = row.findViewById(R.id.daysLabel);
         daysCount.setText(days + "");
         daysLabel.setText(days == 1 ? "day" : "days");
+        boolean today = days == 0;
+        daysCount.setVisibility(today ? View.GONE : View.VISIBLE);
+        daysLabel.setVisibility(today ? View.GONE : View.VISIBLE);
+        row.findViewById(R.id.todayBadge).setVisibility(today ? View.VISIBLE : View.GONE);
         boolean soon = days <= 7;
         int countColor = ContextCompat.getColor(row.getContext(), soon ? R.color.aandb_soon_text_color : R.color.aandb_muted_text_color);
         daysCount.setTextColor(countColor);

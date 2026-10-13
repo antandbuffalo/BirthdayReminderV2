@@ -89,6 +89,11 @@
             android:text="days"
             android:textColor="@color/aandb_muted_text_color"
             android:textSize="11sp" />
+
+        <TextView
+            android:id="@+id/todayBadge"
+            style="@style/TodayBadge"
+            android:visibility="gone" />
     </LinearLayout>
 
 </RelativeLayout>
