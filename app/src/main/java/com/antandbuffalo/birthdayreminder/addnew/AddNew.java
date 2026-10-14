@@ -176,7 +176,7 @@ public class AddNew extends AppCompatActivity {
         }
 
         if(!addNewViewModel.isValidDateOfBirth(addNewViewModel.birthdayInfo)) {
-            Toast.makeText(getApplicationContext(), "Please enter valid date", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "Pick a valid date", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -212,23 +212,14 @@ public class AddNew extends AppCompatActivity {
             } else if(addNewViewModel.isBackupFileFound()) {
                 showLoadBackupFileConfirmation(addNewViewModel.birthdayInfo.name + Constants.FILE_NAME_SUFFIX);
             } else {
-                if(addNewViewModel.isValidDateOfBirth(addNewViewModel.birthdayInfo)) {
-                    addNewViewModel.saveToDB();
-                    DataHolder.getInstance().refresh = true;
-                    Storage.setDbBackupTime(new Date());
-                    System.out.println("Inserted successfully");
-                    String status = Constants.NOTIFICATION_ADD_MEMBER_SUCCESS + ". You will get notified at 12:00am and 12:00pm on " + Util.getStringFromDate(addNewViewModel.dateOfBirth.getDobDate(), "dd MMM") + " every year";
-                    Toast toast = Toast.makeText(getApplicationContext(), addNewViewModel.getAddSuccessMessage(getApplicationContext()), Toast.LENGTH_LONG);
-                    toast.show();
-                    clearInputs();
-                    intent.putExtra(Constants.IS_USER_ADDED, Constants.FLAG_SUCCESS.toString());
-                    setResult(RESULT_OK, intent);
-                    finish();
-                }
-                else {
-                    Toast toast = Toast.makeText(getApplicationContext(), "Please enter valid date", Toast.LENGTH_LONG);
-                    toast.show();
-                }
+                addNewViewModel.saveToDB();
+                DataHolder.getInstance().refresh = true;
+                Storage.setDbBackupTime(new Date());
+                Toast.makeText(getApplicationContext(), addNewViewModel.getAddSuccessMessage(getApplicationContext()), Toast.LENGTH_LONG).show();
+                clearInputs();
+                intent.putExtra(Constants.IS_USER_ADDED, Constants.FLAG_SUCCESS.toString());
+                setResult(RESULT_OK, intent);
+                finish();
             }
 
         }

@@ -43,6 +43,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -91,7 +92,7 @@ public class Backup extends AppCompatActivity implements FirebaseHandler {
                 if (getStoragePermission(Constants.MY_PERMISSIONS_READ_WRITE)) {
                     updateLocalBackup();
                 } else {
-                    Toast.makeText(DataHolder.getInstance().getAppContext(), "Please provide permission to access local storage", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(DataHolder.getInstance().getAppContext(), "Allow storage access to back up to a file", Toast.LENGTH_SHORT).show();
                 }
                 if (FirebaseAuth.getInstance().getCurrentUser() != null) {
                     backupToFirebaseConfirmation();
@@ -106,8 +107,7 @@ public class Backup extends AppCompatActivity implements FirebaseHandler {
             @Override
             public void onClick(View view) {
                 if (FirebaseAuth.getInstance().getCurrentUser() != null) {
-                    restoreDateOfBirthsFromFirebase(FirebaseFirestore.getInstance(), FirebaseAuth.getInstance().getCurrentUser());
-                    restoreUserPreferenceFromFirebase(FirebaseFirestore.getInstance(), FirebaseAuth.getInstance().getCurrentUser());
+                    restoreBirthdaysAndSettingsFromFirebase(FirebaseFirestore.getInstance(), FirebaseAuth.getInstance().getCurrentUser());
                 } else {
                     UIUtil.showConfirmationDialog(Backup.this, "Confirmation", "You need to setup your Google account to restore. Meanwhile we can try to restore from local file if available. Do you want to continue?", (DialogInterface dialog, int which) -> {
                         String status = Util.readFromFile("dob.txt");
@@ -283,7 +283,7 @@ public class Backup extends AppCompatActivity implements FirebaseHandler {
             preferenceDone = null;
             FirebaseUtil.restoreDateOfBirthAndUserPreferenceFromFirebase(FirebaseFirestore.getInstance(), FirebaseAuth.getInstance().getCurrentUser(), Backup.this);
         } else {
-            Toast.makeText(DataHolder.getInstance().getAppContext(), "Not able to sign in", Toast.LENGTH_SHORT).show();
+            Toast.makeText(DataHolder.getInstance().getAppContext(), Constants.SIGN_IN_FAILED, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -330,7 +330,6 @@ public class Backup extends AppCompatActivity implements FirebaseHandler {
                         //updateLastUpdatedTime(db, firebaseUser);
                         Storage.setServerBackupTime(Util.getDateFromString(Storage.getDbBackupTime(), Constants.backupDateFormatToStore));
                         backupUserPreferenceToFirebase(firebaseFirestore, firebaseUser);
-                        Toast.makeText(DataHolder.getInstance().getAppContext(), "Birthday informations uploaded successfully", Toast.LENGTH_SHORT).show();
                         ReviewPrompt.showNow(Backup.this);
                     }
                 })
@@ -339,7 +338,7 @@ public class Backup extends AppCompatActivity implements FirebaseHandler {
                     public void onFailure(@NonNull Exception e) {
                         hideProgressBar();
                         Log.e("F", e.getLocalizedMessage());
-                        Toast.makeText(DataHolder.getInstance().getAppContext(), "Error while updating to server", Toast.LENGTH_LONG).show();
+                        Toast.makeText(DataHolder.getInstance().getAppContext(), Constants.BACKUP_FAILED, Toast.LENGTH_LONG).show();
                     }
                 });
     }
@@ -355,7 +354,7 @@ public class Backup extends AppCompatActivity implements FirebaseHandler {
                     public void onSuccess(Void aVoid) {
                         hideProgressBar();
                         Log.d("Success", "Preferences updated successfully");
-                        Toast.makeText(DataHolder.getInstance().getAppContext(), "Your preferences uploaded successfully", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(DataHolder.getInstance().getAppContext(), "Birthdays and settings backed up", Toast.LENGTH_SHORT).show();
                         updateBackupTimeUI();
                     }
                 })
@@ -364,7 +363,7 @@ public class Backup extends AppCompatActivity implements FirebaseHandler {
                     public void onFailure(@NonNull Exception e) {
                         hideProgressBar();
                         Log.e("F", e.getLocalizedMessage());
-                        Toast.makeText(DataHolder.getInstance().getAppContext(), "Error while updating to server", Toast.LENGTH_LONG).show();
+                        Toast.makeText(DataHolder.getInstance().getAppContext(), Constants.BACKUP_FAILED, Toast.LENGTH_LONG).show();
                     }
                 });
     }
@@ -399,12 +398,23 @@ public class Backup extends AppCompatActivity implements FirebaseHandler {
         FirebaseUtil.restoreDateOfBirthsFromFirebase(firebaseFirestore, firebaseUser, Backup.this);
     }
 
-    public void restoreUserPreferenceFromFirebase(FirebaseFirestore firebaseFirestore, FirebaseUser firebaseUser) {
-        if (firebaseUser == null) {
-            return;
-        }
+    public void restoreBirthdaysAndSettingsFromFirebase(FirebaseFirestore firebaseFirestore, FirebaseUser firebaseUser) {
         showProgressBar();
-        FirebaseUtil.restoreUserPreferenceFromFirebase(firebaseFirestore, firebaseUser, Backup.this);
+        Task<DocumentSnapshot> dobTask = FirebaseUtil.getDocument(firebaseFirestore, firebaseUser, Constants.firebaseDocumentFriends);
+        Task<DocumentSnapshot> preferenceTask = FirebaseUtil.getDocument(firebaseFirestore, firebaseUser, Constants.firebaseDocumentSettings);
+        Tasks.whenAllComplete(dobTask, preferenceTask).addOnCompleteListener(done -> {
+            hideProgressBar();
+            restoreBirthdaysAndSettings(dobTask, preferenceTask);
+        });
+    }
+
+    public void restoreBirthdaysAndSettings(Task<DocumentSnapshot> dobTask, Task<DocumentSnapshot> preferenceTask) {
+        boolean restored = postProcessDateOfBirths(dobTask);
+        postProcessUserPreference(preferenceTask);
+        if (restored) {
+            Toast.makeText(Backup.this, "Birthdays and settings restored", Toast.LENGTH_SHORT).show();
+            ReviewPrompt.showNow(Backup.this);
+        }
     }
 
     public void updateLastUpdatedTime(FirebaseFirestore firebaseFirestore, FirebaseUser firebaseUser) {
@@ -498,7 +508,7 @@ public class Backup extends AppCompatActivity implements FirebaseHandler {
         if (connectivityManager.getAllNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnected()) {
             getFirebaseLastUpdatedTime(FirebaseFirestore.getInstance(), FirebaseAuth.getInstance().getCurrentUser(), "syncNow");
         } else {
-            Toast.makeText(DataHolder.getInstance().getAppContext(), "Please connect to Internet", Toast.LENGTH_LONG).show();
+            Toast.makeText(DataHolder.getInstance().getAppContext(), "You're offline. Please connect to the internet", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -599,8 +609,7 @@ public class Backup extends AppCompatActivity implements FirebaseHandler {
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        postProcessDateOfBirths(dobTask);
-                        postProcessUserPreference(preferenceTask);
+                        restoreBirthdaysAndSettings(dobTask, preferenceTask);
                     }
                 })
                 .setNegativeButton("No", null);
@@ -614,27 +623,31 @@ public class Backup extends AppCompatActivity implements FirebaseHandler {
         dialog.show();
     }
 
-    public void postProcessDateOfBirths(Task<DocumentSnapshot> task) {
+    // Returns true when birthdays were found on the server and restored
+    public boolean postProcessDateOfBirths(Task<DocumentSnapshot> task) {
         if (task.isSuccessful()) {
             DocumentSnapshot document = task.getResult();
             if (document.exists()) {
                 Log.d("FirebaseGetData", "DocumentSnapshot data: " + document.getData());
                 Util.inserDateOfBirthFromServer(document.getData());
                 DataHolder.getInstance().refresh = true;
-                Toast.makeText(Backup.this, "Successfully Restored Birthday Informations from server", Toast.LENGTH_SHORT).show();
-                ReviewPrompt.showNow(Backup.this);
+                return true;
             } else {
                 Log.d("FirebaseGetData", "No such document");
             }
         } else {
             Log.d("FirebaseGetData", "get failed with ", task.getException());
         }
+        return false;
     }
 
     @Override
     public void onCompleteDateOfBirthSync(Task<DocumentSnapshot> task) {
         hideProgressBar();
-        postProcessDateOfBirths(task);
+        if (postProcessDateOfBirths(task)) {
+            Toast.makeText(Backup.this, "Birthdays restored", Toast.LENGTH_SHORT).show();
+            ReviewPrompt.showNow(Backup.this);
+        }
     }
 
     public void postProcessUserPreference(Task<DocumentSnapshot> task) {
@@ -649,19 +662,12 @@ public class Backup extends AppCompatActivity implements FirebaseHandler {
                 updateAutoFrequencyUI();
                 Util.applyTheme();
                 DataHolder.getInstance().refreshSettings = true;
-                Toast.makeText(Backup.this, "Successfully Restored your preferences from server", Toast.LENGTH_SHORT).show();
             } else {
                 Log.d("FirebaseGetData", "No such document");
             }
         } else {
             Log.d("FirebaseGetData", "get failed with ", task.getException());
         }
-    }
-
-    @Override
-    public void onCompleteUserPreferenceSync(Task<DocumentSnapshot> task) {
-        hideProgressBar();
-        postProcessUserPreference(task);
     }
 
     @Override

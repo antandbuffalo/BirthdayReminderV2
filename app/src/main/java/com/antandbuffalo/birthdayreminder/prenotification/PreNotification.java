@@ -69,10 +69,12 @@ public class PreNotification extends AppCompatActivity {
         if (id == R.id.action_menu_done) {
             Log.d("BRJB", item.getItemId() + " : done");
             NumberPicker numberPicker = (NumberPicker) findViewById(R.id.recentDaysToday);
-            Storage.putInt(Util.getSharedPreference(), Constants.PREFERENCE_PRE_NOTIFICATION_DAYS, numberPicker.getValue());
+            int days = numberPicker.getValue();
+            Storage.putInt(Util.getSharedPreference(), Constants.PREFERENCE_PRE_NOTIFICATION_DAYS, days);
 
-            Toast toast = Toast.makeText(getApplicationContext(), Constants.NOTIFICATION_SUCCESSFULLY_UPDATED, Toast.LENGTH_SHORT);
-            toast.show();
+            String message = days == 0 ? "Early reminder turned off"
+                    : "You'll also get a reminder " + days + (days == 1 ? " day" : " days") + " before";
+            Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
             Storage.setDbBackupTime(new Date());
             setResult(RESULT_OK, intent);
         }

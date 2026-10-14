@@ -229,12 +229,12 @@ public class Storage {
         if (is24HourFormat) {
             return Util.getTwoDigitsString(hours) + ":" + Util.getTwoDigitsString(minutes);
         } else {
-            String amOrPm = "AM";
-            if (hours > 12) {
-                hours = hours - 12;
-                amOrPm = "PM";
+            String amOrPm = hours >= 12 ? "PM" : "AM";
+            hours = hours % 12;
+            if (hours == 0) {
+                hours = 12;
             }
-            return Util.getTwoDigitsString(hours) + ":" + Util.getTwoDigitsString(minutes) + " " + amOrPm;
+            return hours + ":" + Util.getTwoDigitsString(minutes) + " " + amOrPm;
         }
     }
 

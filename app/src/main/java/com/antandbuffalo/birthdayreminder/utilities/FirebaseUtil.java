@@ -73,14 +73,8 @@ public class FirebaseUtil {
         });
     }
 
-    public static void restoreUserPreferenceFromFirebase(FirebaseFirestore firebaseFirestore, FirebaseUser firebaseUser, FirebaseHandler firebaseHandler) {
-        DocumentReference documentReference = firebaseFirestore.collection(Util.getCollectionId(firebaseUser)).document(Constants.firebaseDocumentSettings);
-        documentReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                firebaseHandler.onCompleteUserPreferenceSync(task);
-            }
-        });
+    public static Task<DocumentSnapshot> getDocument(FirebaseFirestore firebaseFirestore, FirebaseUser firebaseUser, String document) {
+        return firebaseFirestore.collection(Util.getCollectionId(firebaseUser)).document(document).get();
     }
 
     public static void restoreDateOfBirthAndUserPreferenceFromFirebase(FirebaseFirestore firebaseFirestore, FirebaseUser firebaseUser, FirebaseHandler firebaseHandler) {

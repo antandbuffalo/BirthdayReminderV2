@@ -164,6 +164,6 @@ public class AddNewViewModel extends ViewModel {
     }
 
     public String getAddSuccessMessage(Context context) {
-        return Constants.NOTIFICATION_ADD_MEMBER_SUCCESS + ". " + Util.getNotificationMessageWithTime(context, dateOfBirth.getDobDate());
+        return Util.getSavedMessage(context, dateOfBirth);
     }
 }

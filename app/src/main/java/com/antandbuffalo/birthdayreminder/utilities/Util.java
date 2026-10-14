@@ -212,7 +212,6 @@ public class Util {
             // Get the text file
             File file = new File(sdcard, Constants.FOLDER_NAME + "/" + fileName);
             if (!file.exists()) {
-                Toast.makeText(DataHolder.getInstance().getAppContext(), Constants.ERROR_NO_BACKUP_FILE, Toast.LENGTH_SHORT).show();
                 return Constants.ERROR_NO_BACKUP_FILE;
             }
             BufferedReader br = new BufferedReader(new BufferedReader(new FileReader(file)));
@@ -288,7 +287,7 @@ public class Util {
     public static File writeToFile(Context context, String backupFileNameSuffix) {
         if(!Util.createEmptyFolder()) {
             if(context != null) {
-                Toast.makeText(context, "Not able to create folder", Toast.LENGTH_LONG).show();
+                Toast.makeText(context, "Couldn't create the backup folder", Toast.LENGTH_LONG).show();
             }
             return null;
         }
@@ -347,7 +346,7 @@ public class Util {
     public static String updateFile(DateOfBirth dob) {
         String returnValue = "";
         if(!Util.createEmptyFolder()) {
-            return "Not able to create folder";
+            return "Couldn't create the backup folder";
         }
         File sdcard = Environment.getExternalStorageDirectory();
         long currentMillis = System.currentTimeMillis();
@@ -681,37 +680,11 @@ public class Util {
 //        return false;
 //    }
 
-    public static String getNotificationMessageWithTime(Context context, Date dob) {
-        boolean is24HourFormat = android.text.format.DateFormat.is24HourFormat(context);
-        String time = "";
-        Integer hours, minutes;
-        hours = Storage.getNotificationHours();
-        minutes = Storage.getNotificationMinutes();
-        if(is24HourFormat) {
-            time = Util.getTwoDigitsString(hours)
-                    + ":"
-                    + Util.getTwoDigitsString(minutes);
-        }
-        else {
-            if(hours > 12) {
-                hours = hours - 12;
-                time = Util.getTwoDigitsString(hours)
-                        + ":"
-                        + Util.getTwoDigitsString(minutes)
-                        + "pm";
-            }
-            else {
-                time = Util.getTwoDigitsString(hours)
-                        + ":"
-                        + Util.getTwoDigitsString(minutes)
-                        + "am";
-            }
-        }
-        String message = "You will get notified at "
-                + time
-                + " on "
-                + Util.getStringFromDate(dob, "dd MMM") + " every year";
-        return  message;
+    // Short enough to fit a toast: "Priya saved. Reminder on 14 Oct at 8:00 AM"
+    public static String getSavedMessage(Context context, DateOfBirth dateOfBirth) {
+        return dateOfBirth.getName() + " saved. Reminder on "
+                + Util.getStringFromDate(dateOfBirth.getDobDate(), "d MMM")
+                + " at " + Storage.getNotificationTime(context);
     }
 
     public static Map<String, DateOfBirth> getDateOfBirthMap() {

@@ -60,13 +60,14 @@ public class NotificationFrequency extends AppCompatActivity {
         int minutes = settings.getInt(Constants.PREFERENCE_NOTIFICATION_TIME_MINUTES, 0);
 
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        Util.setRepeatingAlarm(getApplicationContext(), alarmManager, hours, minutes, numberPicker.getValue());
+        int perDay = numberPicker.getValue();
+        Util.setRepeatingAlarm(getApplicationContext(), alarmManager, hours, minutes, perDay);
 
         SharedPreferences.Editor editor = settings.edit();
-        editor.putInt(Constants.PREFERENCE_NOTIFINCATION_FREQUENCY, numberPicker.getValue());
+        editor.putInt(Constants.PREFERENCE_NOTIFINCATION_FREQUENCY, perDay);
         editor.commit();
-        Toast toast = Toast.makeText(getApplicationContext(), "Number of Notifications per day updated Successfully", Toast.LENGTH_SHORT);
-        toast.show();
+        String message = perDay == 1 ? "Reminders now once a day" : "Reminders now " + perDay + " times a day";
+        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
     }
 
     @Override

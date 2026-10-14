@@ -94,8 +94,7 @@ public class NotificationTime extends AppCompatActivity {
         editor.putInt(Constants.PREFERENCE_NOTIFICATION_TIME_HOURS, hour);
         editor.putInt(Constants.PREFERENCE_NOTIFICATION_TIME_MINUTES, minute);
         editor.commit();
-        Toast toast = Toast.makeText(getApplicationContext(), "Notification Time updated successfully", Toast.LENGTH_SHORT);
-        toast.show();
+        Toast.makeText(getApplicationContext(), "Reminders now at " + Storage.getNotificationTime(getApplicationContext()), Toast.LENGTH_SHORT).show();
     }
 
     public void populateInitialValues(TimePicker timePicker, int hours, int minutes, boolean is24Hours) {

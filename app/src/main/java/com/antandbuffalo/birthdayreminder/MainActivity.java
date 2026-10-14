@@ -256,7 +256,7 @@ public class MainActivity extends AppCompatActivity {
                     Log.d("FirebaseAuth", user.getUid());
                 }
             } else {
-                Toast.makeText(DataHolder.getInstance().getAppContext(), "Not able to sign in", Toast.LENGTH_SHORT).show();
+                Toast.makeText(DataHolder.getInstance().getAppContext(), Constants.SIGN_IN_FAILED, Toast.LENGTH_SHORT).show();
             }
         } else if (requestCode == Constants.ADD_NEW_MEMBER && resultCode == RESULT_OK) {
             ReviewPrompt.markPositiveMoment();

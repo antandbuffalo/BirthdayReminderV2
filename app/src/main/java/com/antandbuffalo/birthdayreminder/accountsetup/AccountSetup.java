@@ -167,7 +167,7 @@ public class AccountSetup extends AppCompatActivity implements FirebaseHandler {
             updateProfileToFirebase(FirebaseFirestore.getInstance(), FirebaseAuth.getInstance().getCurrentUser());
             getUserPreferenceFromFirebase();
         } else {
-            Toast.makeText(DataHolder.getInstance().getAppContext(), "Not able to sign in", Toast.LENGTH_SHORT).show();
+            Toast.makeText(DataHolder.getInstance().getAppContext(), Constants.SIGN_IN_FAILED, Toast.LENGTH_SHORT).show();
         }
     }
 
