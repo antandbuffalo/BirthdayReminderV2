@@ -69,6 +69,7 @@ public class Constants {
     public static final String SETTINGS_DELETE_ALL = "DELETE_ALL";
     public static final String SETTINGS_SELECT_THEME = "SELECT_THEME";
     public static final String SETTINGS_ABOUT = "ABOUT";
+    public static final String SETTINGS_WEB = "WEB";
     public static final String SETTINGS_MODIFY_TODAY = "SETTINGS_MODIFY_TODAY";
     public static final String SETTINGS_NOTIFICATION = "SETTINGS_NOTIFICATION";
     public static final String SETTINGS_NOTIFICATION_TIME = "SETTINGS_NOTIFICATION_TIME";

@@ -1,7 +1,5 @@
 package com.antandbuffalo.birthdayreminder;
 
-import static com.antandbuffalo.birthdayreminder.utilities.Constants.WEB_URL;
-
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlarmManager;
@@ -10,7 +8,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
@@ -26,7 +23,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
 
-import com.antandbuffalo.birthdayreminder.about.About;
 import com.antandbuffalo.birthdayreminder.accountsetup.AccountSetup;
 import com.antandbuffalo.birthdayreminder.addnew.AddNew;
 import com.antandbuffalo.birthdayreminder.database.DBHelper;
@@ -227,24 +223,9 @@ public class MainActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         switch (id) {
-            case R.id.action_add_new: {
-                Intent intent = new Intent(this, AddNew.class);
-                startActivityForResult(intent, Constants.ADD_NEW_MEMBER);
-                return true;
-            }
             case R.id.action_settings: {
                 Intent settings = new Intent(this, Settings.class);
                 startActivity(settings);
-                return true;
-            }
-            case R.id.action_web: {
-                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(WEB_URL));
-                startActivity(browserIntent);
-                return true;
-            }
-            case R.id.action_about: {
-                Intent intent = new Intent(this, About.class);
-                startActivity(intent);
                 return true;
             }
         }

@@ -3,6 +3,7 @@ package com.antandbuffalo.birthdayreminder.settings;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -80,6 +81,9 @@ public class Settings extends AppCompatActivity {
                 else if (selectedOption.getKey().equalsIgnoreCase(Constants.SETTINGS_ABOUT)) {
                     Intent intent = new Intent(view.getContext(), About.class);
                     startActivityForResult(intent, Constants.REFRESH_SETTINGS);
+                }
+                else if (selectedOption.getKey().equalsIgnoreCase(Constants.SETTINGS_WEB)) {
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(Constants.WEB_URL)));
                 }
                 else if (selectedOption.getKey().equalsIgnoreCase(Constants.SETTINGS_SELECT_THEME)) {
                     selectTheme();

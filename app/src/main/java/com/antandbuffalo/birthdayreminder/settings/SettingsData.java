@@ -98,6 +98,22 @@ public class SettingsData {
         datum.setIconId(R.drawable.ic_delete_sweep_primary_dark);
         data.add(datum);
 
+        datum = SettingsModel.newInstance();
+        datum.setKey(Constants.SETTINGS_WEB);
+        datum.setTitle("Web Version");
+        datum.setSubTitle("");
+        datum.setSno(8);
+        datum.setIconId(R.drawable.ic_language_primary_dark);
+        data.add(datum);
+
+        datum = SettingsModel.newInstance();
+        datum.setKey(Constants.SETTINGS_ABOUT);
+        datum.setTitle("About");
+        datum.setSubTitle("");
+        datum.setSno(9);
+        datum.setIconId(R.drawable.ic_info_primary_dark);
+        data.add(datum);
+
         return data;
     }
 }
