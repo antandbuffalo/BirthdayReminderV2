@@ -138,7 +138,6 @@ public class Constants {
 
     public static final String NOTIFICATION_DELETE_1001 = "All Datas deleted";
     public static final String NOTIFICATION_ADD_MEMBER_SUCCESS = "Successfully added";
-    public static final String NOTIFICATION_DELETE_MEMBER_SUCCESS = "Successfully Deleted";
     public static final String NOTIFICATION_UPDATE_MEMBER_SUCCESS = "Successfully Updated";
 
     public static final String NOTIFICATION_SUCCESSFULLY_UPDATED = "Successfully Updated";

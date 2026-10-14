@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- "Already saved" pop-up shown by DuplicateDialog on the add and edit screens -->
+<!-- Shared pop-up shown by PopupDialog: "Already saved", "Delete Name?" and "Delete all" -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -9,24 +9,24 @@
     android:padding="24dp">
 
     <ImageView
+        android:id="@+id/popupIcon"
         android:layout_width="52dp"
         android:layout_height="52dp"
         android:background="@drawable/today_cake_circle"
         android:padding="12dp"
-        app:srcCompat="@drawable/ic_app_icon_clipart_primary_dark"
         app:tint="@color/white" />
 
     <TextView
+        android:id="@+id/popupTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="14dp"
-        android:text="Already saved"
         android:textColor="@color/aandb_primay_text_color"
         android:textSize="20sp"
         android:textStyle="bold" />
 
     <TextView
-        android:id="@+id/duplicateMessage"
+        android:id="@+id/popupMessage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
@@ -35,14 +35,16 @@
         android:textSize="14sp" />
 
     <FrameLayout
+        android:id="@+id/popupRowCard"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:background="@drawable/today_card_bg"
-        android:backgroundTint="@color/aandb_dob_preview">
+        android:backgroundTint="@color/aandb_dob_preview"
+        android:visibility="gone">
 
         <include
-            android:id="@+id/duplicateRow"
+            android:id="@+id/popupRow"
             layout="@layout/list_item_default" />
     </FrameLayout>
 
@@ -53,13 +55,12 @@
         android:orientation="horizontal">
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/viewExisting"
+            android:id="@+id/popupSecondary"
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_width="0dp"
             android:layout_height="48dp"
             android:layout_marginEnd="6dp"
             android:layout_weight="1"
-            android:text="View existing"
             android:insetTop="0dp"
             android:insetBottom="0dp"
             android:letterSpacing="0"
@@ -72,13 +73,12 @@
             app:strokeColor="@color/aandb_field_stroke" />
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/changeDetails"
+            android:id="@+id/popupPrimary"
             android:layout_width="0dp"
             android:layout_height="48dp"
             android:layout_marginStart="6dp"
             android:layout_weight="1"
             android:backgroundTint="@color/colorAccent"
-            android:text="Change details"
             android:insetTop="0dp"
             android:insetBottom="0dp"
             android:letterSpacing="0"

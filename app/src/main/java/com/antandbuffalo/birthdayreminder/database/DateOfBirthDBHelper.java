@@ -307,9 +307,8 @@ public class DateOfBirthDBHelper {
         return dobList;
     }
 
-    public static String deleteAll() {
-        int numberOfRowsDeleted = DBHelper.deleteAll(Constants.TABLE_DATE_OF_BIRTH);
-        return Constants.NOTIFICATION_DELETE_1001;
+    public static void deleteAll() {
+        DBHelper.deleteAll(Constants.TABLE_DATE_OF_BIRTH);
     }
 
     public static Boolean deleteRecordForTheId(long givenId) {

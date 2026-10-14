@@ -1,6 +1,5 @@
 package com.antandbuffalo.birthdayreminder.update;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
@@ -20,7 +19,6 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.antandbuffalo.birthdayreminder.R;
@@ -29,6 +27,7 @@ import com.antandbuffalo.birthdayreminder.models.DateOfBirth;
 import com.antandbuffalo.birthdayreminder.sharewish.ShareWish;
 import com.antandbuffalo.birthdayreminder.upcoming.UpcomingListAdapter;
 import com.antandbuffalo.birthdayreminder.utilities.Constants;
+import com.antandbuffalo.birthdayreminder.utilities.DeleteDialog;
 import com.antandbuffalo.birthdayreminder.utilities.DuplicateDialog;
 import com.antandbuffalo.birthdayreminder.utilities.ReviewPrompt;
 import com.antandbuffalo.birthdayreminder.utilities.Storage;
@@ -274,32 +273,15 @@ public class Update extends AppCompatActivity {
     }
 
     public void delete() {
-        androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(Update.this);
-        builder.setTitle("Confirmation")
-            .setMessage("Are you sure you want to delete " + currentDOB.getName() + "?")
-            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    updateViewModel.delete(currentDOB.getDobId());
-                    Storage.setDbBackupTime(new Date());
-                    currentDOB = null;
-                    Toast toast = Toast.makeText(getApplicationContext(), Constants.NOTIFICATION_DELETE_MEMBER_SUCCESS, Toast.LENGTH_SHORT);
-                    toast.show();
-                    setResult(RESULT_OK, intent);
-                    clearInputs();
-                    finish();
-                }
-            })
-            .setNegativeButton("No", null);
-
-        androidx.appcompat.app.AlertDialog dialog = builder.create();
-        dialog.setOnShowListener( new DialogInterface.OnShowListener() {
-            @Override
-            public void onShow(DialogInterface arg0) {
-                dialog.getButton(android.app.AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(Update.this, R.color.dark_gray));
-            }
+        DeleteDialog.show(this, currentDOB, currentDayOfYear, recentDayOfYear, () -> {
+            updateViewModel.delete(currentDOB.getDobId());
+            Storage.setDbBackupTime(new Date());
+            Toast.makeText(getApplicationContext(), currentDOB.getName() + " deleted", Toast.LENGTH_SHORT).show();
+            currentDOB = null;
+            setResult(RESULT_OK, intent);
+            clearInputs();
+            finish();
         });
-        dialog.show();
     }
 
     @Override

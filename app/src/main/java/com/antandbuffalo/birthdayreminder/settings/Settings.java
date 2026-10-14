@@ -18,6 +18,7 @@ import androidx.core.content.ContextCompat;
 import com.antandbuffalo.birthdayreminder.R;
 import com.antandbuffalo.birthdayreminder.about.About;
 import com.antandbuffalo.birthdayreminder.backup.Backup;
+import com.antandbuffalo.birthdayreminder.database.DBHelper;
 import com.antandbuffalo.birthdayreminder.database.DateOfBirthDBHelper;
 import com.antandbuffalo.birthdayreminder.models.SettingsModel;
 import com.antandbuffalo.birthdayreminder.notificationfrequency.NotificationFrequency;
@@ -25,6 +26,7 @@ import com.antandbuffalo.birthdayreminder.notificationtime.NotificationTime;
 import com.antandbuffalo.birthdayreminder.prenotification.PreNotification;
 import com.antandbuffalo.birthdayreminder.utilities.Constants;
 import com.antandbuffalo.birthdayreminder.utilities.DataHolder;
+import com.antandbuffalo.birthdayreminder.utilities.DeleteDialog;
 import com.antandbuffalo.birthdayreminder.utilities.Storage;
 import com.antandbuffalo.birthdayreminder.utilities.ThemeOptions;
 import com.antandbuffalo.birthdayreminder.utilities.Util;
@@ -89,30 +91,17 @@ public class Settings extends AppCompatActivity {
                     selectTheme();
                 }
                 else if (selectedOption.getKey().equalsIgnoreCase(Constants.SETTINGS_DELETE_ALL)) {
-                    //put confirmation here
-                    androidx.appcompat.app.AlertDialog.Builder alertDialogBuilder = new androidx.appcompat.app.AlertDialog.Builder(Settings.this);
-                        // .setIcon(android.R.drawable.ic_dialog_alert)
-                        // .setIconAttribute(android.R.attr.alertDialogIcon)
-                    alertDialogBuilder.setTitle("Confirmation")
-                        .setMessage("Are you sure you want to delete all?")
-                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                Toast.makeText(Settings.this, DateOfBirthDBHelper.deleteAll(), Toast.LENGTH_SHORT).show();
-                                DataHolder.getInstance().refresh = true;
-                                Storage.setDbBackupTime(new Date());
-                            }
-                        })
-                        .setNegativeButton("No", null);
-
-                    androidx.appcompat.app.AlertDialog dialog = alertDialogBuilder.create();
-                    dialog.setOnShowListener( new DialogInterface.OnShowListener() {
-                        @Override
-                        public void onShow(DialogInterface arg0) {
-                            dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(Settings.this, R.color.dark_gray));
-                        }
+                    long count = DBHelper.getNumberOfRows(Constants.TABLE_DATE_OF_BIRTH);
+                    if (count == 0) {
+                        Toast.makeText(Settings.this, "No birthdays to delete", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    DeleteDialog.showAll(Settings.this, count, () -> {
+                        DateOfBirthDBHelper.deleteAll();
+                        Toast.makeText(Settings.this, "All birthdays deleted", Toast.LENGTH_SHORT).show();
+                        DataHolder.getInstance().refresh = true;
+                        Storage.setDbBackupTime(new Date());
                     });
-                    dialog.show();
                 }
             }
         });
