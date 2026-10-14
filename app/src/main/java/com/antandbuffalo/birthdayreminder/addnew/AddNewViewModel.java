@@ -44,8 +44,8 @@ public class AddNewViewModel extends ViewModel {
         return Util.getMonths();
     }
 
-    public Boolean isDOBAvailable(DateOfBirth dob) {
-        return !DateOfBirthDBHelper.isUniqueDateOfBirthIgnoreCase(dob);
+    public DateOfBirth findDuplicate(DateOfBirth dob) {
+        return DateOfBirthDBHelper.findDuplicate(dob, true);
     }
 
     public Boolean isNameEmpty() {
@@ -132,7 +132,7 @@ public class AddNewViewModel extends ViewModel {
         birthdayInfo.isRemoveYear = (flag != null)? flag : birthdayInfo.isRemoveYear;
     }
     public void setBirthdayInfoName(String name) {
-        setBirthdayInfo(name, null, null, null, null);
+        setBirthdayInfo(name.trim(), null, null, null, null);
     }
     public void setBirthdayInfoDate(String date) {
         setBirthdayInfo(null, date, null, null, null);

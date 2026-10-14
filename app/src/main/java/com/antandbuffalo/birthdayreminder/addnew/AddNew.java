@@ -30,6 +30,7 @@ import com.antandbuffalo.birthdayreminder.models.DateOfBirth;
 import com.antandbuffalo.birthdayreminder.upcoming.UpcomingListAdapter;
 import com.antandbuffalo.birthdayreminder.utilities.Constants;
 import com.antandbuffalo.birthdayreminder.utilities.DataHolder;
+import com.antandbuffalo.birthdayreminder.utilities.DuplicateDialog;
 import com.antandbuffalo.birthdayreminder.utilities.Storage;
 import com.antandbuffalo.birthdayreminder.utilities.Util;
 import com.google.android.gms.ads.AdRequest;
@@ -179,15 +180,9 @@ public class AddNew extends AppCompatActivity {
             return;
         }
 
-        if (addNewViewModel.isDOBAvailable(addNewViewModel.dateOfBirth)) {
-            //put confirmation here
-            new AlertDialog.Builder(AddNew.this)
-                    //.setIcon(android.R.drawable.ic_dialog_info)
-                    .setIconAttribute(android.R.attr.alertDialogIcon)
-                    .setTitle(Constants.ERROR)
-                    .setMessage(Constants.USER_EXIST)
-                    .setPositiveButton(Constants.OK, null)
-                    .show();
+        DateOfBirth duplicate = addNewViewModel.findDuplicate(addNewViewModel.dateOfBirth);
+        if (duplicate != null) {
+            DuplicateDialog.show(this, duplicate, currentDayOfYear, recentDayOfYear);
         } else {
             final String fileName = addNewViewModel.getFileName();
             if (fileName != null) {

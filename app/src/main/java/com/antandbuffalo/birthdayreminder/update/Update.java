@@ -1,6 +1,5 @@
 package com.antandbuffalo.birthdayreminder.update;
 
-import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -30,6 +29,7 @@ import com.antandbuffalo.birthdayreminder.models.DateOfBirth;
 import com.antandbuffalo.birthdayreminder.sharewish.ShareWish;
 import com.antandbuffalo.birthdayreminder.upcoming.UpcomingListAdapter;
 import com.antandbuffalo.birthdayreminder.utilities.Constants;
+import com.antandbuffalo.birthdayreminder.utilities.DuplicateDialog;
 import com.antandbuffalo.birthdayreminder.utilities.ReviewPrompt;
 import com.antandbuffalo.birthdayreminder.utilities.Storage;
 import com.antandbuffalo.birthdayreminder.utilities.Util;
@@ -255,15 +255,9 @@ public class Update extends AppCompatActivity {
             //show error
             Toast.makeText(getApplicationContext(), Constants.NAME_EMPTY, Toast.LENGTH_SHORT).show();
         } else {
-            if (updateViewModel.isDOBAvailable(updateViewModel.dateOfBirth)) {
-                //put confirmation here
-                new AlertDialog.Builder(Update.this)
-                        //.setIcon(android.R.drawable.ic_dialog_info)
-                        // .setIconAttribute(android.R.attr.alertDialogIcon)
-                        .setTitle(Constants.ERROR)
-                        .setMessage(Constants.USER_EXIST)
-                        .setPositiveButton(Constants.OK, null)
-                        .show();
+            DateOfBirth duplicate = updateViewModel.findDuplicate(updateViewModel.dateOfBirth);
+            if (duplicate != null) {
+                DuplicateDialog.show(this, duplicate, currentDayOfYear, recentDayOfYear);
             } else {
                 Log.i("after update", currentDOB.getName());
                 updateViewModel.update();

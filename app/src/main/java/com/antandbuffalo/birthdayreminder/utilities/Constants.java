@@ -144,9 +144,6 @@ public class Constants {
     public static final String NOTIFICATION_SUCCESSFULLY_UPDATED = "Successfully Updated";
 
     public static final String NAME_EMPTY = "Please enter Name";
-    public static final String ERROR = "Error";
-    public static final String USER_EXIST = "Same Date of Birth already available";
-    public static final String OK = "OK";
 
     public static final String PREFERENCE_NAME = "BirthdayReminder";
     public static final String PREFERENCE_IS_SECONDTIME = "isSecondTime";

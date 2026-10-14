@@ -109,6 +109,27 @@ public class DateOfBirthDBHelper {
         return true;
     }
 
+    //returns the saved entry with the same name, date and year option, or null
+    //the entry being edited (same id) is not counted as a duplicate
+    public static DateOfBirth findDuplicate(DateOfBirth dob, boolean ignoreCase) {
+        SQLiteDatabase db = DBHelper.getInstace().getReadableDatabase();
+
+        String[] columns = {Constants.COLUMN_DOB_ID, Constants.COLUMN_DOB_NAME, Constants.COLUMN_DOB_DATE, Constants.COLUMN_DOB_OPTIONAL_YEAR};
+
+        String selection = "TRIM(" + Constants.COLUMN_DOB_NAME + ") =?" + (ignoreCase ? " COLLATE NOCASE" : "")
+                + " AND " + Constants.COLUMN_DOB_DATE + " =?"
+                + " AND IFNULL(" + Constants.COLUMN_DOB_OPTIONAL_YEAR + ", 0) = " + (dob.getRemoveYear() ? 1 : 0)
+                + " AND " + Constants.COLUMN_DOB_ID + " !=?";
+
+        String[] selectionArgs = {dob.getName(), Util.getStringFromDate(dob.getDobDate()), String.valueOf(dob.getDobId())};
+        Cursor cursor = db.query(Constants.TABLE_DATE_OF_BIRTH, columns, selection, selectionArgs, null, null, null, "1");
+
+        List<DateOfBirth> dobList = getDateOfBirthsFromCursor(cursor);
+        cursor.close();
+        db.close();
+        return dobList.isEmpty() ? null : dobList.get(0);
+    }
+
     public static long insertDOB(DateOfBirth dateOfBirth) {
         DBHelper dbHelper = DBHelper.getInstace();
         SQLiteDatabase db = dbHelper.getWritableDatabase();
