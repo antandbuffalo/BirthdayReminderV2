@@ -2,14 +2,12 @@ package com.antandbuffalo.birthdayreminder.notificationtime;
 
 import android.app.AlarmManager;
 import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
+import androidx.core.text.HtmlCompat;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
@@ -26,8 +24,14 @@ import com.google.android.gms.ads.AdView;
 import java.util.Date;
 
 public class NotificationTime extends AppCompatActivity {
-    Intent intent;
-    boolean is24HourFormat;
+    private static final int MAX_PER_DAY = 24;
+
+    TimePicker picker;
+    TextView timesLine;
+    TextView perDayValue;
+    View perDayMinus;
+    View perDayPlus;
+    int perDay;
     AdView mAdView;
 
     @Override
@@ -40,16 +44,68 @@ public class NotificationTime extends AppCompatActivity {
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close_white);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        intent = new Intent();
+        TextView heading = findViewById(R.id.timeHeading);
+        heading.setText("Remind me at");
+        // rounded card corners also clip the picker's teal header
+        findViewById(R.id.timeCard).setClipToOutline(true);
 
-        TimePicker picker=(TimePicker)findViewById(R.id.notificationTimePicker);
-        is24HourFormat = android.text.format.DateFormat.is24HourFormat(this);
-        picker.setIs24HourView(is24HourFormat);
+        timesLine = findViewById(R.id.timesLine);
+        picker = findViewById(R.id.notificationTimePicker);
+        picker.setIs24HourView(android.text.format.DateFormat.is24HourFormat(this));
+        picker.setHour(Storage.getNotificationHours());
+        picker.setMinute(Storage.getNotificationMinutes());
+        picker.setOnTimeChangedListener((view, hour, minute) -> showTimesLine());
 
-        populateInitialValues(picker, Util.getSharedPreference().getInt(Constants.PREFERENCE_NOTIFICATION_TIME_HOURS, 0), Util.getSharedPreference().getInt(Constants.PREFERENCE_NOTIFICATION_TIME_MINUTES, 0), is24HourFormat);
+        perDayValue = findViewById(R.id.perDayValue);
+        perDayMinus = findViewById(R.id.perDayMinus);
+        perDayPlus = findViewById(R.id.perDayPlus);
+        perDayMinus.setOnClickListener(v -> setPerDay(perDay - 1));
+        perDayPlus.setOnClickListener(v -> setPerDay(perDay + 1));
+        setPerDay(Storage.getNotificationPerDay());
 
         loadAd();
         showSnowFlakes();
+    }
+
+    // 1 to 24; the − / + buttons fade at the ends
+    private void setPerDay(int value) {
+        perDay = Math.max(1, Math.min(MAX_PER_DAY, value));
+        perDayValue.setText(String.valueOf(perDay));
+        setStepperEnabled(perDayMinus, perDay > 1);
+        setStepperEnabled(perDayPlus, perDay < MAX_PER_DAY);
+        showTimesLine();
+    }
+
+    private void setStepperEnabled(View button, boolean enabled) {
+        button.setEnabled(enabled);
+        button.setAlpha(enabled ? 1f : 0.4f);
+    }
+
+    // one line that follows "Times a day": the first reminder, and how the rest are spread over the day
+    private void showTimesLine() {
+        int hour = picker.getHour();
+        int minute = picker.getMinute();
+        String first = "<b>" + Storage.formatTime(this, hour, minute) + "</b>";
+        String line = Util.capitalize(Storage.getTimesADayLabel(perDay));
+        if (perDay <= 1) {
+            line += " at " + first;
+        } else if (perDay == 2) {
+            line += ": " + first + " and <b>" + Storage.formatTime(this, (hour + 12) % 24, minute) + "</b>";
+        } else {
+            line += ", " + everyLabel(perDay) + " from " + first;
+        }
+        timesLine.setText(HtmlCompat.fromHtml(line, HtmlCompat.FROM_HTML_MODE_LEGACY));
+    }
+
+    // 24 / perDay hours; uneven gaps are rounded to the nearest half hour, e.g. 7 a day -> about every 3½ hours
+    private String everyLabel(int perDay) {
+        if (24 % perDay == 0) {
+            int hours = 24 / perDay;
+            return hours == 1 ? "every hour" : "every " + hours + " hours";
+        }
+        int halfHours = Math.round(48f / perDay);
+        String hours = halfHours / 2 + (halfHours % 2 == 1 ? "½" : "");
+        return "about every " + hours + (hours.equals("1") ? " hour" : " hours");
     }
 
     @Override
@@ -60,53 +116,24 @@ public class NotificationTime extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        Log.d("BRJB", item.getItemId() + "");
         int id = item.getItemId();
         if (id == R.id.action_menu_done) {
             saveNotificationTime();
             Storage.setDbBackupTime(new Date());
-            setResult(RESULT_OK, intent);
-        }
-        else if(id == android.R.id.home) {
-            Log.d("BRJB", item.getItemId() + " : back");
-            setResult(RESULT_CANCELED, intent);
         }
         finish();
         return true;
     }
 
     public void saveNotificationTime() {
-        TimePicker picker=(TimePicker)findViewById(R.id.notificationTimePicker);
-        int hour, minute;
-        if (Build.VERSION.SDK_INT >= 23 ){
-            hour = picker.getHour();
-            minute = picker.getMinute();
-        }
-        else{
-            hour = picker.getCurrentHour();
-            minute = picker.getCurrentMinute();
-        }
+        int hour = picker.getHour();
+        int minute = picker.getMinute();
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        int frequency = Storage.getNotificationFrequency();
-        Util.setRepeatingAlarm(getApplicationContext(), alarmManager, hour, minute, frequency);
-
-        SharedPreferences.Editor editor = Util.getSharedPreference().edit();
-        editor.putInt(Constants.PREFERENCE_NOTIFICATION_TIME_HOURS, hour);
-        editor.putInt(Constants.PREFERENCE_NOTIFICATION_TIME_MINUTES, minute);
-        editor.commit();
-        Toast.makeText(getApplicationContext(), "Reminders now at " + Storage.getNotificationTime(getApplicationContext()), Toast.LENGTH_SHORT).show();
-    }
-
-    public void populateInitialValues(TimePicker timePicker, int hours, int minutes, boolean is24Hours) {
-        if (Build.VERSION.SDK_INT >= 23 ){
-            timePicker.setHour(hours);
-            timePicker.setMinute(minutes);
-        }
-        else {
-            timePicker.setCurrentHour(hours);
-            timePicker.setCurrentMinute(minutes);
-        }
-        timePicker.setIs24HourView(is24Hours);
+        Util.setRepeatingAlarm(getApplicationContext(), alarmManager, hour, minute, perDay);
+        Storage.setNotificationPerDay(perDay);
+        Storage.setNotificationHours(hour);
+        Storage.setNotificationMinutes(minute);
+        Toast.makeText(getApplicationContext(), "Reminders now at " + Storage.formatTime(this, hour, minute) + ", " + Storage.getTimesADayLabel(perDay), Toast.LENGTH_SHORT).show();
     }
 
     public void loadAd() {

@@ -27,7 +27,6 @@ import com.antandbuffalo.birthdayreminder.backup.Backup;
 import com.antandbuffalo.birthdayreminder.database.DBHelper;
 import com.antandbuffalo.birthdayreminder.database.DateOfBirthDBHelper;
 import com.antandbuffalo.birthdayreminder.models.SettingsModel;
-import com.antandbuffalo.birthdayreminder.notificationfrequency.NotificationFrequency;
 import com.antandbuffalo.birthdayreminder.notificationtime.NotificationTime;
 import com.antandbuffalo.birthdayreminder.prenotification.PreNotification;
 import com.antandbuffalo.birthdayreminder.utilities.Constants;
@@ -65,7 +64,6 @@ public class Settings extends AppCompatActivity {
     private static final Map<String, Class<?>> SCREENS = new HashMap<String, Class<?>>() {{
         put(Constants.SETTINGS_NOTIFICATION, PreNotification.class);
         put(Constants.SETTINGS_NOTIFICATION_TIME, NotificationTime.class);
-        put(Constants.SETTINGS_NOTIFICATION_FREQUENCY, NotificationFrequency.class);
         put(Constants.SETTINGS_WISH_TEMPLATE, WishTemplate.class);
         put(Constants.settingsBackup, Backup.class);
         put(Constants.SETTINGS_ABOUT, About.class);

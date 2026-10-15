@@ -30,8 +30,7 @@ public class SettingsData {
 
         List<SettingsModel> reminders = new ArrayList<>();
         reminders.add(row(Constants.SETTINGS_NOTIFICATION, "Remind me", getRemindMe(Storage.getPreNotificationDays()), R.drawable.ic_settings_remind));
-        reminders.add(row(Constants.SETTINGS_NOTIFICATION_TIME, "Reminder time", Storage.getNotificationTime(context), R.drawable.ic_settings_time));
-        reminders.add(row(Constants.SETTINGS_NOTIFICATION_FREQUENCY, "Times a day", Storage.getNotificationFrequency() + "", R.drawable.ic_settings_repeat));
+        reminders.add(row(Constants.SETTINGS_NOTIFICATION_TIME, "Reminder time", Storage.getNotificationTime(context) + ", " + Storage.getTimesADayLabel(Storage.getNotificationPerDay()), R.drawable.ic_settings_time));
         sections.put("Reminders", reminders);
 
         List<SettingsModel> wishes = new ArrayList<>();

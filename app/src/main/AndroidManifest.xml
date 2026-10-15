@@ -36,11 +36,7 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".notificationtime.NotificationTime"
-            android:label="Notification Time"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".notificationfrequency.NotificationFrequency"
-            android:label="Notification Frequency"
+            android:label="Reminder time"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".update.Update"

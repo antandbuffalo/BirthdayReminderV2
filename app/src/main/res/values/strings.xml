@@ -38,7 +38,6 @@
 <!--    <string name="ad_share_wish">ca-app-pub-3940256099942544/6300978111</string>-->
 <!--    <string name="ad_about">ca-app-pub-3940256099942544/6300978111</string>-->
 <!--    <string name="ad_notificationtime">ca-app-pub-3940256099942544/6300978111</string>-->
-<!--    <string name="ad_notificationfrequency">ca-app-pub-3940256099942544/6300978111</string>-->
 <!--    <string name="ad_settings">ca-app-pub-3940256099942544/6300978111</string>-->
 <!--    <string name="ad_backup">ca-app-pub-3940256099942544/6300978111</string>-->
 <!--    <string name="ad_account_setup">ca-app-pub-3940256099942544/6300978111</string>-->
@@ -54,7 +53,6 @@
 <!--    <string name="ad_share_wish">ca-app-pub-7116389331562728/3988631148</string>-->
 <!--    <string name="ad_about">ca-app-pub-7116389331562728/4955417829</string>-->
 <!--    <string name="ad_notificationtime">ca-app-pub-7116389331562728/2215332125</string>-->
-<!--    <string name="ad_notificationfrequency">ca-app-pub-7116389331562728/4230766154</string>-->
 <!--    <string name="ad_settings">ca-app-pub-7116389331562728/2067178109</string>-->
 <!--    <string name="ad_backup">ca-app-pub-7116389331562728/8441014762</string>-->
 <!--    <string name="ad_account_setup">ca-app-pub-7116389331562728/8249443071</string>-->
@@ -70,7 +68,6 @@
         <string name="ad_share_wish">ca-app-pub-2477570555850305/3395272768</string>
         <string name="ad_about">ca-app-pub-2477570555850305/3395272768</string>
         <string name="ad_notificationtime">ca-app-pub-2477570555850305/3395272768</string>
-        <string name="ad_notificationfrequency">ca-app-pub-2477570555850305/3395272768</string>
         <string name="ad_settings">ca-app-pub-2477570555850305/3395272768</string>
         <string name="ad_backup">ca-app-pub-2477570555850305/3395272768</string>
         <string name="ad_account_setup">ca-app-pub-2477570555850305/3395272768</string>

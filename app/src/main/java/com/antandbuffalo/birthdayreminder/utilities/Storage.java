@@ -127,6 +127,10 @@ public class Storage {
         return Util.getSharedPreference().getInt(Constants.PREFERENCE_NOTIFINCATION_FREQUENCY, 1);
     }
 
+    public static String getTimesADayLabel(int perDay) {
+        return perDay == 1 ? "once a day" : perDay == 2 ? "twice a day" : perDay + " times a day";
+    }
+
     public static Integer getFeaturesNotificationStatus(String key) {
         return Util.getSharedPreference().getInt(key, 0);
     }
@@ -231,8 +235,10 @@ public class Storage {
 
 
     public static String getNotificationTime(Context context) {
-        int hours = Storage.getNotificationHours();
-        int minutes = Storage.getNotificationMinutes();
+        return formatTime(context, Storage.getNotificationHours(), Storage.getNotificationMinutes());
+    }
+
+    public static String formatTime(Context context, int hours, int minutes) {
         boolean is24HourFormat = android.text.format.DateFormat.is24HourFormat(context);
         if (is24HourFormat) {
             return Util.getTwoDigitsString(hours) + ":" + Util.getTwoDigitsString(minutes);
