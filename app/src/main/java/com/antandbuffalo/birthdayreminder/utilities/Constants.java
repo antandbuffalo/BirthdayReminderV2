@@ -56,7 +56,6 @@ public class Constants {
 
     public static final int ADD_NEW_MEMBER = 1;
     public static final int DELETE_MEMBER = 2;
-    public static final int REFRESH_SETTINGS = 3;
     public static final int NOTIFICATION_PERMISSION = 4;
 
     public static final String IS_USER_ADDED = "IS_USER_ADDED";
@@ -102,22 +101,6 @@ public class Constants {
 
     public static final Map<String, String> SETTINGS_MSG = new HashMap<String, String>() {{
         put("backup", "Backup file is created and stored in the location " + Constants.FOLDER_NAME + "/" + Constants.FILE_NAME + Constants.FILE_NAME_SUFFIX);
-    }};
-
-    public static final int SETTINGS_CELL_TYPE_DATE = 0;
-    public static final int SETTINGS_CELL_TYPE_1_LETTER = 1;
-    public static final int SETTINGS_CELL_TYPE_NA = 2;
-
-    public static final int SETTINGS_CELL_TYPES_COUNT = 3;
-
-    public static final Set<String> SETTINGS_CELL_TYPE_0_VALUES = new HashSet<String>() {{
-        add(SETTINGS_READ_FILE);
-        add(SETTINGS_WRITE_FILE);
-    }};
-
-    public static final Set<String> SETTINGS_CELL_TYPE_1_LETTER_VALUES = new HashSet<String>() {{
-        add(SETTINGS_DELETE_ALL);
-        add(SETTINGS_ABOUT);
     }};
 
     public static final String SETTINGS_WRITE_FILE_TITLE = "Backup";

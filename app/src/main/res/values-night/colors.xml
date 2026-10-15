@@ -30,4 +30,8 @@
     <color name="aandb_search_bg">#383838</color>
     <color name="aandb_field_stroke">#616161</color>
     <color name="aandb_error_text">#EF9A9A</color>
+
+    <color name="aandb_settings_card">#222626</color>
+    <color name="aandb_settings_icon_bg">#294DB6AC</color>
+    <color name="aandb_settings_danger_bg">#24EF9A9A</color>
 </resources>

@@ -71,4 +71,8 @@
 
     <color name="aandb_field_stroke">#BDBDBD</color>
     <color name="aandb_error_text">#C62828</color>
+
+    <color name="aandb_settings_card">#F3F6F6</color>
+    <color name="aandb_settings_icon_bg">#1F00796B</color>
+    <color name="aandb_settings_danger_bg">#1AC62828</color>
 </resources>

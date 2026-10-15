@@ -1,119 +1,97 @@
 package com.antandbuffalo.birthdayreminder.settings;
 
-import android.content.ContentValues;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
+import android.content.Context;
+import android.text.format.DateUtils;
 
+import com.antandbuffalo.birthdayreminder.BuildConfig;
 import com.antandbuffalo.birthdayreminder.R;
-import com.antandbuffalo.birthdayreminder.database.DBHelper;
 import com.antandbuffalo.birthdayreminder.models.SettingsModel;
 import com.antandbuffalo.birthdayreminder.utilities.Constants;
 import com.antandbuffalo.birthdayreminder.utilities.Storage;
+import com.antandbuffalo.birthdayreminder.utilities.ThemeOptions;
 import com.antandbuffalo.birthdayreminder.utilities.Util;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by i677567 on 12/10/15.
  */
 public class SettingsData {
+    public static final String TYPE_DANGER = "danger";
+    public static final String TYPE_EXTERNAL = "external";
 
-    public static List getDefatultValues() {
-        List<SettingsModel> data = new ArrayList();
-        SettingsModel datum;
-        JSONObject extraFields;
+    // section title -> rows, in display order
+    public static Map<String, List<SettingsModel>> getSections(Context context) {
+        Map<String, List<SettingsModel>> sections = new LinkedHashMap<>();
 
-        datum = SettingsModel.newInstance();
-        datum.setKey(Constants.SETTINGS_NOTIFICATION);
-        datum.setTitle("Pre Notification");
-        datum.setSubTitle("");
-        datum.setIconLetter("P");
-        datum.setSno(1);
-        int days = Storage.getInt(Util.getSharedPreference(), Constants.PREFERENCE_PRE_NOTIFICATION_DAYS);
-        datum.setValue(days + " day");
-        if(days > 1) {
-            datum.setValue(days + " days");
+        List<SettingsModel> reminders = new ArrayList<>();
+        reminders.add(row(Constants.SETTINGS_NOTIFICATION, "Remind me", getRemindMe(Storage.getPreNotificationDays()), R.drawable.ic_settings_remind));
+        reminders.add(row(Constants.SETTINGS_NOTIFICATION_TIME, "Reminder time", Storage.getNotificationTime(context), R.drawable.ic_settings_time));
+        reminders.add(row(Constants.SETTINGS_NOTIFICATION_FREQUENCY, "Times a day", Storage.getNotificationFrequency() + "", R.drawable.ic_settings_repeat));
+        sections.put("Reminders", reminders);
+
+        List<SettingsModel> wishes = new ArrayList<>();
+        wishes.add(row(Constants.SETTINGS_WISH_TEMPLATE, "Wish template", "“" + Storage.getWishTemplate().trim() + "”", R.drawable.ic_settings_wish));
+        sections.put("Wishes", wishes);
+
+        List<SettingsModel> data = new ArrayList<>();
+        data.add(row(Constants.settingsBackup, "Backup & restore", getLastBackup(), R.drawable.ic_settings_backup));
+        data.add(row(Constants.SETTINGS_DELETE_ALL, "Delete all birthdays", "", R.drawable.ic_settings_delete, TYPE_DANGER));
+        sections.put("Your data", data);
+
+        List<SettingsModel> app = new ArrayList<>();
+        app.add(row(Constants.SETTINGS_SELECT_THEME, "Theme", getTheme(), R.drawable.ic_settings_theme));
+        app.add(row(Constants.SETTINGS_WEB, "Web version", "", R.drawable.ic_settings_web, TYPE_EXTERNAL));
+        app.add(row(Constants.SETTINGS_ABOUT, "About", "Version " + BuildConfig.VERSION_NAME, R.drawable.ic_settings_info));
+        sections.put("App", app);
+
+        return sections;
+    }
+
+    private static SettingsModel row(String key, String title, String subTitle, int iconId) {
+        return row(key, title, subTitle, iconId, null);
+    }
+
+    private static SettingsModel row(String key, String title, String subTitle, int iconId, String type) {
+        SettingsModel datum = SettingsModel.newInstance();
+        datum.setKey(key);
+        datum.setTitle(title);
+        datum.setSubTitle(subTitle);
+        datum.setIconId(iconId);
+        datum.setType(type);
+        return datum;
+    }
+
+    private static String getRemindMe(int days) {
+        if (days == 0) {
+            return "On the day";
         }
-        datum.setIconId(R.drawable.ic_history_primary_dark);
-        data.add(datum);
+        // the on-the-day reminder always fires; this setting adds one extra, N days earlier
+        return "On the day and " + (days == 1 ? "1 day before" : days + " days before");
+    }
 
-        datum = SettingsModel.newInstance();
-        datum.setKey(Constants.SETTINGS_NOTIFICATION_TIME);
-        datum.setTitle("Notification Time");
-        datum.setSubTitle("");
-        datum.setIconLetter("N");
-        datum.setSno(2);
-        datum.setValue("00:00");
-        datum.setIconId(R.drawable.ic_alarm_primary_dark);
-        data.add(datum);
+    private static String getLastBackup() {
+        Date backupTime = Util.getDateFromString(Storage.getServerBackupTime(), Constants.backupDateFormatToStore);
+        if (backupTime == null) {
+            return "Not backed up yet";
+        }
+        long now = System.currentTimeMillis();
+        if (now - backupTime.getTime() < DateUtils.MINUTE_IN_MILLIS) {
+            return "Last backup just now";
+        }
+        return "Last backup " + DateUtils.getRelativeTimeSpanString(backupTime.getTime(), now, DateUtils.MINUTE_IN_MILLIS);
+    }
 
-        datum = SettingsModel.newInstance();
-        datum.setKey(Constants.SETTINGS_NOTIFICATION_FREQUENCY);
-        datum.setTitle("Notifications Per Day");
-        datum.setSubTitle("");
-        datum.setIconLetter("N");
-        datum.setSno(3);
-        datum.setValue(Storage.getNotificationFrequency() + "");
-        datum.setIconId(R.drawable.ic_timeline_primary_dark);
-        data.add(datum);
-
-        datum = SettingsModel.newInstance();
-        datum.setKey(Constants.SETTINGS_WISH_TEMPLATE);
-        datum.setTitle("Wish Template");
-        datum.setSubTitle("");
-        datum.setIconLetter("W");
-        datum.setSno(4);
-        datum.setIconId(R.drawable.ic_assignment_primary_dark);
-        data.add(datum);
-
-        datum = SettingsModel.newInstance();
-        datum.setKey(Constants.settingsBackup);
-        datum.setTitle("Backup and Restore");
-        datum.setSubTitle(Constants.SETTINGS_WRITE_FILE_SUB_TITLE);
-        //datum.setUpdatedOn(new Date());
-        datum.setSno(5);
-        datum.setIconId(R.drawable.ic_backup_primary_dark);
-        data.add(datum);
-
-        datum = SettingsModel.newInstance();
-        datum.setKey(Constants.SETTINGS_SELECT_THEME);
-        datum.setTitle("Theme");
-        datum.setSubTitle("");
-        datum.setSno(6);
-        datum.setIconId(R.drawable.ic_brightness_primary_dark);
-        data.add(datum);
-
-        datum = SettingsModel.newInstance();
-        datum.setKey(Constants.SETTINGS_DELETE_ALL);
-        datum.setTitle(Constants.SETTINGS_DELETE_ALL_TITLE);
-        datum.setSubTitle("");
-        //datum.setUpdatedOn(new Date());
-        datum.setSno(7);
-        datum.setIconId(R.drawable.ic_delete_sweep_primary_dark);
-        data.add(datum);
-
-        datum = SettingsModel.newInstance();
-        datum.setKey(Constants.SETTINGS_WEB);
-        datum.setTitle("Web Version");
-        datum.setSubTitle("");
-        datum.setSno(8);
-        datum.setIconId(R.drawable.ic_language_primary_dark);
-        data.add(datum);
-
-        datum = SettingsModel.newInstance();
-        datum.setKey(Constants.SETTINGS_ABOUT);
-        datum.setTitle("About");
-        datum.setSubTitle("");
-        datum.setSno(9);
-        datum.setIconId(R.drawable.ic_info_primary_dark);
-        data.add(datum);
-
-        return data;
+    private static String getTheme() {
+        for (Map<String, String> option : ThemeOptions.getInstance().getValues()) {
+            if (Storage.getTheme().equalsIgnoreCase(option.get("key"))) {
+                return option.get("value");
+            }
+        }
+        return "";
     }
 }

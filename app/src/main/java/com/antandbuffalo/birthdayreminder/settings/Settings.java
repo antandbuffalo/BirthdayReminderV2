@@ -3,17 +3,23 @@ package com.antandbuffalo.birthdayreminder.settings;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
+import android.view.LayoutInflater;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
+import androidx.core.widget.ImageViewCompat;
 
 import com.antandbuffalo.birthdayreminder.R;
 import com.antandbuffalo.birthdayreminder.about.About;
@@ -35,11 +41,11 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class Settings extends AppCompatActivity {
-    SettingsListAdapter settingsListAdapter;
     AdView mAdView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,62 +57,88 @@ public class Settings extends AppCompatActivity {
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_back_white);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        final ListView settingsList = (ListView)findViewById(R.id.settingsList);
-        settingsListAdapter = new SettingsListAdapter();
-        //http://stackoverflow.com/questions/6495898/findviewbyid-in-fragment
-        settingsList.setAdapter(settingsListAdapter);
-
-        settingsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                SettingsModel selectedOption = settingsListAdapter.listData.get(position);
-                if (selectedOption.getKey().equalsIgnoreCase(Constants.SETTINGS_NOTIFICATION)) {
-                    Intent intent = new Intent(view.getContext(), PreNotification.class);
-                    startActivityForResult(intent, Constants.REFRESH_SETTINGS);
-                }
-                else if (selectedOption.getKey().equalsIgnoreCase(Constants.settingsBackup)) {
-                    Intent intent = new Intent(view.getContext(), Backup.class);
-                    startActivityForResult(intent, Constants.REFRESH_SETTINGS);
-                }
-                else if (selectedOption.getKey().equalsIgnoreCase(Constants.SETTINGS_NOTIFICATION_TIME)) {
-                    Intent intent = new Intent(view.getContext(), NotificationTime.class);
-                    startActivityForResult(intent, Constants.REFRESH_SETTINGS);
-                }
-                else if (selectedOption.getKey().equalsIgnoreCase(Constants.SETTINGS_NOTIFICATION_FREQUENCY)) {
-                    Intent intent = new Intent(view.getContext(), NotificationFrequency.class);
-                    startActivityForResult(intent, Constants.REFRESH_SETTINGS);
-                }
-                else if (selectedOption.getKey().equalsIgnoreCase(Constants.SETTINGS_WISH_TEMPLATE)) {
-                    Intent intent = new Intent(view.getContext(), WishTemplate.class);
-                    startActivityForResult(intent, Constants.REFRESH_SETTINGS);
-                }
-                else if (selectedOption.getKey().equalsIgnoreCase(Constants.SETTINGS_ABOUT)) {
-                    Intent intent = new Intent(view.getContext(), About.class);
-                    startActivityForResult(intent, Constants.REFRESH_SETTINGS);
-                }
-                else if (selectedOption.getKey().equalsIgnoreCase(Constants.SETTINGS_WEB)) {
-                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(Constants.WEB_URL)));
-                }
-                else if (selectedOption.getKey().equalsIgnoreCase(Constants.SETTINGS_SELECT_THEME)) {
-                    selectTheme();
-                }
-                else if (selectedOption.getKey().equalsIgnoreCase(Constants.SETTINGS_DELETE_ALL)) {
-                    long count = DBHelper.getNumberOfRows(Constants.TABLE_DATE_OF_BIRTH);
-                    if (count == 0) {
-                        Toast.makeText(Settings.this, "No birthdays to delete", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                    DeleteDialog.showAll(Settings.this, count, () -> {
-                        DateOfBirthDBHelper.deleteAll();
-                        Toast.makeText(Settings.this, "All birthdays deleted", Toast.LENGTH_SHORT).show();
-                        DataHolder.getInstance().refresh = true;
-                        Storage.setDbBackupTime(new Date());
-                    });
-                }
-            }
-        });
         loadAd();
         showSnowFlakes();
+    }
+
+    // rows that just open another screen
+    private static final Map<String, Class<?>> SCREENS = new HashMap<String, Class<?>>() {{
+        put(Constants.SETTINGS_NOTIFICATION, PreNotification.class);
+        put(Constants.SETTINGS_NOTIFICATION_TIME, NotificationTime.class);
+        put(Constants.SETTINGS_NOTIFICATION_FREQUENCY, NotificationFrequency.class);
+        put(Constants.SETTINGS_WISH_TEMPLATE, WishTemplate.class);
+        put(Constants.settingsBackup, Backup.class);
+        put(Constants.SETTINGS_ABOUT, About.class);
+    }};
+
+    public void onSettingClick(String key) {
+        Class<?> screen = SCREENS.get(key);
+        if (screen != null) {
+            startActivity(new Intent(this, screen));
+        }
+        else if (key.equals(Constants.SETTINGS_WEB)) {
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(Constants.WEB_URL)));
+        }
+        else if (key.equals(Constants.SETTINGS_SELECT_THEME)) {
+            selectTheme();
+        }
+        else if (key.equals(Constants.SETTINGS_DELETE_ALL)) {
+            long count = DBHelper.getNumberOfRows(Constants.TABLE_DATE_OF_BIRTH);
+            if (count == 0) {
+                Toast.makeText(Settings.this, "No birthdays to delete", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            DeleteDialog.showAll(Settings.this, count, () -> {
+                DateOfBirthDBHelper.deleteAll();
+                Toast.makeText(Settings.this, "All birthdays deleted", Toast.LENGTH_SHORT).show();
+                DataHolder.getInstance().refresh = true;
+                Storage.setDbBackupTime(new Date());
+            });
+        }
+    }
+
+    // one heading + rounded card per section
+    public void buildSettings() {
+        LinearLayout container = findViewById(R.id.settingsContainer);
+        container.removeAllViews();
+        LayoutInflater inflater = getLayoutInflater();
+        for (Map.Entry<String, List<SettingsModel>> section : SettingsData.getSections(this).entrySet()) {
+            TextView heading = (TextView) inflater.inflate(R.layout.settings_section, container, false);
+            heading.setText(section.getKey());
+            container.addView(heading);
+
+            ViewGroup group = (ViewGroup) inflater.inflate(R.layout.settings_group, container, false);
+            group.setClipToOutline(true);
+            container.addView(group);
+            for (SettingsModel option : section.getValue()) {
+                group.addView(bindRow(inflater, group, option));
+            }
+        }
+    }
+
+    private View bindRow(LayoutInflater inflater, ViewGroup group, SettingsModel option) {
+        View row = inflater.inflate(R.layout.settings_row, group, false);
+        TextView title = row.findViewById(R.id.settingsTitle);
+        title.setText(option.getTitle());
+        TextView subtitle = row.findViewById(R.id.settingsSubtitle);
+        subtitle.setText(option.getSubTitle());
+        subtitle.setVisibility(option.getSubTitle().isEmpty() ? View.GONE : View.VISIBLE);
+        ImageView icon = row.findViewById(R.id.settingsIcon);
+        icon.setImageResource(option.getIconId());
+
+        ImageView trailing = row.findViewById(R.id.settingsTrailing);
+        if (SettingsData.TYPE_DANGER.equals(option.getType())) {
+            int danger = ContextCompat.getColor(this, R.color.aandb_error_text);
+            title.setTextColor(danger);
+            ImageViewCompat.setImageTintList(icon, ColorStateList.valueOf(danger));
+            row.findViewById(R.id.settingsIconCircle).setBackgroundResource(R.drawable.settings_icon_circle_danger);
+            trailing.setVisibility(View.GONE);
+        }
+        else if (SettingsData.TYPE_EXTERNAL.equals(option.getType())) {
+            trailing.setImageResource(R.drawable.ic_settings_open);
+        }
+        row.setOnClickListener(v -> onSettingClick(option.getKey()));
+        return row;
     }
 
     public void selectTheme() {
@@ -131,7 +163,7 @@ public class Settings extends AppCompatActivity {
                 Storage.setDbBackupTime(new Date());
                 Util.applyTheme();
                 // refresh the list to update selected theme
-                settingsListAdapter.refreshData();
+                buildSettings();
             }
         });
         adb.setNegativeButton("Cancel", null);
@@ -177,7 +209,7 @@ public class Settings extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        settingsListAdapter.refreshData();
+        buildSettings();
         mAdView.resume();
     }
 
