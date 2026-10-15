@@ -71,7 +71,7 @@ public class SettingsData {
             return "On the day";
         }
         // the on-the-day reminder always fires; this setting adds one extra, N days earlier
-        return "On the day and " + (days == 1 ? "1 day before" : days + " days before");
+        return "On the day and " + Storage.getDaysBeforeLabel(days);
     }
 
     private static String getLastBackup() {

@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:layout_height="match_parent">
 
     <com.jetradarmobile.snowfall.SnowfallView
         android:id="@+id/snowFlakes"
@@ -22,64 +21,76 @@
         app:snowflakesFadingEnabled="true"
         app:snowflakesNum="250" />
 
-    <com.google.android.material.appbar.AppBarLayout
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/appbar"
-        android:theme="@style/AppTheme.AppBarOverlay">
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/aandb_toolbar_bg"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:titleTextColor="@color/white"
+        app:popupTheme="@style/AppTheme.PopupOverlay" />
 
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/adView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar">
+
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="@color/aandb_toolbar_bg"
-            app:popupTheme="@style/AppTheme.PopupOverlay" />
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:paddingBottom="16dp">
 
-    </com.google.android.material.appbar.AppBarLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/remind_note_bg"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="14dp">
 
-    <TextView
-        android:id="@+id/mtLable2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/appbar"
-        android:layout_marginTop="30dp"
-        android:text="Please select the number of days, to get notified, before the actual birthday"
-        android:textAlignment="center"
-        android:textColor="@color/aandb_primay_text_color"
-        android:textSize="16sp" />
+                <ImageView
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:layout_marginEnd="12dp"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/ic_remind_bell"
+                    app:tint="@color/aandb_soon_text_color" />
 
-    <NumberPicker
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/recentDaysToday"
-        android:layout_below="@+id/mtLable2"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp"
-        android:theme="@style/AppTheme"
-        android:orientation="vertical" />
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="You'll always get a reminder on the day. Want an earlier one too?"
+                    android:textColor="@color/aandb_primay_text_color"
+                    android:textSize="14sp" />
+            </LinearLayout>
 
-    <TextView
-        android:id="@+id/mtLable3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/recentDaysToday"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginRight="10dp"
-        android:text="You will also get notified on the day of the actual birthday"
-        android:textAlignment="center"
-        android:textColor="@color/aandb_primay_text_color"
-        android:textSize="16sp" />
+            <include
+                android:id="@+id/remindHeading"
+                layout="@layout/settings_section" />
 
-    <com.google.android.gms.ads.AdView xmlns:ads="http://schemas.android.com/apk/res-auto"
+            <include
+                android:id="@+id/remindOptions"
+                layout="@layout/settings_group" />
+        </LinearLayout>
+    </ScrollView>
+
+    <com.google.android.gms.ads.AdView
         android:id="@+id/adView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:background="#00D33636"
-        ads:adSize="BANNER"
-        android:layout_marginBottom="0dp"
-        ads:adUnitId="@string/ad_notificationsetting"></com.google.android.gms.ads.AdView>
-
-</RelativeLayout>
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        app:adSize="BANNER"
+        app:adUnitId="@string/ad_notificationsetting"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>

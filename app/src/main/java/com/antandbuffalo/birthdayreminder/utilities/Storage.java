@@ -185,6 +185,14 @@ public class Storage {
         return Storage.putInt(Util.getSharedPreference(), Constants.PREFERENCE_PRE_NOTIFICATION_DAYS, days);
     }
 
+    // wording for the early reminder, shared by the Remind me screen, its toast and the settings row
+    public static String getDaysBeforeLabel(int days) {
+        if (days == 7) {
+            return "1 week before";
+        }
+        return days + (days == 1 ? " day before" : " days before");
+    }
+
     public static Boolean putString(String key, String value) {
         SharedPreferences.Editor editor = Util.getSharedPreference().edit();
         editor.putString(key, value);

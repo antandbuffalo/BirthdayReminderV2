@@ -32,7 +32,7 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".prenotification.PreNotification"
-            android:label="Pre Notification"
+            android:label="Remind me"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".notificationtime.NotificationTime"

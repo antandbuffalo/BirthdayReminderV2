@@ -1,19 +1,17 @@
 package com.antandbuffalo.birthdayreminder.prenotification;
 
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.graphics.Paint;
+import android.graphics.Typeface;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.EditText;
-import android.widget.NumberPicker;
+import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 
 import com.antandbuffalo.birthdayreminder.R;
 import com.antandbuffalo.birthdayreminder.utilities.Constants;
@@ -22,11 +20,11 @@ import com.antandbuffalo.birthdayreminder.utilities.Util;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 
-import java.lang.reflect.Field;
 import java.util.Date;
 
 public class PreNotification extends AppCompatActivity {
-    Intent intent;
+    private static final int MAX_DAYS = 7;
+
     AdView mAdView;
 
     @Override
@@ -36,84 +34,58 @@ public class PreNotification extends AppCompatActivity {
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close_white);
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_back_white);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        final SharedPreferences settings = Util.getSharedPreference();
-        intent = new Intent();
-
-        final NumberPicker numberPicker = (NumberPicker) findViewById(R.id.recentDaysToday);
-        //setNumberPickerTextColor(numberPicker, Color.WHITE);
-        numberPicker.setWrapSelectorWheel(true);
-        numberPicker.setMaxValue(7);
-        numberPicker.setMinValue(0);
-        numberPicker.setWrapSelectorWheel(false);
-
-        int preNotifDays = settings.getInt(Constants.PREFERENCE_PRE_NOTIFICATION_DAYS, 0);
-        numberPicker.setValue(preNotifDays);
+        TextView heading = findViewById(R.id.remindHeading);
+        heading.setText("Also remind me");
+        buildOptions(Storage.getPreNotificationDays());
 
         loadAd();
         showSnowFlakes();
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_done, menu);
-        return true;
+    // one row per choice: 0 (on the day only) to 7 days early; tapping a row saves it and closes
+    private void buildOptions(int selectedDays) {
+        LinearLayout options = findViewById(R.id.remindOptions);
+        LayoutInflater inflater = LayoutInflater.from(this);
+        for (int days = 0; days <= MAX_DAYS; days++) {
+            View row = inflater.inflate(R.layout.remind_me_option, options, false);
+            RadioButton radio = row.findViewById(R.id.remindRadio);
+            TextView label = row.findViewById(R.id.remindLabel);
+            label.setText(days == 0 ? "No early reminder" : Storage.getDaysBeforeLabel(days));
+            if (days == 0) {
+                TextView hint = row.findViewById(R.id.remindHint);
+                hint.setText("on the day only");
+                hint.setVisibility(View.VISIBLE);
+            }
+            if (days == selectedDays) {
+                radio.setChecked(true);
+                label.setTextColor(ContextCompat.getColor(this, R.color.aandb_soon_text_color));
+                label.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
+            }
+            final int choice = days;
+            row.setOnClickListener(v -> save(choice));
+            options.addView(row);
+        }
+    }
+
+    private void save(int days) {
+        Storage.setPreNotificationDays(days);
+
+        String message = days == 0 ? "Early reminder turned off"
+                : "You'll also get a reminder " + Storage.getDaysBeforeLabel(days);
+        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+        Storage.setDbBackupTime(new Date());
+        finish();
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        Log.d("BRJB", item.getItemId() + "");
-        int id = item.getItemId();
-        if (id == R.id.action_menu_done) {
-            Log.d("BRJB", item.getItemId() + " : done");
-            NumberPicker numberPicker = (NumberPicker) findViewById(R.id.recentDaysToday);
-            int days = numberPicker.getValue();
-            Storage.putInt(Util.getSharedPreference(), Constants.PREFERENCE_PRE_NOTIFICATION_DAYS, days);
-
-            String message = days == 0 ? "Early reminder turned off"
-                    : "You'll also get a reminder " + days + (days == 1 ? " day" : " days") + " before";
-            Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
-            Storage.setDbBackupTime(new Date());
-            setResult(RESULT_OK, intent);
-        }
-        else if(id == android.R.id.home) {
-            Log.d("BRJB", item.getItemId() + " : back");
-            setResult(RESULT_CANCELED, intent);
-        }
+    public boolean onSupportNavigateUp() {
         finish();
         return true;
     }
 
-    public static boolean setNumberPickerTextColor(NumberPicker numberPicker, int color)
-    {
-        final int count = numberPicker.getChildCount();
-        for(int i = 0; i < count; i++){
-            View child = numberPicker.getChildAt(i);
-            if(child instanceof EditText){
-                try{
-                    Field selectorWheelPaintField = numberPicker.getClass()
-                            .getDeclaredField("mSelectorWheelPaint");
-                    selectorWheelPaintField.setAccessible(true);
-                    ((Paint)selectorWheelPaintField.get(numberPicker)).setColor(color);
-                    ((EditText)child).setTextColor(color);
-                    numberPicker.invalidate();
-                    return true;
-                }
-                catch(NoSuchFieldException e){
-                    Log.w("setNumberPickerTextCol", e);
-                }
-                catch(IllegalAccessException e){
-                    Log.w("setNumberPickerTextCol", e);
-                }
-                catch(IllegalArgumentException e){
-                    Log.w("setNumberPickerTextC", e);
-                }
-            }
-        }
-        return false;
-    }
     public void loadAd() {
         mAdView = this.findViewById(R.id.adView);
         if(!Constants.enableAds) {
