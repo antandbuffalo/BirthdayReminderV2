@@ -3,6 +3,7 @@ package com.antandbuffalo.birthdayreminder.utilities;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.core.content.ContextCompat;
@@ -46,5 +47,11 @@ public class UIUtil {
             }
         });
         dialog.show();
+    }
+
+    // disabled controls also fade, since a tinted button otherwise looks the same
+    public static void setEnabledDimmed(View view, boolean enabled) {
+        view.setEnabled(enabled);
+        view.setAlpha(enabled ? 1f : 0.4f);
     }
 }

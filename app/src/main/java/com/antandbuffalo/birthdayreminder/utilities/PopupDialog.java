@@ -43,11 +43,17 @@ public class PopupDialog {
         view.findViewById(R.id.popupRowCard).setVisibility(View.VISIBLE);
     }
 
-    // Both buttons close the pop-up first; a null action just closes it
-    public static void show(Activity activity, View view, Runnable onSecondary, Runnable onPrimary) {
+    // Rounded background and grow/fade animation, for pop-ups with their own layout too
+    public static AlertDialog create(Activity activity, View view) {
         AlertDialog dialog = new AlertDialog.Builder(activity).setView(view).create();
         dialog.getWindow().setBackgroundDrawableResource(R.drawable.dialog_bg);
         dialog.getWindow().setWindowAnimations(R.style.PopupDialogAnimation);
+        return dialog;
+    }
+
+    // Both buttons close the pop-up first; a null action just closes it
+    public static void show(Activity activity, View view, Runnable onSecondary, Runnable onPrimary) {
+        AlertDialog dialog = create(activity, view);
 
         view.findViewById(R.id.popupSecondary).setOnClickListener(v -> {
             dialog.dismiss();

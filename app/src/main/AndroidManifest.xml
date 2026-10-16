@@ -20,7 +20,7 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".wishtemplate.WishTemplate"
-            android:label="Wish Template"
+            android:label="My wishes"
             android:theme="@style/AppTheme.NoActionBar" />
 
         <activity

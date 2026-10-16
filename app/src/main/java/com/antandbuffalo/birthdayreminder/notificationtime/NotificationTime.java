@@ -17,6 +17,7 @@ import androidx.appcompat.widget.Toolbar;
 import com.antandbuffalo.birthdayreminder.R;
 import com.antandbuffalo.birthdayreminder.utilities.Constants;
 import com.antandbuffalo.birthdayreminder.utilities.Storage;
+import com.antandbuffalo.birthdayreminder.utilities.UIUtil;
 import com.antandbuffalo.birthdayreminder.utilities.Util;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
@@ -71,14 +72,9 @@ public class NotificationTime extends AppCompatActivity {
     private void setPerDay(int value) {
         perDay = Math.max(1, Math.min(MAX_PER_DAY, value));
         perDayValue.setText(String.valueOf(perDay));
-        setStepperEnabled(perDayMinus, perDay > 1);
-        setStepperEnabled(perDayPlus, perDay < MAX_PER_DAY);
+        UIUtil.setEnabledDimmed(perDayMinus, perDay > 1);
+        UIUtil.setEnabledDimmed(perDayPlus, perDay < MAX_PER_DAY);
         showTimesLine();
-    }
-
-    private void setStepperEnabled(View button, boolean enabled) {
-        button.setEnabled(enabled);
-        button.setAlpha(enabled ? 1f : 0.4f);
     }
 
     // one line that follows "Times a day": the first reminder, and how the rest are spread over the day

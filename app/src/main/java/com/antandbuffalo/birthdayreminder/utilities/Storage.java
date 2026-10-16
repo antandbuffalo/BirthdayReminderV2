@@ -9,7 +9,12 @@ import com.antandbuffalo.birthdayreminder.models.UserPreference;
 import com.antandbuffalo.birthdayreminder.models.UserProfile;
 import com.google.firebase.Timestamp;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -229,8 +234,40 @@ public class Storage {
         return Storage.putString(Constants.PREFERENCE_WISH_TEMPLATE, wishTemplate);
     }
 
+    // the default wish: filled in by Send wish, and the only one older versions know about
     public static String getWishTemplate() {
         return Storage.getString(Constants.PREFERENCE_WISH_TEMPLATE, Constants.WISH_TEMPLATE_DEFAULT);
+    }
+
+    // up to MAX_WISHES saved wishes; the default (getWishTemplate) is always one of them
+    public static List<String> getWishes() {
+        String stored = Storage.getString(Constants.PREFERENCE_WISH_LIST, null);
+        if (stored != null) {
+            try {
+                JSONArray array = new JSONArray(stored);
+                List<String> wishes = new ArrayList<>();
+                for (int i = 0; i < array.length(); i++) {
+                    wishes.add(array.getString(i));
+                }
+                return wishes;
+            } catch (JSONException ignored) {
+            }
+        }
+        // first open: the current wish plus ready-made ones, leaving a slot free to add your own
+        String current = Storage.getWishTemplate();
+        List<String> wishes = new ArrayList<>();
+        wishes.add(current);
+        for (String wish : Constants.READY_MADE_WISHES) {
+            if (wishes.size() < Constants.MAX_WISHES - 1 && !wish.trim().equalsIgnoreCase(current.trim())) {
+                wishes.add(wish);
+            }
+        }
+        Storage.setWishes(wishes);
+        return wishes;
+    }
+
+    public static Boolean setWishes(List<String> wishes) {
+        return Storage.putString(Constants.PREFERENCE_WISH_LIST, new JSONArray(wishes).toString());
     }
 
 
@@ -254,6 +291,16 @@ public class Storage {
 
     public static void updateUserPreference(UserPreference userPreference, AlarmManager alarmManager, Context context) {
         Storage.setWishTemplate(userPreference.wishTemplate);
+        if (userPreference.wishes != null && !userPreference.wishes.isEmpty()) {
+            Storage.setWishes(userPreference.wishes);
+        } else {
+            // backup from a version without the list: keep ours and put the restored wish first
+            List<String> wishes = Storage.getWishes();
+            if (!wishes.contains(Storage.getWishTemplate())) {
+                wishes.add(0, Storage.getWishTemplate());
+                Storage.setWishes(wishes.subList(0, Math.min(wishes.size(), Constants.MAX_WISHES)));
+            }
+        }
         Storage.setPreNotificationDays(userPreference.preNotificationDays);
         Storage.setDbBackupTime(userPreference.localBackupTime);
         Storage.setServerBackupTime(userPreference.serverBackupTime);
@@ -292,6 +339,7 @@ public class Storage {
         userPreference.preNotificationDays = Storage.getPreNotificationDays();
         userPreference.serverBackupTime = Util.getDateFromString(Storage.getServerBackupTime(), Constants.backupDateFormatToStore);
         userPreference.wishTemplate = Storage.getWishTemplate();
+        userPreference.wishes = Storage.getWishes();
         userPreference.localBackupTime = Util.getDateFromString(Storage.getDbBackupTime(), Constants.backupDateFormatToStore);
         userPreference.versionName = BuildConfig.VERSION_NAME;
         userPreference.versionCode = BuildConfig.VERSION_CODE;
@@ -303,6 +351,7 @@ public class Storage {
     public static UserPreference createUserPreferenceFromServer(Map<String, Object> genericPreference) {
         UserPreference userPreference = new UserPreference();
         userPreference.wishTemplate = (String) genericPreference.get("wishTemplate");
+        userPreference.wishes = (List<String>) genericPreference.get("wishes");
         if (genericPreference.get("preNotificationDays") != null) {
             userPreference.preNotificationDays = ((Long) genericPreference.get("preNotificationDays")).intValue();
         }

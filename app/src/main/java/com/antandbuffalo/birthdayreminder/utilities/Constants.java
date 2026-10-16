@@ -130,6 +130,7 @@ public class Constants {
     public static final String PREFERENCE_RECENT_DAYS_TODAY = "PREFERENCE_RECENT_DAYS_TODAY";
     public static final String PREFERENCE_PRE_NOTIFICATION_DAYS = "PREFERENCE_PRE_NOTIFICATION_DAYS";
     public static final String PREFERENCE_WISH_TEMPLATE = "PREFERENCE_WISH_TEMPLATE";
+    public static final String PREFERENCE_WISH_LIST = "PREFERENCE_WISH_LIST";
     public static final String PREFERENCE_NOTIFICATION_TIME_HOURS = "PREFERENCE_NOTIFICATION_TIME_HOURS";
     public static final String PREFERENCE_NOTIFICATION_TIME_MINUTES = "PREFERENCE_NOTIFICATION_TIME_MINUTES";
     public static final String PREFERENCE_NOTIFINCATION_FREQUENCY = "PREFERENCE_NOTIFINCATION_FREQUENCY";
@@ -151,6 +152,14 @@ public class Constants {
     public static final int MY_PERMISSIONS_READ_WRITE = 3;
 
     public static final String WISH_TEMPLATE_DEFAULT = "Wish you many more happy returns of the day";
+    public static final int MAX_WISHES = 5;
+    // starting list for someone who has never opened My wishes; their current wish goes first
+    public static final String[] READY_MADE_WISHES = {
+            WISH_TEMPLATE_DEFAULT,
+            "Happy birthday! Wishing you a wonderful year ahead 🎉",
+            "Happy birthday! Have a great day 🎂",
+            "Many happy returns! Hope all your wishes come true",
+    };
 
     public static final String NEW_FEATURE_2_6_0_34 = "NEW_FEATURE_2_6_0_34";
 

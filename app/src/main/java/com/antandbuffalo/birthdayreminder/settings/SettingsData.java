@@ -34,7 +34,7 @@ public class SettingsData {
         sections.put("Reminders", reminders);
 
         List<SettingsModel> wishes = new ArrayList<>();
-        wishes.add(row(Constants.SETTINGS_WISH_TEMPLATE, "Wish template", "“" + Storage.getWishTemplate().trim() + "”", R.drawable.ic_settings_wish));
+        wishes.add(row(Constants.SETTINGS_WISH_TEMPLATE, "My wishes", "“" + Storage.getWishTemplate().trim() + "”", R.drawable.ic_settings_wish));
         sections.put("Wishes", wishes);
 
         List<SettingsModel> data = new ArrayList<>();
