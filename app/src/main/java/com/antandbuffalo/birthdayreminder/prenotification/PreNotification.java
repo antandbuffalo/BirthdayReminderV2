@@ -1,21 +1,19 @@
 package com.antandbuffalo.birthdayreminder.prenotification;
 
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
-import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.content.ContextCompat;
 
 import com.antandbuffalo.birthdayreminder.R;
 import com.antandbuffalo.birthdayreminder.utilities.Constants;
 import com.antandbuffalo.birthdayreminder.utilities.Storage;
+import com.antandbuffalo.birthdayreminder.utilities.UIUtil;
 import com.antandbuffalo.birthdayreminder.utilities.Util;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
@@ -50,23 +48,11 @@ public class PreNotification extends AppCompatActivity {
         LinearLayout options = findViewById(R.id.remindOptions);
         LayoutInflater inflater = LayoutInflater.from(this);
         for (int days = 0; days <= MAX_DAYS; days++) {
-            View row = inflater.inflate(R.layout.remind_me_option, options, false);
-            RadioButton radio = row.findViewById(R.id.remindRadio);
-            TextView label = row.findViewById(R.id.remindLabel);
-            label.setText(days == 0 ? "No early reminder" : Storage.getDaysBeforeLabel(days));
-            if (days == 0) {
-                TextView hint = row.findViewById(R.id.remindHint);
-                hint.setText("on the day only");
-                hint.setVisibility(View.VISIBLE);
-            }
-            if (days == selectedDays) {
-                radio.setChecked(true);
-                label.setTextColor(ContextCompat.getColor(this, R.color.aandb_soon_text_color));
-                label.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
-            }
             final int choice = days;
-            row.setOnClickListener(v -> save(choice));
-            options.addView(row);
+            UIUtil.addRadioRow(inflater, options,
+                    days == 0 ? "No early reminder" : Storage.getDaysBeforeLabel(days),
+                    days == 0 ? "on the day only" : null,
+                    days == selectedDays, v -> save(choice));
         }
     }
 

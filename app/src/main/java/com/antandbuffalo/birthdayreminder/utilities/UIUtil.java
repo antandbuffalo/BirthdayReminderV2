@@ -3,7 +3,12 @@ package com.antandbuffalo.birthdayreminder.utilities;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Typeface;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.RadioButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.core.content.ContextCompat;
@@ -53,5 +58,31 @@ public class UIUtil {
     public static void setEnabledDimmed(View view, boolean enabled) {
         view.setEnabled(enabled);
         view.setAlpha(enabled ? 1f : 0.4f);
+    }
+
+    // teal + medium weight for the chosen / important line, muted otherwise
+    public static void highlight(TextView view, boolean on) {
+        view.setTextColor(ContextCompat.getColor(view.getContext(), on ? R.color.aandb_soon_text_color : R.color.aandb_muted_text_color));
+        view.setTypeface(on ? Typeface.create("sans-serif-medium", Typeface.NORMAL) : Typeface.DEFAULT);
+    }
+
+    // one row of a settings-style radio list (remind_me_option.xml); the chosen row reads teal
+    public static View addRadioRow(LayoutInflater inflater, ViewGroup list, String label, String hint, boolean selected, View.OnClickListener onClick) {
+        View row = inflater.inflate(R.layout.remind_me_option, list, false);
+        TextView labelView = row.findViewById(R.id.remindLabel);
+        labelView.setText(label);
+        if (hint != null && !hint.isEmpty()) {
+            TextView hintView = row.findViewById(R.id.remindHint);
+            hintView.setText(hint);
+            hintView.setVisibility(View.VISIBLE);
+        }
+        if (selected) {
+            ((RadioButton) row.findViewById(R.id.remindRadio)).setChecked(true);
+            labelView.setTextColor(ContextCompat.getColor(list.getContext(), R.color.aandb_soon_text_color));
+            labelView.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
+        }
+        row.setOnClickListener(onClick);
+        list.addView(row);
+        return row;
     }
 }

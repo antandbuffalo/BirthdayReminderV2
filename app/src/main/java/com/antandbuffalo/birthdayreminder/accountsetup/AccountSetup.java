@@ -163,7 +163,7 @@ public class AccountSetup extends AppCompatActivity implements FirebaseHandler {
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
             TextView accountName = findViewById(R.id.accountName);
             accountName.setText("Account: " + user.getEmail());
-            Storage.setDbBackupTime(new Date());
+            // signing in isn't a change on this phone, so don't stamp the local time
             updateProfileToFirebase(FirebaseFirestore.getInstance(), FirebaseAuth.getInstance().getCurrentUser());
             getUserPreferenceFromFirebase();
         } else {

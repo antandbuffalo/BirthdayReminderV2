@@ -2,17 +2,19 @@ package com.antandbuffalo.birthdayreminder.backup;
 
 import android.Manifest;
 import android.app.AlarmManager;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.text.Html;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -26,22 +28,18 @@ import com.antandbuffalo.birthdayreminder.R;
 import com.antandbuffalo.birthdayreminder.database.DBHelper;
 import com.antandbuffalo.birthdayreminder.models.DateOfBirth;
 import com.antandbuffalo.birthdayreminder.models.UserProfile;
-import com.antandbuffalo.birthdayreminder.utilities.AutoSyncOptions;
 import com.antandbuffalo.birthdayreminder.utilities.Constants;
 import com.antandbuffalo.birthdayreminder.utilities.DataHolder;
 import com.antandbuffalo.birthdayreminder.utilities.FirebaseHandler;
 import com.antandbuffalo.birthdayreminder.utilities.FirebaseUtil;
+import com.antandbuffalo.birthdayreminder.utilities.PopupDialog;
 import com.antandbuffalo.birthdayreminder.utilities.ReviewPrompt;
 import com.antandbuffalo.birthdayreminder.utilities.Storage;
 import com.antandbuffalo.birthdayreminder.utilities.UIUtil;
 import com.antandbuffalo.birthdayreminder.utilities.Util;
 import com.firebase.ui.auth.AuthUI;
-import com.firebase.ui.auth.IdpResponse;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.Timestamp;
@@ -50,18 +48,33 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Source;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class Backup extends AppCompatActivity implements FirebaseHandler {
+    // auto sync choices: key stored in preferences, label, when it runs (see AlarmReceiver), toast
+    private static final String[][] AUTO_SYNC = {
+            {"none", "Off", "", "Auto sync turned off"},
+            {"daily", "Daily", "", "Auto sync: daily"},
+            {"weekly", "Weekly", "Sundays", "Auto sync: weekly, on Sundays"},
+            {"monthly", "Monthly", "1st of the month", "Auto sync: monthly, on the 1st"},
+    };
+
     AdView mAdView;
     Integer progressCounter = 0;
     Task<DocumentSnapshot> dobDone, preferenceDone;
+
+    // status line state while the backup time is loading or couldn't load
+    boolean checking = false;
+    boolean offline = false;
+    // the row that's backing up or restoring; the rest of the page is disabled until it's done
+    int busyRow = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,111 +85,32 @@ public class Backup extends AppCompatActivity implements FirebaseHandler {
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close_white);
+        getSupportActionBar().setTitle("Backup & restore");
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_back_white);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        ((TextView) findViewById(R.id.accountHeading)).setText("Google account");
+        ((TextView) findViewById(R.id.backupHeading)).setText("Backup");
+        ((TextView) findViewById(R.id.autoSyncHeading)).setText("Auto sync");
+        ((TextView) findViewById(R.id.fileHeading)).setText("On this phone");
+        findViewById(R.id.autoSyncOptions).setClipToOutline(true);
+
+        bindRow(R.id.backupNowRow, R.drawable.ic_settings_backup, "Back up now");
+        bindRow(R.id.restoreRow, R.drawable.ic_backup_restore, "Restore");
+        bindRow(R.id.restoreFileRow, R.drawable.ic_backup_restore, "Restore from a file");
+        setSubtitle(R.id.restoreFileRow, "From a file saved earlier on this phone", false);
+
+        findViewById(R.id.accountRow).setOnClickListener(v -> startFirebaseAuth());
+        findViewById(R.id.signOut).setOnClickListener(v -> removeAccountConfirmation());
+        findViewById(R.id.backupNowRow).setOnClickListener(v -> onBackupNow());
+        findViewById(R.id.restoreRow).setOnClickListener(v -> onRestore());
+        findViewById(R.id.signIn).setOnClickListener(v -> startFirebaseAuth());
+        findViewById(R.id.restoreFileRow).setOnClickListener(v -> restoreFromFile());
+
+        render();
         if (FirebaseAuth.getInstance().getCurrentUser() != null) {
-            Log.d("FirebaseUser", FirebaseAuth.getInstance().getCurrentUser().getEmail());
-            TextView textView = findViewById(R.id.accountName);
-            textView.setText("Account: " + FirebaseAuth.getInstance().getCurrentUser().getEmail());
-            getFirebaseLastUpdatedTime(FirebaseFirestore.getInstance(), FirebaseAuth.getInstance().getCurrentUser(), "updateUI");
-        } else {
-            Log.d("FirebaseError", "User Not found. Please login first");
-            startFirebaseAuth();
+            refreshServerBackupTime();
         }
-
-        Button backupNow = findViewById(R.id.backupNow);
-        backupNow.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (getStoragePermission(Constants.MY_PERMISSIONS_READ_WRITE)) {
-                    updateLocalBackup();
-                } else {
-                    Toast.makeText(DataHolder.getInstance().getAppContext(), "Allow storage access to back up to a file", Toast.LENGTH_SHORT).show();
-                }
-                if (FirebaseAuth.getInstance().getCurrentUser() != null) {
-                    backupToFirebaseConfirmation();
-                } else {
-                    UIUtil.showAlertWithOk(Backup.this, "Error", "Please select account to backup");
-                }
-            }
-        });
-
-        Button restoreNow = findViewById(R.id.restoreNow);
-        restoreNow.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (FirebaseAuth.getInstance().getCurrentUser() != null) {
-                    restoreBirthdaysAndSettingsFromFirebase(FirebaseFirestore.getInstance(), FirebaseAuth.getInstance().getCurrentUser());
-                } else {
-                    UIUtil.showConfirmationDialog(Backup.this, "Confirmation", "You need to setup your Google account to restore. Meanwhile we can try to restore from local file if available. Do you want to continue?", (DialogInterface dialog, int which) -> {
-                        String status = Util.readFromFile("dob.txt");
-                        Toast toast = Toast.makeText(getApplicationContext(), status, Toast.LENGTH_SHORT);
-                        toast.show();
-                        DataHolder.getInstance().refresh = true;
-                    });
-//                    UIUtil.showAlertWithOk(Backup.this, "Error", "Please select account to backup");
-                }
-            }
-        });
-
-        Button selectAccount = findViewById(R.id.selectAccount);
-        selectAccount.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startFirebaseAuth();
-            }
-        });
-
-        Button removeAccount = findViewById(R.id.removeAccount);
-        removeAccount.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                removeAccountConfirmation();
-            }
-        });
-
-        Button selectFrequency = findViewById(R.id.frequency);
-        selectFrequency.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                androidx.appcompat.app.AlertDialog.Builder adb = new androidx.appcompat.app.AlertDialog.Builder(Backup.this);
-                //CharSequence items[] = new CharSequence[] {AutoSyncFrequency.NONE.getFrequency(), AutoSyncFrequency.DAILY.name(), AutoSyncFrequency.WEEKLY.name(), AutoSyncFrequency.MONTHLY.name()};
-                List<Map<String, String>> optionsList = AutoSyncOptions.getInstance().getValues();
-                CharSequence options[] = new CharSequence[optionsList.size()];
-
-                Integer selectedItem = 0;
-                for (int i = 0; i < optionsList.size(); i++) {
-                    options[i] = optionsList.get(i).get("value");
-                    if (optionsList.get(i).get("key").equalsIgnoreCase(Storage.getAutoSyncFrequency())) {
-                        selectedItem = i;
-                    }
-                }
-                adb.setSingleChoiceItems(options, selectedItem, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        System.out.println("i = " + i);
-                        Storage.setAutoSyncFrequency(optionsList.get(i).get("key"));
-                        updateAutoFrequencyUI();
-                        Storage.setDbBackupTime(new Date());
-                    }
-                });
-                adb.setPositiveButton("OK", null);
-                adb.setNegativeButton("Cancel", null);
-                adb.setTitle("Select Sync Frequency");
-
-                androidx.appcompat.app.AlertDialog dialog = adb.create();
-                dialog.setOnShowListener(new DialogInterface.OnShowListener() {
-                    @Override
-                    public void onShow(DialogInterface arg0) {
-                        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(Backup.this, R.color.dark_gray));
-                    }
-                });
-                dialog.show();
-            }
-        });
-        updateBackupTimeUI();
-        updateAutoFrequencyUI();
         loadAd();
         showSnowFlakes();
     }
@@ -186,21 +120,255 @@ public class Backup extends AppCompatActivity implements FirebaseHandler {
         DataHolder.getInstance().setAppContext(getApplicationContext());
     }
 
+    // settings_row with no chevron: these rows act on this page
+    private void bindRow(int rowId, int iconId, String title) {
+        View row = findViewById(rowId);
+        ((ImageView) row.findViewById(R.id.settingsIcon)).setImageResource(iconId);
+        ((TextView) row.findViewById(R.id.settingsTitle)).setText(title);
+        row.findViewById(R.id.settingsTrailing).setVisibility(View.GONE);
+    }
+
+    private void setSubtitle(int rowId, String text, boolean recommended) {
+        TextView subtitle = findViewById(rowId).findViewById(R.id.settingsSubtitle);
+        subtitle.setText(text);
+        UIUtil.highlight(subtitle, recommended);
+    }
+
+    // ---- page state ----
+
+    public void render() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        findViewById(R.id.signedInView).setVisibility(user != null ? View.VISIBLE : View.GONE);
+        findViewById(R.id.signedOutView).setVisibility(user != null ? View.GONE : View.VISIBLE);
+        if (user == null) {
+            return;
+        }
+        String email = user.getEmail() == null ? "" : user.getEmail();
+        ((TextView) findViewById(R.id.accountEmail)).setText(email);
+        ((TextView) findViewById(R.id.accountInitial)).setText(email.isEmpty() ? "" : email.substring(0, 1).toUpperCase());
+        renderStatus();
+        buildAutoSyncOptions();
+    }
+
+    private void renderStatus() {
+        Date server = Storage.getServerBackupDate();
+        Date local = Storage.getDbBackupDate();
+
+        TextView title = findViewById(R.id.backupStatusTitle);
+        title.setText(server == null ? "Not backed up yet"
+                : Html.fromHtml("Last backup: <b>" + formatBackupTime(server) + "</b>"));
+
+        String detail = "";
+        boolean warn = false;
+        int recommended = 0;
+        if (checking) {
+            detail = "Checking…";
+        } else if (offline) {
+            detail = "Offline · couldn't check, showing last known";
+        } else if (server == null) {
+            recommended = R.id.backupNowRow;
+        } else if (local != null && local.after(server)) {
+            detail = "Changed " + formatBackupTime(local) + " · not backed up";
+            warn = true;
+            recommended = R.id.backupNowRow;
+        } else if (local == null || local.before(server)) {
+            detail = local == null ? "Newer than this phone"
+                    : "Newer than this phone (changed " + Util.getStringFromDate(local, "d MMM") + ")";
+            warn = true;
+            recommended = R.id.restoreRow;
+        } else {
+            detail = "Up to date";
+        }
+
+        TextView detailView = findViewById(R.id.backupStatusDetail);
+        detailView.setText(detail);
+        UIUtil.highlight(detailView, warn);
+        findViewById(R.id.backupStatusDetailRow).setVisibility(detail.isEmpty() ? View.GONE : View.VISIBLE);
+        findViewById(R.id.backupStatusDot).setVisibility(warn ? View.VISIBLE : View.GONE);
+        findViewById(R.id.backupStatusSpinner).setVisibility(checking ? View.VISIBLE : View.GONE);
+
+        boolean up = recommended == R.id.backupNowRow;
+        boolean restore = recommended == R.id.restoreRow;
+        setSubtitle(R.id.backupNowRow, server == null
+                ? (up ? "Recommended · saves your birthdays and settings" : "Saves your birthdays and settings")
+                : (up ? "Recommended · overwrites your backup" : "Overwrites your backup"), up);
+        setSubtitle(R.id.restoreRow, restore ? "Recommended · adds missing birthdays" : "Brings back missing birthdays", restore);
+    }
+
+    // "today, 8:02 AM", "yesterday, 9:15 PM", "12 Oct, 9:15 PM", "12 Oct 2025"
+    private String formatBackupTime(Date date) {
+        Calendar then = Util.getCalendar(date);
+        Calendar now = Calendar.getInstance();
+        String time = Storage.formatTime(this, then.get(Calendar.HOUR_OF_DAY), then.get(Calendar.MINUTE));
+        if (then.get(Calendar.YEAR) != now.get(Calendar.YEAR)) {
+            return Util.getStringFromDate(date, "d MMM yyyy");
+        }
+        int days = now.get(Calendar.DAY_OF_YEAR) - then.get(Calendar.DAY_OF_YEAR);
+        if (days == 0) {
+            return "today, " + time;
+        }
+        if (days == 1) {
+            return "yesterday, " + time;
+        }
+        return Util.getStringFromDate(date, "d MMM") + ", " + time;
+    }
+
+    private void buildAutoSyncOptions() {
+        LinearLayout options = findViewById(R.id.autoSyncOptions);
+        options.removeAllViews();
+        LayoutInflater inflater = LayoutInflater.from(this);
+        String selected = Storage.getAutoSyncFrequency();
+        for (String[] choice : AUTO_SYNC) {
+            UIUtil.addRadioRow(inflater, options, choice[1], choice[2], choice[0].equalsIgnoreCase(selected), v -> saveAutoSync(choice));
+        }
+    }
+
+    private void saveAutoSync(String[] choice) {
+        if (busyRow != 0 || choice[0].equalsIgnoreCase(Storage.getAutoSyncFrequency())) {
+            return;
+        }
+        Storage.setAutoSyncFrequency(choice[0]);
+        Storage.setDbBackupTime(new Date());
+        Toast.makeText(this, choice[3], Toast.LENGTH_SHORT).show();
+        buildAutoSyncOptions();
+        renderStatus();
+    }
+
+    // 0 clears it; the auto sync rows are rebuilt each time so they check busyRow themselves
+    private void setBusy(int rowId) {
+        busyRow = rowId;
+        boolean free = rowId == 0;
+        UIUtil.setEnabledDimmed(findViewById(R.id.accountRow), free);
+        UIUtil.setEnabledDimmed(findViewById(R.id.signOut), free);
+        UIUtil.setEnabledDimmed(findViewById(R.id.autoSyncOptions), free);
+        UIUtil.setEnabledDimmed(findViewById(R.id.backupNowRow), free || rowId == R.id.backupNowRow);
+        UIUtil.setEnabledDimmed(findViewById(R.id.restoreRow), free || rowId == R.id.restoreRow);
+        findViewById(R.id.backupStatus).setAlpha(free ? 1f : 0.4f);
+        if (free) {
+            renderStatus();
+        } else {
+            setSubtitle(rowId, rowId == R.id.backupNowRow ? "Backing up…" : "Restoring…", false);
+        }
+    }
+
+    private boolean isOnline() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo network = connectivityManager == null ? null : connectivityManager.getActiveNetworkInfo();
+        return network != null && network.isConnected();
+    }
+
+    // ---- pop-ups ----
+
+    private void showMessage(int iconId, String title, String message) {
+        View view = PopupDialog.inflate(this, iconId, title, message, "", "OK");
+        view.findViewById(R.id.popupSecondary).setVisibility(View.GONE);
+        PopupDialog.show(this, view, null, null);
+    }
+
+    private void showOffline(String action) {
+        refreshServerBackupTime();
+        showMessage(R.drawable.ic_cloud_off, "You're offline", "Connect to the internet to " + action + ". Nothing was changed.");
+    }
+
+    // ---- actions ----
+
+    private void onBackupNow() {
+        if (!isOnline()) {
+            showOffline("back up");
+            return;
+        }
+        // an empty phone would replace the backup with nothing
+        if (DBHelper.getNumberOfRows(Constants.TABLE_DATE_OF_BIRTH) == 0) {
+            View view = PopupDialog.inflate(this, R.drawable.ic_settings_backup, "Nothing to back up",
+                    "This phone has no birthdays. Backing up now would erase the birthdays in your backup.\n\nRestore them to this phone instead?",
+                    "Cancel", "Restore");
+            PopupDialog.show(this, view, null, () -> restoreBirthdaysAndSettingsFromFirebase(FirebaseFirestore.getInstance(), FirebaseAuth.getInstance().getCurrentUser()));
+            return;
+        }
+        View view = PopupDialog.inflate(this, R.drawable.ic_settings_backup, "Back up now?",
+                "Your backup will be replaced with the birthdays and settings on this phone.", "Cancel", "Back up");
+        PopupDialog.show(this, view, null, () -> {
+            if (getStoragePermission(Constants.MY_PERMISSIONS_READ_WRITE)) {
+                updateLocalBackup();
+            } else {
+                Toast.makeText(Backup.this, "Allow storage access to back up to a file", Toast.LENGTH_SHORT).show();
+            }
+            backupDateOfBirthsToFirebase(FirebaseFirestore.getInstance(), FirebaseAuth.getInstance().getCurrentUser());
+        });
+    }
+
+    private void onRestore() {
+        if (!isOnline()) {
+            showOffline("restore");
+            return;
+        }
+        View view = PopupDialog.inflate(this, R.drawable.ic_backup_restore, "Restore from backup?",
+                "Birthdays in your backup that aren't on this phone will be added. Nothing on this phone gets deleted. Birthdays you deleted after this backup will come back.\n\nYour settings (reminder time, wishes, theme) will be replaced with the ones in the backup.",
+                "Cancel", "Restore");
+        PopupDialog.show(this, view, null, () -> restoreBirthdaysAndSettingsFromFirebase(FirebaseFirestore.getInstance(), FirebaseAuth.getInstance().getCurrentUser()));
+    }
+
+    private void restoreFromFile() {
+        String status = Util.readFromFile("dob.txt");
+        if (Constants.ERROR_NO_BACKUP_FILE.equals(status) || Constants.ERROR_NO_SD_CARD.equals(status)) {
+            showMessage(R.drawable.ic_backup_restore, "No backup file", "There's no backup file on this phone.");
+            return;
+        }
+        Toast.makeText(this, status, Toast.LENGTH_SHORT).show();
+        DataHolder.getInstance().refresh = true;
+    }
+
     public void updateLocalBackup() {
         File file = Util.writeToFile(this);
         if (file != null) {
             Storage.setDbBackupTime(new Date(file.lastModified()));
         }
-        updateBackupTimeUI();
+    }
+
+    // the backup time on the server, read fresh so the status never shows a stale or another account's time
+    public void refreshServerBackupTime() {
+        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (firebaseUser == null) {
+            return;
+        }
+        if (!isOnline()) {
+            offline = true;
+            renderStatus();
+            return;
+        }
+        checking = true;
+        offline = false;
+        renderStatus();
+        DocumentReference documentReference = FirebaseFirestore.getInstance().collection(Util.getCollectionId(firebaseUser)).document(Constants.firebaseDocumentSettings);
+        // activity-scoped listeners: a closed page doesn't wait on a slow fetch
+        documentReference.get(Source.SERVER).addOnSuccessListener(this, documentSnapshot -> {
+                    checking = false;
+                    if (!documentSnapshot.exists()) {
+                        Storage.setServerBackupTime(null);
+                    } else {
+                        Date backupTime = serverBackupTimeOf(documentSnapshot);
+                        if (backupTime != null) {
+                            Storage.setServerBackupTime(backupTime);
+                        }
+                    }
+                    renderStatus();
+                })
+                .addOnFailureListener(this, e -> {
+                    Log.e("ERROR", "Not able to get last updated time");
+                    checking = false;
+                    offline = true;
+                    renderStatus();
+                });
+    }
+
+    // the backup time stored in the settings document, if it has one
+    private static Date serverBackupTimeOf(DocumentSnapshot document) {
+        Timestamp timestamp = (Timestamp) document.get(Constants.serverBackupTime);
+        return timestamp == null ? null : timestamp.toDate();
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        Log.d("BRJB", item.getItemId() + "");
-        int id = item.getItemId();
-        if (id == android.R.id.home) {
-            Log.d("BRJB", item.getItemId() + " : back");
-        }
         finish();
         return true;
     }
@@ -232,66 +400,40 @@ public class Backup extends AppCompatActivity implements FirebaseHandler {
         return false;
     }
 
-    public void readWritePermission(Boolean isGranted) {
-        if (isGranted) {
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == Constants.MY_PERMISSIONS_READ_WRITE
+                && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             updateLocalBackup();
         }
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch (requestCode) {
-            case Constants.MY_PERMISSIONS_READ_WRITE: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // permission was granted, yay! Do the
-                    readWritePermission(true);
-
-                } else {
-                    // permission denied, boo! Disable the
-                    readWritePermission(false);
-                }
-                return;
-            }
-            // other 'case' lines to check for other
-            // permissions this app might request.
-        }
-    }
-
     public void handleFirebaseSignIn(int resultCode, Intent data) {
-        IdpResponse response = IdpResponse.fromResultIntent(data);
-
         if (resultCode == RESULT_OK) {
-            // Successfully signed in
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-            System.out.println(user.getDisplayName());
-            System.out.println(user.getEmail());
-            System.out.println(user.getPhoneNumber());
-            System.out.println(user.getProviderId());
-            System.out.println(user.getUid());
-            TextView accountName = findViewById(R.id.accountName);
-            accountName.setText("Account: " + user.getEmail());
-            updateProfileToFirebase(FirebaseFirestore.getInstance(), FirebaseAuth.getInstance().getCurrentUser());
-            Storage.setDbBackupTime(new Date());
+            // could be a different account: drop the old account's backup time until this one's loads
+            Storage.setServerBackupTime(null);
+            updateProfileToFirebase(FirebaseFirestore.getInstance(), user);
+            // signing in isn't a change on this phone: leave the local time alone so the
+            // status (and auto sync) compare real data, not the sign-in moment
+            offline = false;
+            render();
 
             Log.i("AUTO_RESTORE", "Calling auto restore");
             showProgressBar();
             showProgressBar();
             dobDone = null;
             preferenceDone = null;
-            FirebaseUtil.restoreDateOfBirthAndUserPreferenceFromFirebase(FirebaseFirestore.getInstance(), FirebaseAuth.getInstance().getCurrentUser(), Backup.this);
+            FirebaseUtil.restoreDateOfBirthAndUserPreferenceFromFirebase(FirebaseFirestore.getInstance(), user, Backup.this);
         } else {
-            Toast.makeText(DataHolder.getInstance().getAppContext(), Constants.SIGN_IN_FAILED, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, Constants.SIGN_IN_FAILED, Toast.LENGTH_SHORT).show();
         }
     }
 
     public void startFirebaseAuth() {
-        // Choose authentication providers
         List<AuthUI.IdpConfig> providers = Arrays.asList(
                 new AuthUI.IdpConfig.GoogleBuilder().build());
-// Create and launch sign-in intent
         startActivityForResult(
                 AuthUI.getInstance()
                         .createSignInIntentBuilder()
@@ -303,14 +445,11 @@ public class Backup extends AppCompatActivity implements FirebaseHandler {
     public void signoutFromFirebase() {
         AuthUI.getInstance()
                 .signOut(this)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    public void onComplete(@NonNull Task<Void> task) {
-                        TextView accountName = findViewById(R.id.accountName);
-                        accountName.setText("Account: ");
-                        Storage.setServerBackupTime(null);
-                        TextView serverBackup = findViewById(R.id.cloudBackup);
-                        serverBackup.setText("Server: ");
-                    }
+                .addOnCompleteListener(task -> {
+                    Storage.setServerBackupTime(null);
+                    checking = false;
+                    offline = false;
+                    render();
                 });
     }
 
@@ -318,53 +457,43 @@ public class Backup extends AppCompatActivity implements FirebaseHandler {
         if (firebaseUser == null) {
             return;
         }
-        // Create a new user with a first and last name
+        if (Storage.getDbBackupTime() == null || Storage.getDbBackupTime().isEmpty()) {
+            Storage.setDbBackupTime(new Date());
+        }
         showProgressBar();
+        setBusy(R.id.backupNowRow);
         Map<String, DateOfBirth> dateOfBirthMap = Util.getDateOfBirthMap();
         DocumentReference documentReference = firebaseFirestore.collection(Util.getCollectionId(firebaseUser)).document(Constants.firebaseDocumentFriends);
-        documentReference.set(dateOfBirthMap).addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        hideProgressBar();
-                        Log.d("Success", "data updated successfully");
-                        //updateLastUpdatedTime(db, firebaseUser);
-                        Storage.setServerBackupTime(Util.getDateFromString(Storage.getDbBackupTime(), Constants.backupDateFormatToStore));
-                        backupUserPreferenceToFirebase(firebaseFirestore, firebaseUser);
-                        ReviewPrompt.showNow(Backup.this);
-                    }
+        documentReference.set(dateOfBirthMap).addOnSuccessListener(aVoid -> {
+                    hideProgressBar();
+                    Log.d("Success", "data updated successfully");
+                    Storage.setServerBackupTime(Storage.getDbBackupDate());
+                    backupUserPreferenceToFirebase(firebaseFirestore, firebaseUser);
+                    ReviewPrompt.showNow(Backup.this);
                 })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        hideProgressBar();
-                        Log.e("F", e.getLocalizedMessage());
-                        Toast.makeText(DataHolder.getInstance().getAppContext(), Constants.BACKUP_FAILED, Toast.LENGTH_LONG).show();
-                    }
+                .addOnFailureListener(e -> {
+                    hideProgressBar();
+                    setBusy(0);
+                    Log.e("F", e.getLocalizedMessage());
+                    Toast.makeText(Backup.this, Constants.BACKUP_FAILED, Toast.LENGTH_LONG).show();
                 });
     }
 
     public void backupUserPreferenceToFirebase(FirebaseFirestore db, FirebaseUser firebaseUser) {
-        if (firebaseUser == null) {
-            return;
-        }
         showProgressBar();
         DocumentReference documentReference = db.collection(Util.getCollectionId(firebaseUser)).document(Constants.firebaseDocumentSettings);
-        documentReference.set(Storage.getUserPreference()).addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        hideProgressBar();
-                        Log.d("Success", "Preferences updated successfully");
-                        Toast.makeText(DataHolder.getInstance().getAppContext(), "Birthdays and settings backed up", Toast.LENGTH_SHORT).show();
-                        updateBackupTimeUI();
-                    }
+        documentReference.set(Storage.getUserPreference()).addOnSuccessListener(aVoid -> {
+                    hideProgressBar();
+                    offline = false;
+                    setBusy(0);
+                    Log.d("Success", "Preferences updated successfully");
+                    Toast.makeText(Backup.this, "Birthdays and settings backed up", Toast.LENGTH_SHORT).show();
                 })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        hideProgressBar();
-                        Log.e("F", e.getLocalizedMessage());
-                        Toast.makeText(DataHolder.getInstance().getAppContext(), Constants.BACKUP_FAILED, Toast.LENGTH_LONG).show();
-                    }
+                .addOnFailureListener(e -> {
+                    hideProgressBar();
+                    setBusy(0);
+                    Log.e("F", e.getLocalizedMessage());
+                    Toast.makeText(Backup.this, Constants.BACKUP_FAILED, Toast.LENGTH_LONG).show();
                 });
     }
 
@@ -372,38 +501,33 @@ public class Backup extends AppCompatActivity implements FirebaseHandler {
         if (firebaseUser == null) {
             return;
         }
-        // Create a new user with a first and last name
         UserProfile userProfile = Util.getUserProfileFromFirebaseUser(firebaseUser);
         Storage.saveUserProfileToLocal(userProfile);
         DocumentReference documentReference = db.collection(Util.getCollectionId(firebaseUser)).document(Constants.firebaseDocumentProfile);
-        documentReference.set(userProfile).addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d("Success", "Profile updated");
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.e("Profile", "Error updating profile: " + e.getLocalizedMessage());
-                    }
-                });
+        documentReference.set(userProfile)
+                .addOnSuccessListener(aVoid -> Log.d("Success", "Profile updated"))
+                .addOnFailureListener(e -> Log.e("Profile", "Error updating profile: " + e.getLocalizedMessage()));
     }
 
-    public void restoreDateOfBirthsFromFirebase(FirebaseFirestore firebaseFirestore, FirebaseUser firebaseUser) {
+    public void restoreBirthdaysAndSettingsFromFirebase(FirebaseFirestore firebaseFirestore, FirebaseUser firebaseUser) {
         if (firebaseUser == null) {
             return;
         }
         showProgressBar();
-        FirebaseUtil.restoreDateOfBirthsFromFirebase(firebaseFirestore, firebaseUser, Backup.this);
-    }
-
-    public void restoreBirthdaysAndSettingsFromFirebase(FirebaseFirestore firebaseFirestore, FirebaseUser firebaseUser) {
-        showProgressBar();
+        setBusy(R.id.restoreRow);
         Task<DocumentSnapshot> dobTask = FirebaseUtil.getDocument(firebaseFirestore, firebaseUser, Constants.firebaseDocumentFriends);
         Task<DocumentSnapshot> preferenceTask = FirebaseUtil.getDocument(firebaseFirestore, firebaseUser, Constants.firebaseDocumentSettings);
         Tasks.whenAllComplete(dobTask, preferenceTask).addOnCompleteListener(done -> {
             hideProgressBar();
+            setBusy(0);
+            if (!dobTask.isSuccessful()) {
+                Toast.makeText(Backup.this, "Couldn't restore. Check your connection", Toast.LENGTH_LONG).show();
+                return;
+            }
+            if (!dobTask.getResult().exists()) {
+                showMessage(R.drawable.ic_backup_restore, "No backup found", "There's no backup on " + firebaseUser.getEmail() + " yet.");
+                return;
+            }
             restoreBirthdaysAndSettings(dobTask, preferenceTask);
         });
     }
@@ -417,145 +541,39 @@ public class Backup extends AppCompatActivity implements FirebaseHandler {
         }
     }
 
-    public void updateLastUpdatedTime(FirebaseFirestore firebaseFirestore, FirebaseUser firebaseUser) {
-        if (firebaseUser == null) {
-            return;
-        }
-        Map<String, Date> updateTime = new HashMap<>();
-        updateTime.put(Constants.serverBackupTime, Util.getDateFromString(Storage.getDbBackupTime(), Constants.backupDateFormatToStore));
-        DocumentReference documentReference = firebaseFirestore.collection(Util.getCollectionId(firebaseUser)).document(Constants.firebaseDocumentSettings);
-        documentReference.set(updateTime).addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d("Success", "Last updated time updated");
-                        Storage.setServerBackupTime(Util.getDateFromString(Storage.getDbBackupTime(), Constants.backupDateFormatToStore));
-                        TextView cloudBackup = findViewById(R.id.cloudBackup);
-                        cloudBackup.setText("Server: " + Storage.getServerBackupTime());
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.e("F", e.getLocalizedMessage());
-                    }
-                });
-    }
-
-    public void getFirebaseLastUpdatedTime(FirebaseFirestore firebaseFirestore, FirebaseUser firebaseUser, String caller) {
-        if (firebaseUser == null) {
-            return;
-        }
-        DocumentReference documentReference = firebaseFirestore.collection(Util.getCollectionId(firebaseUser)).document(Constants.firebaseDocumentSettings);
-        documentReference.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                    @Override
-                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        Timestamp serverTimestamp = (Timestamp) documentSnapshot.get(Constants.serverBackupTime);
-
-                        if (serverTimestamp != null) {
-                            String formattedDate = Util.getStringFromDate(serverTimestamp.toDate(), Constants.backupDateFormatToStore);
-                            Storage.putString(Constants.serverBackupTime, formattedDate);
-                            switch (caller) {
-                                case "updateUI": {
-                                    updateBackupTimeUI();
-                                    break;
-                                }
-                                case "saveLocally": {
-                                    break;
-                                }
-                            }
-                        }
-                        if (caller.equalsIgnoreCase("syncNow")) {
-                            compareBackupTimes();
-                        }
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.e("ERROR", "Not able to get last updated time");
-                    }
-                });
-    }
-
-
-    public void getFirebaseLastUpdatedTime(FirebaseFirestore firebaseFirestore, FirebaseUser firebaseUser) {
-        getFirebaseLastUpdatedTime(firebaseFirestore, firebaseUser, "");
-    }
-
-    public void backupToFirebaseConfirmation() {
-        androidx.appcompat.app.AlertDialog.Builder alertDialogBuilder = new androidx.appcompat.app.AlertDialog.Builder(Backup.this);
-        alertDialogBuilder.setTitle("Confirmation")
-                .setMessage("This action will replace existing server content with local content. Are you sure want to continue?")
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        backupDateOfBirthsToFirebase(FirebaseFirestore.getInstance(), FirebaseAuth.getInstance().getCurrentUser());
-                    }
-                })
-                .setNegativeButton("No", null);
-        androidx.appcompat.app.AlertDialog dialog = alertDialogBuilder.create();
-        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
-            @Override
-            public void onShow(DialogInterface arg0) {
-                dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(Backup.this, R.color.dark_gray));
-            }
-        });
-        dialog.show();
-    }
-
-    public void syncNow() {
-        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        if (connectivityManager.getAllNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnected()) {
-            getFirebaseLastUpdatedTime(FirebaseFirestore.getInstance(), FirebaseAuth.getInstance().getCurrentUser(), "syncNow");
-        } else {
-            Toast.makeText(DataHolder.getInstance().getAppContext(), "You're offline. Please connect to the internet", Toast.LENGTH_LONG).show();
-        }
-    }
-
-    public void compareBackupTimes() {
-        Date dbBackupDate = Util.getDateFromString(Storage.getDbBackupTime(), Constants.backupDateFormatToStore);
-        Date serverBackupDate = Util.getDateFromString(Storage.getServerBackupTime(), Constants.backupDateFormatToStore);
-        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        if (serverBackupDate == null) {
-            backupDateOfBirthsToFirebase(FirebaseFirestore.getInstance(), firebaseUser);
-            return;
-        }
-        if (dbBackupDate == null) {
-            restoreDateOfBirthsFromFirebase(FirebaseFirestore.getInstance(), firebaseUser);
-            return;
-        }
-        if (dbBackupDate.getTime() == serverBackupDate.getTime()) {
-            return;
-        }
-        if (dbBackupDate.getTime() > serverBackupDate.getTime()) {
-            // Local data is latest. Upload to server
-            backupDateOfBirthsToFirebase(FirebaseFirestore.getInstance(), firebaseUser);
-        } else {
-            // Server data is latest. Download
-            restoreDateOfBirthsFromFirebase(FirebaseFirestore.getInstance(), firebaseUser);
-        }
-    }
-
-    public void updateBackupTimeUI() {
-        TextView localBackup = findViewById(R.id.localBackup);
-        localBackup.setText("Local: " + Storage.getDbBackupTime());
-
-        TextView serverBackup = findViewById(R.id.cloudBackup);
-        serverBackup.setText("Server: " + Storage.getServerBackupTime());
-    }
-
-    public void updateAutoFrequencyUI() {
-        TextView localBackup = findViewById(R.id.syncFrequency);
-        for (int i = 0; i < AutoSyncOptions.getInstance().getValues().size(); i++) {
-            if (AutoSyncOptions.getInstance().getValues().get(i).get("key").equalsIgnoreCase(Storage.getAutoSyncFrequency())) {
-                localBackup.setText("Auto Sync Frequency: " + AutoSyncOptions.getInstance().getValues().get(i).get("value"));
-                break;
+    // after sign-in: offer the account's backup, if it has one
+    public void autoRestoreConfirmation(Task<DocumentSnapshot> dobTask, Task<DocumentSnapshot> preferenceTask) {
+        Date backupTime = null;
+        if (preferenceTask.isSuccessful() && preferenceTask.getResult().exists()) {
+            backupTime = serverBackupTimeOf(preferenceTask.getResult());
+            if (backupTime != null) {
+                Storage.setServerBackupTime(backupTime);
             }
         }
+        if (preferenceTask.isSuccessful()) {
+            renderStatus();
+        } else {
+            // couldn't read the backup time, so don't claim there's no backup
+            refreshServerBackupTime();
+        }
+        if (!dobTask.isSuccessful() || !dobTask.getResult().exists()) {
+            return;
+        }
+        String from = backupTime == null ? "" : " from " + formatBackupTime(backupTime);
+        View view = PopupDialog.inflate(this, R.drawable.ic_backup_restore, "Backup found",
+                "You have a backup" + from + " on " + FirebaseAuth.getInstance().getCurrentUser().getEmail() + ". Restore it now?\n\nBirthdays are added, nothing on this phone gets deleted. You can also do this later with Restore.",
+                "Not now", "Restore");
+        PopupDialog.show(this, view, null, () -> restoreBirthdaysAndSettings(dobTask, preferenceTask));
+    }
+
+    public void removeAccountConfirmation() {
+        View view = PopupDialog.inflate(this, R.drawable.ic_cloud_off, "Sign out?",
+                "Your backup stays in your Google account. Auto sync stops until you sign in again.", "Cancel", "Sign out");
+        PopupDialog.show(this, view, null, this::signoutFromFirebase);
     }
 
     public void showProgressBar() {
-        ProgressBar progressBar = findViewById(R.id.progresBar);
+        ProgressBar progressBar = findViewById(R.id.progressBar);
         if (progressCounter == 0) {
             progressBar.setVisibility(View.VISIBLE);
         }
@@ -563,7 +581,7 @@ public class Backup extends AppCompatActivity implements FirebaseHandler {
     }
 
     public void hideProgressBar() {
-        ProgressBar progressBar = findViewById(R.id.progresBar);
+        ProgressBar progressBar = findViewById(R.id.progressBar);
         progressCounter--;
         if (progressCounter == 0) {
             progressBar.setVisibility(View.INVISIBLE);
@@ -580,50 +598,6 @@ public class Backup extends AppCompatActivity implements FirebaseHandler {
         mAdView.loadAd(adRequest);
     }
 
-    public void removeAccountConfirmation() {
-        androidx.appcompat.app.AlertDialog.Builder alertDialogBuilder = new androidx.appcompat.app.AlertDialog.Builder(Backup.this);
-        alertDialogBuilder.setTitle("Confirmation")
-                .setMessage("Are you sure want to remove your account?")
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        signoutFromFirebase();
-                    }
-                })
-                .setNegativeButton("No", null);
-        androidx.appcompat.app.AlertDialog dialog = alertDialogBuilder.create();
-        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
-            @Override
-            public void onShow(DialogInterface arg0) {
-                dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(Backup.this, R.color.dark_gray));
-            }
-        });
-        dialog.show();
-    }
-
-    public void autoRestoreConfirmation(Task<DocumentSnapshot> dobTask, Task<DocumentSnapshot> preferenceTask) {
-        Log.i("AUTO_RESTORE", "Going to show confirmation");
-        androidx.appcompat.app.AlertDialog.Builder alertDialogBuilder = new androidx.appcompat.app.AlertDialog.Builder(Backup.this);
-        alertDialogBuilder.setTitle("Confirmation")
-                .setMessage("We found a backup for this account. Do you want to restore now? You can always restore later using the Restore option")
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        restoreBirthdaysAndSettings(dobTask, preferenceTask);
-                    }
-                })
-                .setNegativeButton("No", null);
-        androidx.appcompat.app.AlertDialog dialog = alertDialogBuilder.create();
-        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
-            @Override
-            public void onShow(DialogInterface arg0) {
-                dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(Backup.this, R.color.dark_gray));
-            }
-        });
-        dialog.show();
-    }
-
-    // Returns true when birthdays were found on the server and restored
     public boolean postProcessDateOfBirths(Task<DocumentSnapshot> task) {
         if (task.isSuccessful()) {
             DocumentSnapshot document = task.getResult();
@@ -641,15 +615,6 @@ public class Backup extends AppCompatActivity implements FirebaseHandler {
         return false;
     }
 
-    @Override
-    public void onCompleteDateOfBirthSync(Task<DocumentSnapshot> task) {
-        hideProgressBar();
-        if (postProcessDateOfBirths(task)) {
-            Toast.makeText(Backup.this, "Birthdays restored", Toast.LENGTH_SHORT).show();
-            ReviewPrompt.showNow(Backup.this);
-        }
-    }
-
     public void postProcessUserPreference(Task<DocumentSnapshot> task) {
         if (task.isSuccessful()) {
             DocumentSnapshot document = task.getResult();
@@ -658,8 +623,7 @@ public class Backup extends AppCompatActivity implements FirebaseHandler {
                 AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
                 Storage.updateUserPreference(Storage.createUserPreferenceFromServer(document.getData()), alarmManager, getApplicationContext());
-                updateBackupTimeUI();
-                updateAutoFrequencyUI();
+                render();
                 Util.applyTheme();
                 DataHolder.getInstance().refreshSettings = true;
             } else {
@@ -667,17 +631,6 @@ public class Backup extends AppCompatActivity implements FirebaseHandler {
             }
         } else {
             Log.d("FirebaseGetData", "get failed with ", task.getException());
-        }
-    }
-
-    @Override
-    public void onCompleteDateOfBirthUserPreferenceSync(Task<DocumentSnapshot> dobTask, Task<DocumentSnapshot> preferenceTask) {
-        Log.i("AUTO_RESTORE", "One is done");
-
-        hideProgressBar();
-        if (dobTask != null && preferenceTask != null) {
-            Log.i("AUTO_RESTORE", "Both done");
-            autoRestoreConfirmation(dobTask, preferenceTask);
         }
     }
 
@@ -723,10 +676,4 @@ public class Backup extends AppCompatActivity implements FirebaseHandler {
         mAdView.destroy();
         super.onDestroy();
     }
-    // download prgress link
-    // https://developers.google.com/drive/android/files
-
-    // use firebase instead of app data
-    // https://ammar.lanui.online/integrate-google-drive-rest-api-on-android-app-bc4ddbd90820
-
 }

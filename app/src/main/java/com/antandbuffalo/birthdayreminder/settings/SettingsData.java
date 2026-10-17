@@ -74,15 +74,16 @@ public class SettingsData {
     }
 
     private static String getLastBackup() {
-        Date backupTime = Util.getDateFromString(Storage.getServerBackupTime(), Constants.backupDateFormatToStore);
+        Date backupTime = Storage.getServerBackupDate();
         if (backupTime == null) {
             return "Not backed up yet";
         }
         long now = System.currentTimeMillis();
+        String changes = Storage.hasChangesSinceBackup() ? " · not backed up yet" : "";
         if (now - backupTime.getTime() < DateUtils.MINUTE_IN_MILLIS) {
-            return "Last backup just now";
+            return "Last backup just now" + changes;
         }
-        return "Last backup " + DateUtils.getRelativeTimeSpanString(backupTime.getTime(), now, DateUtils.MINUTE_IN_MILLIS);
+        return "Last backup " + DateUtils.getRelativeTimeSpanString(backupTime.getTime(), now, DateUtils.MINUTE_IN_MILLIS) + changes;
     }
 
     private static String getTheme() {

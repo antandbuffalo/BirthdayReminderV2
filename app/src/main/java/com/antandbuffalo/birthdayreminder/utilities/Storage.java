@@ -128,6 +128,23 @@ public class Storage {
         Storage.putString(Constants.dbBackupTime, Util.getStringFromDate(givenDate, Constants.backupDateFormatToStore));
     }
 
+    // when the last backup went to the server; null if never
+    public static Date getServerBackupDate() {
+        return Util.getDateFromString(getServerBackupTime(), Constants.backupDateFormatToStore);
+    }
+
+    // when anything on this phone last changed (every add, edit or settings change stamps it)
+    public static Date getDbBackupDate() {
+        return Util.getDateFromString(getDbBackupTime(), Constants.backupDateFormatToStore);
+    }
+
+    // true when something changed on this phone after the last backup
+    public static boolean hasChangesSinceBackup() {
+        Date server = getServerBackupDate();
+        Date local = getDbBackupDate();
+        return server != null && local != null && local.after(server);
+    }
+
     public static Integer getNotificationFrequency() {
         return Util.getSharedPreference().getInt(Constants.PREFERENCE_NOTIFINCATION_FREQUENCY, 1);
     }

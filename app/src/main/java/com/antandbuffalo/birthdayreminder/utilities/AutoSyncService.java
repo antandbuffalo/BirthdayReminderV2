@@ -122,6 +122,11 @@ public class AutoSyncService {
             return;
         }
         Map<String, DateOfBirth> dateOfBirthMap = Util.getDateOfBirthMap();
+        // never replace a backup with an empty phone
+        if(dateOfBirthMap.isEmpty()) {
+            Log.d("AutoSync", "No birthdays on this phone, skipping backup");
+            return;
+        }
         DocumentReference documentReference = firebaseFirestore.collection(Util.getCollectionId(firebaseUser)).document(Constants.firebaseDocumentFriends);
         documentReference.set(dateOfBirthMap).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
